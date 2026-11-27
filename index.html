@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Laboratoriet for Børn</title>
+    <meta property="og:title" content="STEM Laboratoriet – Interaktive værktøjer til fysik, kemi og mikrobiologi">
+    <meta property="og:description" content="Gratis interaktivt læringsværktøj med det periodiske system, 2D/3D-molekylebygger, vækstsimulator, formelsamling og forsøgsvejledninger.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stem-lab.bornsleepy-morten.workers.dev/">
+    <!-- Three.js til 3D molekylevisning -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin: 25px 0 10px 0;
+            font-weight: 700;
+        }
+
+        .grid-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .grid-stem {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .grid-extra {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 22px 18px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            border: 2px solid transparent;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.12);
+            border-color: var(--primary);
+        }
+        .category-icon { font-size: 2.6rem; margin-bottom: 8px; }
+        .category-card h3 { color: var(--secondary); margin-bottom: 6px; font-size: 1.15rem; }
+        .category-card p { color: #64748b; font-size: 0.88rem; margin: 0; }
+
+        .view { display: none; }
+        .view.active { display: block; }
+        
+        .back-btn {
+            background: #e2e8f0; border: none; color: var(--text);
+            padding: 10px 18px; border-radius: 8px; font-weight: bold;
+            cursor: pointer; margin-bottom: 20px; transition: background 0.2s;
+        }
+        .back-btn:hover { background: #cbd5e1; }
+        .card {
+            background: var(--card-bg); border-radius: 12px; padding: 24px;
+            margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+        }
+        
+        /* Periodisk System Grid */
+        .ptable-container {
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .ptable {
+            display: grid;
+            grid-template-columns: repeat(18, minmax(58px, 1fr));
+            grid-template-rows: repeat(10, minmax(68px, 1fr));
+            gap: 4px;
+            min-width: 1060px;
+        }
+        .element {
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 3px 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .element:hover {
+            transform: scale(1.35);
+            box-shadow: 0 8px 16px rgb(0 0 0 / 0.35);
+            z-index: 20;
+        }
+        .el-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.58rem;
+            color: #334155;
+            line-height: 1;
+            padding: 1px 2px;
+        }
+        .el-number { font-weight: bold; }
+        .el-electrons { color: #0369a1; font-weight: 600; }
+        .el-symbol { font-size: 1.15rem; font-weight: bold; color: #0f172a; line-height: 1; margin: 1px 0; }
+        .el-name { font-size: 0.52rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
+        .el-mass { font-size: 0.5rem; color: #64748b; font-family: monospace; line-height: 1; margin-top: 2px; }
+        
+        .el-placeholder {
+            background: none; border: 2px dashed #cbd5e1; color: #94a3b8; 
+            font-size: 0.7rem; display: flex; align-items: center; justify-content: center; border-radius: 4px;
+        }
+        
+        /* Farvekoder */
+        .alkali { background: #fee2e2; }
+        .alkaline { background: #e0f2fe; }
+        .transition { background: #dcfce7; }
+        .post-transition { background: #cffafe; }
+        .metalloid { background: #fef3c7; }
+        .nonmetal { background: #fef9c3; }
+        .halogen { background: #bbf7d0; }
+        .noble { background: #a5f3fc; }
+        .lanthanide { background: #fce7f3; }
+        .actinide { background: #ccfbf1; }
+
+        /* Mikrobiologi Styles */
+        .microbe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            margin: 18px 0 28px 0;
+        }
+        .microbe-card {
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+        }
+        .microbe-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .growth-sim-box {
+            background: #f0fdfa;
+            border: 2px solid #5eead4;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0 0 0;
+        }
+        .growth-bars {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .growth-col {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .petri-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            min-height: 70px;
+            max-height: 110px;
+            overflow: hidden;
+            align-content: flex-start;
+            background: #f8fafc;
+            border: 1px dashed #94a3b8;
+            border-radius: 8px;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        .bac-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #0d9488;
+        }
+
+        /* Molekylebygger Styles */
+        .mol-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .atom-btn {
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+        }
+        .atom-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .atom-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0,0,0,0.25);
+        }
+        .preset-btn {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .preset-btn:hover { background: #c7d2fe; }
+        
+        .tool-btn {
+            background: #f1f5f9;
+            color: #334155;
+            border: 2px solid #cbd5e1;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .tool-btn.active-delete {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+        .view-toggle-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+            transition: background 0.2s;
+        }
+        .view-toggle-btn:hover { background: #059669; }
+        .view-toggle-btn.is-3d {
+            background: var(--primary);
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        }
+        .clear-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .clear-btn:hover { background: #fecaca; }
+
+        #mol-canvas {
+            width: 100%;
+            height: 450px;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            cursor: crosshair;
+            user-select: none;
+            display: block;
+        }
+        #mol-canvas.delete-mode {
+            cursor: not-allowed;
+            border-color: #fca5a5;
+            background-color: #fffafa;
+        }
+        #mol-3d-container {
+            display: none;
+            width: 100%;
+            height: 450px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+        }
+        #mol-3d-container:active { cursor: grabbing; }
+        .overlay-3d-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 16px;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            pointer-events: none;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .mol-status-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.95rem;
+        }
+        .formula-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white; padding: 25px; border-radius: 16px;
+            max-width: 460px; width: 95%; text-align: center; position: relative;
+        }
+        .close-modal {
+            position: absolute; top: 10px; right: 15px; font-size: 1.8rem;
+            cursor: pointer; color: #64748b;
+        }
+        
+        .atom-visual {
+            position: relative; width: 280px; height: 280px; margin: 15px auto;
+        }
+        .nucleus {
+            position: absolute; width: 30px; height: 30px;
+            background: radial-gradient(circle, #fca5a5, #ef4444);
+            border-radius: 50%; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 10;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+        }
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .electron-shell {
+            position: absolute; border: 1.5px dashed #cbd5e1; border-radius: 50%;
+            top: 50%; left: 50%;
+            transform-origin: center center;
+        }
+        .electron {
+            position: absolute; width: 8px; height: 8px;
+            background: #2563eb; border-radius: 50%;
+            box-shadow: 0 0 6px #60a5fa;
+        }
+
+        h2 { color: var(--secondary); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 0; }
+        h3 { color: var(--primary); margin-top: 20px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        .nerd-box {
+            background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid var(--secondary);
+            padding: 16px 20px; margin-bottom: 22px; border-radius: 0 8px 8px 0;
+        }
+        .nerd-box h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 1.15rem; }
+        .nerd-box code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.92rem; }
+        
+        .si-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .si-table th, .si-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .si-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        .si-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* Formelsamling Grid */
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 12px;
+        }
+        .formula-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+        .formula-card h5 {
+            margin: 0 0 8px 0;
+            color: var(--primary);
+            font-size: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+        .formula-card ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.9rem;
+        }
+        .formula-card li {
+            margin-bottom: 6px;
+        }
+
+        /* Interaktiv omregner */
+        .converter-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .converter-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .converter-card h5 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+        .converter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .converter-group label {
+            width: 110px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 600;
+        }
+        .converter-group input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .converter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .resource-link {
+            display: inline-block;
+            margin-top: 4px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .resource-link:hover {
+            text-decoration: underline;
+        }
+
+        .print-btn {
+            background: var(--secondary); color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background 0.2s;
+        }
+        .print-btn:hover { background: #6d28d9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 style="cursor: pointer;" onclick="showView('home-view')">🔬 STEM Laboratoriet</h1>
+            <p class="subtitle">Eksperimenter, 2D/3D molekylebygger, mikrobiologi, formelsamling og det periodiske system</p>
+        </header>
+
+        <!-- FORSIDE -->
+        <div id="home-view" class="view active">
+            <div class="section-title" style="margin-top: 0;">Interaktive Laboratorier</div>
+            <div class="grid-top">
+                <div class="category-card" onclick="showView('periodic-view')" style="background: #f0fdf4; border: 2px solid #86efac;">
+                    <div class="category-icon">⚛️</div>
+                    <h3 style="color: #166534; font-size: 1.25rem;">Det Periodiske System</h3>
+                    <p>Udforsk samtlige 118 grundstoffer med atomnummer, atomvægt, elektroner og roterende skaller.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('molecule-view')" style="background: #eff6ff; border: 2px solid #93c5fd;">
+                    <div class="category-icon">🧬</div>
+                    <h3 style="color: #1d4ed8; font-size: 1.25rem;">Molekylebyggeren (2D & 3D)</h3>
+                    <p>Byg molekyler med 18 forskellige atomer og grupper, og drej dem som ægte 3D-kuglemodeller!</p>
+                </div>
+
+                <div class="category-card" onclick="showView('microbio-lab-view')" style="background: #f0fdfa; border: 2px solid #5eead4;">
+                    <div class="category-icon">🦠</div>
+                    <h3 style="color: #0f766e; font-size: 1.25rem;">Mikrobiologi-lab</h3>
+                    <p>Bakterier, svampe og virus – udforsk den interaktive vækstsimulator (køleskab vs. stuetemperatur).</p>
+                </div>
+            </div>
+
+            <div class="section-title">STEM Aktiviteter & Forsøg</div>
+            <div class="grid-stem">
+                <div class="category-card" onclick="showView('science-view')">
+                    <div class="category-icon">🧪</div>
+                    <h3>Science</h3>
+                    <p>Kemi & Fysik: Vulkaner, hoppeæg, skyer i flasker og elefantskum.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('microbio-exp-view')">
+                    <div class="category-icon">🧼</div>
+                    <h3>Mikrobiologi & Hygiejne</h3>
+                    <p>Forsøg: Gærens ånding, peber-eksperimentet, dyrk bakterier og hjemmelavet yoghurt.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('technology-view')">
+                    <div class="category-icon">💻</div>
+                    <h3>Technology</h3>
+                    <p>Teknologi: Papirkredsløb med LED og analog kodning uden skærm.</p>
+                </div>
+                
+                <div class="category-card" onclick="showView('engineering-view')">
+                    <div class="category-icon">🏗️</div>
+                    <h3>Engineering</h3>
+                    <p>Ingeniørkunst: Ballonbiler, spaghetti-broer og avis-konstruktioner.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('math-view')">
+                    <div class="category-icon">➗</div>
+                    <h3>Math</h3>
+                    <p>Matematik: M&M-statistik, sandsynlighed og visuelle Lego-brøker.</p>
+                </div>
+            </div>
+
+            <div class="section-title">Fordybelse & Værktøjer</div>
+            <div class="grid-extra">
+                <div class="category-card" onclick="showView('nerd-view')" style="background: #fdf4ff; border-color: #f0abfc;">
+                    <div class="category-icon">🤓</div>
+                    <h3 style="color: #86198f;">Nørd-hjørnet (Formelsamling & SI)</h3>
+                    <p>Formelsamling, temperatur- & enhedsomregning, mikrobiologisk vækst, SI-enheder og ædelgasreglen.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('tools-view')" style="background: #e0e7ff; border-color: #c7d2fe;">
+                    <div class="category-icon">📐</div>
+                    <h3 style="color: #3730a3;">Værktøjer & Papir</h3>
+                    <p>Generer og udskriv kvadratisk 1 cm prikpapir til modeller og skitser.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DET PERIODISKE SYSTEM VISNING -->
+        <div id="periodic-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>⚛️ Det Periodiske System (118 Grundstoffer)</h2>
+                <p>Hvert felt viser <strong>atomnummer</strong> (venstre), <strong>antal elektroner</strong> (højre), <strong>symbol</strong>, <strong>navn</strong> og <strong>atomvægt</strong> (u). Klik for at se skaller og animation.</p>
+                
+                <div class="ptable-container">
+                    <div class="ptable" id="periodic-table"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIKROBIOLOGI-LAB VISNING (VÆKSTSIMULATOR & ORGANISMER) -->
+        <div id="microbio-lab-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h2 style="border: none; margin: 0; padding: 0;">🦠 Mikrobiologi-lab (Den Usynlige Verden)</h2>
+                    <button class="print-btn" style="margin-top: 0; background: #0d9488;" onclick="showView('microbio-exp-view')">🧼 Gå til forsøgene &rarr;</button>
+                </div>
+                <p>Mikroorganismer er levende organismer, der er så små, at de kun kan ses i et mikroskop. De findes overalt: i luften, i jorden, på huden og i vores mad.</p>
+
+                <!-- De tre hovedgrupper -->
+                <div class="microbe-grid">
+                    <div class="microbe-card" style="border-top: 4px solid #0d9488;">
+                        <h4>🧫 Bakterier</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 1–5 mikrometer (&mu;m)</p>
+                        <p style="font-size: 0.9rem; margin: 0;">Encellede organismer uden cellekerne (prokaryoter). De kan formere sig selv ved at dele sig i to. Nogle er nyttige (mælkesyrebakterier i yoghurt og tarmbakterier), mens andre kan give sygdom (fx <em>Salmonella</em>).</p>
+                    </div>
+
+                    <div class="microbe-card" style="border-top: 4px solid #d97706;">
+                        <h4>🍄 Svampe (Gær & Skimmel)</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 5–50 mikrometer (&mu;m)</p>
+                        <p style="font-size: 0.9rem; margin: 0;">Har en rigtig cellekerne (eukaryoter). <strong>Gær</strong> er encellede svampe, der bruges til at hæve brød. <strong>Skimmelsvampe</strong> danner lange tråde (hyfer) og sporer på gammel mad – men bruges også til at lave penicillin og skimmelost.</p>
+                    </div>
+
+                    <div class="microbe-card" style="border-top: 4px solid #e11d48;">
+                        <h4>🧬 Virus</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 20–300 nanometer (nm)</p>
+                        <p style="font-size: 0.9rem; margin: 0;">Meget mindre end bakterier og har intet eget stofskifte. En virus består kun af arvemateriale (DNA/RNA) pakket ind i en proteinkappe. Den kan kun formere sig ved at trænge ind i en levende værtscelle.</p>
+                    </div>
+                </div>
+
+                <!-- Interaktiv bakterievækst-simulator -->
+                <div class="growth-sim-box">
+                    <h3 style="margin-top: 0; color: #0f766e;">📈 Simulator: Hvor hurtigt deler bakterier sig?</h3>
+                    <p style="font-size: 0.92rem; margin-bottom: 10px;">Træk i skyderen for at se, hvor mange bakterier <strong>1 enkelt bakterie</strong> bliver til over 6 timer ved stuetemperatur/kropstemperatur (37 &deg;C, deling hver 20. minut) sammenlignet med i køleskabet (5 &deg;C, deling hver 3. time):</p>
+                    
+                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <label for="growth-slider" style="font-weight: bold; color: #115e59;">Tid gået: <span id="growth-time-label" style="font-size: 1.15rem; color: #0284c7;">2 timer (120 min)</span></label>
+                        <input type="range" id="growth-slider" min="0" max="360" step="20" value="120" style="flex: 1; min-width: 200px;" oninput="updateGrowthSim()">
+                    </div>
+
+                    <div class="growth-bars">
+                        <div class="growth-col">
+                            <strong style="color: #dc2626;">🌡️ På køkkenbordet (37 &deg;C)</strong>
+                            <div style="font-size: 1.25rem; font-weight: bold; margin-top: 4px;" id="warm-count">64 bakterier</div>
+                            <div style="font-size: 0.8rem; color: #64748b;" id="warm-gens">6 generationer (deling hver 20. min)</div>
+                            <div class="petri-dots" id="warm-petri"></div>
+                        </div>
+
+                        <div class="growth-col">
+                            <strong style="color: #0284c7;">❄️ I køleskabet (5 &deg;C)</strong>
+                            <div style="font-size: 1.25rem; font-weight: bold; margin-top: 4px;" id="cold-count">2 bakterier</div>
+                            <div style="font-size: 0.8rem; color: #64748b;" id="cold-gens">0,7 generationer (deling hver 180. min)</div>
+                            <div class="petri-dots" id="cold-petri"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIKROBIOLOGI & HYGIEJNE FORSØG (EGEN FANE UNDER STEM AKTIVITETER) -->
+        <div id="microbio-exp-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h2 style="border: none; margin: 0; padding: 0;">🧼 Mikrobiologi & Hygiejne (Forsøg)</h2>
+                    <button class="print-btn" style="margin-top: 0; background: #0d9488;" onclick="showView('microbio-lab-view')">🦠 Åbn vækstsimulator &rarr;</button>
+                </div>
+
+                <div>
+                    <h3>🎈 Gærens ånding (Ballon på flaske)</h3>
+                    <ul>
+                        <li><strong>Materialer:</strong> En lille plastflaske, 1 pakke tørgær (eller 25 g frisk gær), 2 spsk sukker, lunkent vand (35 &deg;C) og en ballon.</li>
+                        <li><strong>Sådan gør du:</strong> Opløs gær og sukker i det lunkne vand i flasken. Træk ballonen stramt over flaskehalsen og stil den et lunt sted i 30–45 minutter.</li>
+                        <li><strong>Hvorfor sker det?</strong> Gærcellerne vågner i det lunkne vand, spiser sukkeret og danner kuldioxid (CO<sub>2</sub>), som puster ballonen op. Prøv også med iskoldt vand eller kogende vand og se forskellen!</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Gærens ånding', 'Lad gærceller omsætte sukker til kuldioxid og puste en ballon op.')">🖨️ Print forsøgsskema</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🧼 Sæbe vs. Bakterier (Peber-eksperimentet)</h3>
+                    <ul>
+                        <li><strong>Materialer:</strong> En dyb tallerken med vand, stødt sort peber og en dråbe opvaskemiddel.</li>
+                        <li><strong>Sådan gør du:</strong> Drys peber ud over vandoverfladen (peberkornene forestiller bakterier og snavs). Dyp en ren finger i midten – peberet hænger fast på fingeren. Kom nu en dråbe sæbe på fingeren og rør vandet igen.</li>
+                        <li><strong>Hvorfor sker det?</strong> Sæbemolekyler har en vandelskende (hydrofil) og en fedtelskende (hydrofob) ende. De bryder vandets overfladespænding lynhurtigt, så peberet farer ud mod kanten, samtidig med at sæbe kan opløse fedtkappen omkring bakterier og virus.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Sæbe vs. Bakterier', 'Demonstrer sæbens effekt på overfladespænding og mikroorganismer.')">🖨️ Print forsøgsskema</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🍞 Dyrk mikroorganismer (Håndvask-testen)</h3>
+                    <ul>
+                        <li><strong>Materialer:</strong> 3 skiver lyst toastbrød (uden konserveringsmiddel) og 3 lynlåsposer med mærkater.</li>
+                        <li><strong>Sådan gør du:</strong>
+                            1. Tag en skive med en ren tang/pose som <em>Kontrol</em>.<br>
+                            2. Rør ved den anden skive med <em>uvaskede hænder</em> efter leg/skole.<br>
+                            3. Vask hænderne grundigt med vand og sæbe i 20 sekunder, tør dem, og rør ved den tredje skive.<br>
+                            Luk poserne tæt, læg dem et lunt, mørkt sted, og observer udviklingen af skimmel- og bakteriekolonier over 7–10 dage (åbn ikke poserne bagefter).
+                        </li>
+                        <li><strong>Hvorfor sker det?</strong> Mikroorganismer fra hænderne overføres til næringsstofferne i brødet og vokser til synlige kolonier på flere millioner celler.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Dyrk mikroorganismer (Brødtesten)', 'Sammenlign bakterievækst fra uvaskede og nyvaskede hænder.')">🖨️ Print forsøgsskema</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🥛 Nyttige bakterier: Lav din egen yoghurt</h3>
+                    <ul>
+                        <li><strong>Materialer:</strong> 0,5 liter sød- eller letmælk, 2 spsk naturel yoghurt med levende mælkesyrebakterier, en gryde, et termometer og en ren skål med låg.</li>
+                        <li><strong>Sådan gør du:</strong> Varm mælken op til ca. 80 &deg;C i 2 minutter (for at dræbe uønskede bakterier) og køl den ned til 42 &deg;C. Rør de 2 spsk yoghurt i, hæld blandingen på skål med låg, pak den ind i et viskestykke og lad den stå lunt i 6–8 timer. Stil derefter yoghurten på køl.</li>
+                        <li><strong>Hvorfor sker det?</strong> Mælkesyrebakterierne (<em>Lactobacillus</em>) trives ved 42 &deg;C, spiser mælkesukkeret (laktose) og omdanner det til mælkesyre. Syren får mælkeproteinerne til at tykne og beskytter samtidig mod skadelige bakterier.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Lav din egen yoghurt', 'Brug nyttige mælkesyrebakterier til at omdanne mælk til yoghurt.')">🖨️ Print forsøgsskema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCIENCE VISNING -->
+        <div id="science-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>🧪 Science (Kemi & Fysik i børnehøjde)</h2>
+                
+                <div>
+                    <h3>🌋 Den brusende vulkan</h3>
+                    <ul>
+                        <li><strong>Materialer:</strong> En lille flaske, 2 tsk natron, lidt opvaskemiddel, frugtfarve og eddike.</li>
+                        <li><strong>Sådan gør du:</strong> Kom natron, sæbe og farve i flasken. Hæld eddike i, og se vulkanen bruse op!</li>
+                        <li><strong>Hvorfor sker det?</strong> Eddiken reagerer med natron og danner gasbobler (CO<sub>2</sub>), som sæben fanger i skum.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Den brusende vulkan', 'Skab udbrud med eddike og natron.')">🖨️ Print forsøgsskema</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🥚 Hoppeægget</h3>
+                    <ul>
+                        <li><strong>Materialer:</strong> Et råt hønseæg, et glas og husholdningseddike.</li>
+                        <li><strong>Sådan gør du:</strong> Læg ægget i glasset, dæk med eddike i 1-2 døgn. Skyl forsigtigt i koldt vand.</li>
+                        <li><strong>Hvorfor sker det?</strong> Eddiken opløser kalkskallen, mens den seje indre hinde forbliver elastisk.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Hoppeægget', 'Opløs kalkskallen på et råt æg i eddike.')">🖨️ Print forsøgsskema</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>☁️ Sky i en flaske</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Hæld en smule lunkent vand i en plastflaske. Vrid bunden hårdt rundt og slip pludseligt!</li>
+                        <li><strong>Hvorfor sker det?</strong> Det hurtige trykfald køler luften ned, så fugten kondenserer til en synlig sky.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Sky i en flaske', 'Skab tryk i en flaske og slip pludseligt.')">🖨️ Print forsøgsskema</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🐘 Elefanthandpasta</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Bland brintoverilte og sæbe i en flaske. Hæld opløst gær i for at starte reaktionen.</li>
+                        <li><strong>Hvorfor sker det?</strong> Gæren katalyserer reaktionen, så ilten frigives ekstremt hurtigt i millioner af bobler.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Elefanthandpasta', 'Katalyser brintoverilte med gær.')">🖨️ Print forsøgsskema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NØRD-FANEN (INCL. FORMELSAMLING, MIKROBIOLOGI-TEORI, OMREGNING, SI-SYSTEMET & KILDER) -->
+        <div id="nerd-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>🤓 Nørd-hjørnet (Formelsamling, SI-systemet & Omregning)</h2>
+                <p>Det videnskabelige fundament: Interaktive enhedsomregnere, eksplicitte omregningsformler, mikrobiologisk vækstmatematik, SI-grundenheder og en samlet formelsamling for fysik, kemi og geometri.</p>
+
+                <!-- 1. INTERAKTIV ENHEDSOMREGNING + FORMLER -->
+                <div class="nerd-box" style="border-left-color: #0284c7;">
+                    <h4>🔄 Enhedsomregner & Omregningsformler</h4>
+                    <p>Skriv en værdi i et af felterne herunder for automatisk at omregne, eller brug formlerne til selv at regne efter:</p>
+
+                    <div class="converter-container">
+                        <!-- Temperatur -->
+                        <div class="converter-card">
+                            <h5>🌡️ Temperatur</h5>
+                            <div class="converter-group">
+                                <label for="celsius">Celsius (&deg;C):</label>
+                                <input type="number" id="celsius" placeholder="0" oninput="convertTemp('C')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="kelvin">Kelvin (K):</label>
+                                <input type="number" id="kelvin" placeholder="273.15" oninput="convertTemp('K')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="fahrenheit">Fahrenheit (&deg;F):</label>
+                                <input type="number" id="fahrenheit" placeholder="32" oninput="convertTemp('F')">
+                            </div>
+                        </div>
+
+                        <!-- Længde & Tommer -->
+                        <div class="converter-card">
+                            <h5>📏 Længde & Tommer</h5>
+                            <div class="converter-group">
+                                <label for="len-m">Meter (m):</label>
+                                <input type="number" id="len-m" placeholder="1" oninput="convertLength('m')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="len-cm">Centimeter (cm):</label>
+                                <input type="number" id="len-cm" placeholder="100" oninput="convertLength('cm')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="len-mm">Millimeter (mm):</label>
+                                <input type="number" id="len-mm" placeholder="1000" oninput="convertLength('mm')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="len-in">Tommer (in):</label>
+                                <input type="number" id="len-in" placeholder="39.37" oninput="convertLength('in')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="len-ft">Fod (ft):</label>
+                                <input type="number" id="len-ft" placeholder="3.28" oninput="convertLength('ft')">
+                            </div>
+                        </div>
+
+                        <!-- Areal (Kvadrat) -->
+                        <div class="converter-card">
+                            <h5>⏹️ Areal (Kvadrat)</h5>
+                            <div class="converter-group">
+                                <label for="area-m2">m&sup2; (kvadratm.):</label>
+                                <input type="number" id="area-m2" placeholder="1" oninput="convertArea('m2')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="area-dm2">dm&sup2;:</label>
+                                <input type="number" id="area-dm2" placeholder="100" oninput="convertArea('dm2')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="area-cm2">cm&sup2;:</label>
+                                <input type="number" id="area-cm2" placeholder="10000" oninput="convertArea('cm2')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="area-ha">Hektar (ha):</label>
+                                <input type="number" id="area-ha" placeholder="0.0001" oninput="convertArea('ha')">
+                            </div>
+                        </div>
+
+                        <!-- Rumfang (Kubik) -->
+                        <div class="converter-card">
+                            <h5>🧊 Rumfang (Kubik)</h5>
+                            <div class="converter-group">
+                                <label for="vol-m3">m&sup3; (kubikm.):</label>
+                                <input type="number" id="vol-m3" placeholder="1" oninput="convertVol('m3')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="vol-l">Liter (dm&sup3;):</label>
+                                <input type="number" id="vol-l" placeholder="1000" oninput="convertVol('l')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="vol-dl">Deciliter (dl):</label>
+                                <input type="number" id="vol-dl" placeholder="10000" oninput="convertVol('dl')">
+                            </div>
+                            <div class="converter-group">
+                                <label for="vol-cm3">cm&sup3; (ml):</label>
+                                <input type="number" id="vol-cm3" placeholder="1000000" oninput="convertVol('cm3')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="formula-grid" style="margin-top: 18px;">
+                        <div class="formula-card">
+                            <h5>🌡️ Formler til Temperaturomregning</h5>
+                            <ul>
+                                <li><strong>Celsius &rarr; Kelvin:</strong> <code>T(K) = T(&deg;C) + 273,15</code></li>
+                                <li><strong>Kelvin &rarr; Celsius:</strong> <code>T(&deg;C) = T(K) - 273,15</code></li>
+                                <li><strong>Celsius &rarr; Fahrenheit:</strong> <code>T(&deg;F) = T(&deg;C) &middot; 1,8 + 32</code></li>
+                                <li><strong>Fahrenheit &rarr; Celsius:</strong> <code>T(&deg;C) = (T(&deg;F) - 32) / 1,8</code></li>
+                                <li><strong>Absolut nulpunkt:</strong> <code>0 K = -273,15 &deg;C = -459,67 &deg;F</code></li>
+                            </ul>
+                        </div>
+
+                        <div class="formula-card">
+                            <h5>📏 Formler til Længde, Areal & Rumfang</h5>
+                            <ul>
+                                <li><strong>Længde (faktor 10):</strong> <code>1 m = 10 dm = 100 cm = 1.000 mm</code></li>
+                                <li><strong>Tommer & Fod (UK/US):</strong> <code>1 in = 25,4 mm</code> &nbsp;|&nbsp; <code>1 ft = 12 in = 304,8 mm</code></li>
+                                <li><strong>Historisk Dansk tomme:</strong> <code>1 dansk tomme = 26,15 mm</code> (1/24 alen)</li>
+                                <li><strong>Areal (faktor 10&sup2; = 100):</strong> <code>1 m&sup2; = 100 dm&sup2; = 10.000 cm&sup2;</code></li>
+                                <li><strong>Rumfang (faktor 10&sup3; = 1.000):</strong> <code>1 m&sup3; = 1.000 dm&sup3; (L) = 1.000.000 cm&sup3; (mL)</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. DEN STORE FORMELSAMLING -->
+                <div class="nerd-box" style="border-left-color: #7c3aed;">
+                    <h4>📚 STEM Formelsamling (SI-standard)</h4>
+                    <p>De vigtigste matematiske, fysiske, kemiske og mikrobiologiske formler samlet ét sted:</p>
+
+                    <div class="formula-grid">
+                        <!-- Fysik: Mekanik -->
+                        <div class="formula-card">
+                            <h5>⚙️ Mekanik & Bevægelse</h5>
+                            <ul>
+                                <li><strong>Hastighed:</strong> <code>v = s / t</code> <br><small>(strækning <em>s</em> i m, tid <em>t</em> i s &rarr; enhed: m/s)</small></li>
+                                <li><strong>Acceleration:</strong> <code>a = &Delta;v / &Delta;t</code> <br><small>(ændring i hastighed over tid &rarr; enhed: m/s&sup2;)</small></li>
+                                <li><strong>Newtons 2. lov (Kraft):</strong> <code>F = m &middot; a</code> <br><small>(masse <em>m</em> i kg, acceleration <em>a</em> &rarr; enhed: Newton, N)</small></li>
+                                <li><strong>Tyngdekraft (Vægt):</strong> <code>F<sub>t</sub> = m &middot; g</code> <br><small>(tyngdeacceleration i Danmark: <em>g</em> &approx; 9,82 m/s&sup2;)</small></li>
+                                <li><strong>Arbejde / Energi:</strong> <code>E = F &middot; s</code> <br><small>(kraft gange strækning &rarr; enhed: Joule, J)</small></li>
+                                <li><strong>Effekt:</strong> <code>P = E / t</code> <br><small>(energi pr. sekund &rarr; enhed: Watt, W)</small></li>
+                            </ul>
+                        </div>
+
+                        <!-- Fysik: Tryk, Densitet & Gas -->
+                        <div class="formula-card">
+                            <h5>🧪 Densitet, Tryk & Termodynamik</h5>
+                            <ul>
+                                <li><strong>Massefylde (Densitet):</strong> <code>&rho; = m / V</code> <br><small>(masse <em>m</em> i kg, volumen <em>V</em> i m&sup3; &rarr; enhed: kg/m&sup3;)</small></li>
+                                <li><strong>Tryk (Mekanisk):</strong> <code>p = F / A</code> <br><small>(kraft <em>F</em> i N, areal <em>A</em> i m&sup2; &rarr; enhed: Pascal, Pa)</small></li>
+                                <li><strong>Idealgasloven:</strong> <code>p &middot; V = n &middot; R &middot; T</code> <br><small>(<em>p</em> i Pa, <em>V</em> i m&sup3;, <em>n</em> i mol, <em>R</em> = 8,314 J/(mol&middot;K), <em>T</em> i K)</small></li>
+                                <li><strong>Varmeenergi:</strong> <code>Q = m &middot; c &middot; &Delta;T</code> <br><small>(specifik varmekapacitet <em>c</em>; for vand: 4186 J/(kg&middot;K))</small></li>
+                            </ul>
+                        </div>
+
+                        <!-- Elektricitet -->
+                        <div class="formula-card">
+                            <h5>⚡ Elektricitet & Kredsløb</h5>
+                            <ul>
+                                <li><strong>Ohms lov:</strong> <code>U = R &middot; I</code> <br><small>(spænding <em>U</em> i Volt [V], modstand <em>R</em> i Ohm [&Omega;], strøm <em>I</em> i Ampere [A])</small></li>
+                                <li><strong>Elektrisk effekt:</strong> <code>P = U &middot; I</code> <br><small>(spænding gange strømstyrke &rarr; enhed: Watt, W)</small></li>
+                                <li><strong>Seriekobling (modstand):</strong> <code>R<sub>samlet</sub> = R<sub>1</sub> + R<sub>2</sub> + ...</code></li>
+                                <li><strong>Parallelkobling (modstand):</strong> <code>1 / R<sub>samlet</sub> = 1 / R<sub>1</sub> + 1 / R<sub>2</sub> + ...</code></li>
+                            </ul>
+                        </div>
+
+                        <!-- Kemi & Stofmængde -->
+                        <div class="formula-card">
+                            <h5>⚗️ Kemi & Stofmængdeberegning</h5>
+                            <ul>
+                                <li><strong>Stofmængde:</strong> <code>n = m / M</code> <br><small>(masse <em>m</em> i g, molarmasse <em>M</em> i g/mol &rarr; enhed: mol)</small></li>
+                                <li><strong>Koncentration (Molaritet):</strong> <code>c = n / V</code> <br><small>(stofmængde <em>n</em> i mol, volumen <em>V</em> i liter &rarr; enhed: mol/L eller M)</small></li>
+                                <li><strong>pH-værdi (Surhedsgrad):</strong> <code>pH = -log<sub>10</sub>([H<sup>+</sup>])</code> <br><small>(pH mindre end 7: syre, pH = 7: neutral, pH større end 7: base)</small></li>
+                                <li><strong>Avogadros konstant:</strong> <code>N<sub>A</sub> = 6,022 &middot; 10<sup>23</sup> mol<sup>-1</sup></code> <br><small>(antal partikler pr. mol)</small></li>
+                            </ul>
+                        </div>
+
+                        <!-- Mikrobiologi -->
+                        <div class="formula-card">
+                            <h5>🦠 Mikrobiologi & Vækstmatematik</h5>
+                            <ul>
+                                <li><strong>Eksponentiel bakterievækst:</strong> <code>N(t) = N<sub>0</sub> &middot; 2<sup>(t / g)</sup></code> <br><small>(<em>N<sub>0</sub></em> = startantal, <em>t</em> = tid, <em>g</em> = generationstid/fordoblingstid)</small></li>
+                                <li><strong>Antal generationer:</strong> <code>n = t / g</code></li>
+                                <li><strong>Log-reduktion (Desinfektion/Varme):</strong> <code>Log-trin = log<sub>10</sub>(N<sub>før</sub> / N<sub>efter</sub>)</code> <br><small>(1 log-trin = 90 % drab; 6 log-trin = 99,9999 % drab)</small></li>
+                                <li><strong>Temperaturzoner (Hygiejne):</strong><br>
+                                    <small>• Køl: 5 &deg;C eller lavere (vækst hæmmes)<br>
+                                    • Farezone: 5 &deg;C – 65 &deg;C (hurtig formering)<br>
+                                    • Drab: over 75 &deg;C (vegetative bakterier dræbes)</small>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Matematik & Geometri -->
+                        <div class="formula-card">
+                            <h5>📐 Geometri & Matematik</h5>
+                            <ul>
+                                <li><strong>Cirkel (Omkreds & Areal):</strong> <code>O = 2 &middot; &pi; &middot; r</code> &nbsp;|&nbsp; <code>A = &pi; &middot; r&sup2;</code></li>
+                                <li><strong>Trekant (Areal):</strong> <code>A = &frac12; &middot; h &middot; g</code> <br><small>(højde <em>h</em> gange grundlinje <em>g</em>)</small></li>
+                                <li><strong>Pythagoras' læresætning:</strong> <code>a&sup2; + b&sup2; = c&sup2;</code> <br><small>(gælder for alle retvinklede trekanter)</small></li>
+                                <li><strong>Cylinder (Rumfang):</strong> <code>V = &pi; &middot; r&sup2; &middot; h</code></li>
+                                <li><strong>Kugle (Rumfang):</strong> <code>V = (4/3) &middot; &pi; &middot; r&sup3;</code></li>
+                                <li><strong>Procent & Sandsynlighed:</strong> <code>p = (del / helhed) &middot; 100 %</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. SI-SYSTEMET -->
+                <div class="nerd-box" style="border-left-color: #059669;">
+                    <h4>📏 SI-Systemet (De 7 Grundenheder)</h4>
+                    <table class="si-table">
+                        <thead>
+                            <tr>
+                                <th>Fysisk størrelse</th>
+                                <th>Symbol</th>
+                                <th>SI-grundenhed</th>
+                                <th>Enhedssymbol</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Længde (strækning)</td>
+                                <td><em>s</em>, <em>l</em></td>
+                                <td>meter</td>
+                                <td><strong>m</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Masse</td>
+                                <td><em>m</em></td>
+                                <td>kilogram</td>
+                                <td><strong>kg</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Tid</td>
+                                <td><em>t</em></td>
+                                <td>sekund</td>
+                                <td><strong>s</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Elektrisk strømstyrke</td>
+                                <td><em>I</em></td>
+                                <td>ampere</td>
+                                <td><strong>A</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Termodynamisk temperatur</td>
+                                <td><em>T</em></td>
+                                <td>kelvin</td>
+                                <td><strong>K</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Stofmængde</td>
+                                <td><em>n</em></td>
+                                <td>mol</td>
+                                <td><strong>mol</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Lysstyrke</td>
+                                <td><em>I<sub>v</sub></em></td>
+                                <td>candela</td>
+                                <td><strong>cd</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 4. ÆDELGASREGLEN -->
+                <div class="nerd-box" style="border-left-color: #a855f7;">
+                    <h4>👑 Ædelgasreglen (Oktetreglen)</h4>
+                    <p>I det periodiske system står ædelgasserne i gruppe 18 (Helium, Neon, Argon, Krypton, Xenon, Radon). Deres valensskaller er fuldt besatte, hvilket giver laveste potentielle energitilstand.</p>
+                    <ul>
+                        <li><strong>Oktetreglen (8-tallet):</strong> Atomer tilstræber at opnå <strong>8 elektroner</strong> i yderste skal (Helium undtaget med 2).</li>
+                        <li><strong>Reaktionsmekanismer:</strong>
+                            <ul>
+                                <li><strong>Metaller:</strong> Afgiver valenselektroner (fx <code>Na &rarr; Na<sup>+</sup> + e<sup>-</sup></code>) for at matche Neons skalstruktur.</li>
+                                <li><strong>Ikke-metaller:</strong> Optager elektroner (fx <code>Cl + e<sup>-</sup> &rarr; Cl<sup>-</sup></code>) for at matche Argons skalstruktur.</li>
+                                <li><strong>Kovalente bindinger:</strong> Deler elektronpar, så begge atomer opnår en fuld oktet (fx i vandmolekyler: <code>H<sub>2</sub>O</code>).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 5. BALANCEREDE REAKTIONSLIGNINGER -->
+                <div class="nerd-box" style="border-left-color: #2563eb;">
+                    <h4>⚗️ Balancerede Reaktionsligninger fra Forsøgene</h4>
+                    <ul>
+                        <li><strong>Vulkanen (Syre/Base):</strong><br>
+                            <code>NaHCO<sub>3</sub> + CH<sub>3</sub>COOH &rarr; CH<sub>3</sub>COONa + H<sub>2</sub>O + CO<sub>2</sub></code>
+                        </li>
+                        <li style="margin-top:10px;"><strong>Hoppeægget (Opløsning af calciumcarbonat):</strong><br>
+                            <code>CaCO<sub>3</sub> + 2CH<sub>3</sub>COOH &rarr; Ca(CH<sub>3</sub>COO)<sub>2</sub> + H<sub>2</sub>O + CO<sub>2</sub></code>
+                        </li>
+                        <li style="margin-top:10px;"><strong>Elefanthandpasta (Katalytisk dekomponering):</strong><br>
+                            <code>2H<sub>2</sub>O<sub>2</sub> &rarr; 2H<sub>2</sub>O + O<sub>2</sub></code>
+                        </li>
+                        <li style="margin-top:10px;"><strong>Gærens ånding (Anaerob alkoholgæring):</strong><br>
+                            <code>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> &rarr; 2C<sub>2</sub>H<sub>5</sub>OH + 2CO<sub>2</sub></code>
+                        </li>
+                        <li style="margin-top:10px;"><strong>Yoghurt-gæring (Homolaktisk mælkesyregæring):</strong><br>
+                            <code>C<sub>12</sub>H<sub>22</sub>O<sub>11</sub> + H<sub>2</sub>O &rarr; 4C<sub>3</sub>H<sub>6</sub>O<sub>3</sub></code> <small>(laktose omdannes til mælkesyre)</small>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 6. EKSTERNE FAGLIGE LINKS -->
+                <div class="nerd-box" style="border-left-color: #f59e0b; background: #fffbeb;">
+                    <h4 style="color: #b45309;">🔗 Gode Eksterne Kilder & Opslagsværker</h4>
+                    <p style="margin-bottom: 12px;">Supplerende danske fagressourcer til videre fordybelse i måleteknik, kemi, mikrobiologi og fødevaresikkerhed:</p>
+                    <ul>
+                        <li>
+                            <strong>Lex.dk (Danmarks Nationale Leksikon):</strong><br>
+                            Moderne opslagsværk med fagartikler om grundstoffer, kemi og naturvidenskab.<br>
+                            <a class="resource-link" href="https://lex.dk" target="_blank" rel="noopener noreferrer">Gå til Lex.dk &rarr;</a>
+                        </li>
+                        <li style="margin-top: 10px;">
+                            <strong>Metrologi.dk (Dansk Fundamental Metrologi):</strong><br>
+                            Materiale om måleteknik, SI-enheder og standarder.<br>
+                            <a class="resource-link" href="https://metrologi.dk/download/" target="_blank" rel="noopener noreferrer">Besøg Metrologi.dk Download &rarr;</a>
+                        </li>
+                        <li style="margin-top: 10px;">
+                            <strong>DTU Fødevareinstituttet (Sygdomsfremkaldende mikroorganismer):</strong><br>
+                            Forskning og fakta om bakterier, virus og parasitter i fødevarer, smitteveje og forebyggelse.<br>
+                            <a class="resource-link" href="https://www.food.dtu.dk/Temaer/Sygdomsfremkaldende-mikroorganismer" target="_blank" rel="noopener noreferrer">Gå til DTU Fødevareinstituttet &rarr;</a>
+                        </li>
+                        <li style="margin-top: 10px;">
+                            <strong>DMRI Predict (Teknologisk Institut):</strong><br>
+                            Matematisk vækst- og drabsmodel til at forudsige bakterieudvikling ud fra temperatur, salt og pH (kræver gratis login).<br>
+                            <a class="resource-link" href="https://apps.teknologisk.dk/public/login/?redirectTo=%2Fdmri-predict%2F" target="_blank" rel="noopener noreferrer">Åbn DMRI Predict &rarr;</a>
+                        </li>
+                        <li style="margin-top: 10px;">
+                            <strong>Fødevarestyrelsen (Fødevaresikkerhed & Hygiejne):</strong><br>
+                            Officielle danske anbefalinger og regler om god køkkenhygiejne, opbevaringstemperaturer og rengøring.<br>
+                            <a class="resource-link" href="https://foedevarestyrelsen.dk/kost-og-foedevarer/foedevaresikkerhed" target="_blank" rel="noopener noreferrer">Besøg Fødevarestyrelsen &rarr;</a>
+                        </li>
+                        <li style="margin-top: 10px;">
+                            <strong>BioSite.dk (Biokemisk Hjemmeside):</strong><br>
+                            Klassisk dansk website om biokemi og laboratorieemner.<br>
+                            <a class="resource-link" href="https://www.biosite.dk" target="_blank" rel="noopener noreferrer">Gå til BioSite.dk &rarr;</a>
+                            <br>
+                            <a class="resource-link" href="https://www.biosite.dk/leksikon/leksikon.htm" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; color: #64748b;">(Direkte adgang til BioSite Leksikon uden frames) &rarr;</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOLEKYLEBYGGER VISNING -->
+        <div id="molecule-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h2 style="border: none; margin: 0; padding: 0;">🧬 Hybrid Molekylebygger</h2>
+                    <button id="toggle-3d-btn" class="view-toggle-btn" onclick="toggle3DView()">🧊 Se molekylet i 3D</button>
+                </div>
+
+                <p id="mol-instructions" style="font-size: 0.92rem; color: #475569; margin-top: 0;">
+                    <strong>Byg i 2D:</strong> Klik på et atom eller en byggeklods for at tilføje dem. <strong>Træk</strong> for at flytte. <strong>Klik på ét atom og derefter et andet</strong> for at lave bindinger (enkelt &rarr; dobbelt &rarr; trippel). Brug <strong>Slet-værktøjet</strong> (eller højreklik/dobbeltklik) til at fjerne atomer eller streger.
+                </p>
+
+                <!-- Hurtig-modeller -->
+                <div class="mol-toolbar" style="background: #f1f5f9; padding: 10px; border-radius: 8px;">
+                    <strong style="font-size: 0.85rem; color: #475569;">Færdige modeller:</strong>
+                    <button class="preset-btn" onclick="loadPreset('H2O')">💧 Vand (H₂O)</button>
+                    <button class="preset-btn" onclick="loadPreset('CO2')">🫧 Kuldioxid (CO₂)</button>
+                    <button class="preset-btn" onclick="loadPreset('CH4')">🔥 Metan (CH₄)</button>
+                    <button class="preset-btn" onclick="loadPreset('NH3')">🧪 Ammoniak (NH₃)</button>
+                    <button class="preset-btn" onclick="loadPreset('O2')">🌬️ Ilt (O₂)</button>
+                    <button class="preset-btn" onclick="loadPreset('NaCl')">🧂 Salt (NaCl)</button>
+                    <button class="preset-btn" onclick="loadPreset('CH3COOH')">🍋 Eddikesyre</button>
+                    <button class="preset-btn" onclick="loadPreset('C2H5OH')">🍷 Ethanol</button>
+                    <button class="preset-btn" onclick="loadPreset('C6H12O6')">🍬 Sukker-ring</button>
+                </div>
+
+                <!-- Enkelte atomer & Byggeklodser -->
+                <div id="builder-controls">
+                    <div class="mol-toolbar">
+                        <strong style="font-size: 0.82rem; color: #475569; width: 105px;">Ikke-metaller:</strong>
+                        <button class="atom-btn" onclick="addAtom('H')" title="Hydrogen (1 binding)"><span class="atom-dot" style="background:#f8fafc;"></span> H</button>
+                        <button class="atom-btn" onclick="addAtom('C')" title="Kulstof (4 bindinger)"><span class="atom-dot" style="background:#334155;"></span> C</button>
+                        <button class="atom-btn" onclick="addAtom('N')" title="Kvælstof (3 bindinger)"><span class="atom-dot" style="background:#2563eb;"></span> N</button>
+                        <button class="atom-btn" onclick="addAtom('O')" title="Ilt (2 bindinger)"><span class="atom-dot" style="background:#ef4444;"></span> O</button>
+                        <button class="atom-btn" onclick="addAtom('P')" title="Fosfor (3 bindinger)"><span class="atom-dot" style="background:#f97316;"></span> P</button>
+                        <button class="atom-btn" onclick="addAtom('S')" title="Svovl (2 bindinger)"><span class="atom-dot" style="background:#eab308;"></span> S</button>
+                        <button class="atom-btn" onclick="addAtom('B')" title="Bor (3 bindinger)"><span class="atom-dot" style="background:#f472b6;"></span> B</button>
+                        <button class="atom-btn" onclick="addAtom('Si')" title="Silicium (4 bindinger)"><span class="atom-dot" style="background:#94a3b8;"></span> Si</button>
+                    </div>
+
+                    <div class="mol-toolbar">
+                        <strong style="font-size: 0.82rem; color: #475569; width: 105px;">Halogener/Metal:</strong>
+                        <button class="atom-btn" onclick="addAtom('F')" title="Fluor (1 binding)"><span class="atom-dot" style="background:#86efac;"></span> F</button>
+                        <button class="atom-btn" onclick="addAtom('Cl')" title="Klor (1 binding)"><span class="atom-dot" style="background:#22c55e;"></span> Cl</button>
+                        <button class="atom-btn" onclick="addAtom('Br')" title="Brom (1 binding)"><span class="atom-dot" style="background:#b91c1c;"></span> Br</button>
+                        <button class="atom-btn" onclick="addAtom('I')" title="Jod (1 binding)"><span class="atom-dot" style="background:#7e22ce;"></span> I</button>
+                        <button class="atom-btn" onclick="addAtom('Na')" title="Natrium (1 binding)"><span class="atom-dot" style="background:#a855f7;"></span> Na</button>
+                        <button class="atom-btn" onclick="addAtom('K')" title="Kalium (1 binding)"><span class="atom-dot" style="background:#c084fc;"></span> K</button>
+                        <button class="atom-btn" onclick="addAtom('Mg')" title="Magnesium (2 bindinger)"><span class="atom-dot" style="background:#14b8a6;"></span> Mg</button>
+                        <button class="atom-btn" onclick="addAtom('Ca')" title="Calcium (2 bindinger)"><span class="atom-dot" style="background:#0d9488;"></span> Ca</button>
+                        <button class="atom-btn" onclick="addAtom('Fe')" title="Jern (2 bindinger)"><span class="atom-dot" style="background:#b45309;"></span> Fe</button>
+                        <button class="atom-btn" onclick="addAtom('Cu')" title="Kobber (2 bindinger)"><span class="atom-dot" style="background:#d97706;"></span> Cu</button>
+                    </div>
+
+                    <div class="mol-toolbar">
+                        <strong style="font-size: 0.82rem; color: #475569; width: 105px;">Byggeklodser:</strong>
+                        <button class="atom-btn" style="background:#f8fafc;" onclick="addGroup('CH3')">➕ Methyl (-CH₃)</button>
+                        <button class="atom-btn" style="background:#f8fafc;" onclick="addGroup('CH2')">➕ Methylen (-CH₂-)</button>
+                        <button class="atom-btn" style="background:#f8fafc;" onclick="addGroup('OH')">➕ Alkohol (-OH)</button>
+                        <button class="atom-btn" style="background:#f8fafc;" onclick="addGroup('NH2')">➕ Amin (-NH₂)</button>
+                        <button class="atom-btn" style="background:#f8fafc;" onclick="addGroup('COOH')">➕ Syregruppe (-COOH)</button>
+                        
+                        <div style="margin-left: auto; display: flex; gap: 8px;">
+                            <button id="delete-tool-btn" class="tool-btn" onclick="toggleDeleteMode()">🧹 Slet atom / streg</button>
+                            <button class="clear-btn" onclick="clearMolecule()">🗑️ Ryd alt</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2D Tegneflade -->
+                <svg id="mol-canvas" viewBox="0 0 900 450" oncontextmenu="return false;"></svg>
+
+                <!-- 3D Visningsflade -->
+                <div id="mol-3d-container">
+                    <div class="overlay-3d-hint">🖱️ Træk med musen (eller fingeren) for at dreje molekylet i 3D • Scroll for at zoome</div>
+                </div>
+
+                <!-- Status og Sumformel -->
+                <div class="mol-status-bar">
+                    <div>
+                        <span style="color: #64748b; font-size: 0.85rem; display: block;">Sumformel & Molekylmasse:</span>
+                        <span id="mol-formula" class="formula-display">Ingen atomer på fladen</span>
+                        <span id="mol-mass" style="margin-left: 12px; color: #475569; font-weight: 600;"></span>
+                    </div>
+                    <div id="mol-octet-status" style="font-weight: 600; color: #059669;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TECHNOLOGY VISNING -->
+        <div id="technology-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>💻 Technology (Teknologi)</h2>
+                <div>
+                    <h3>⚡ Kredsløb med papir (Paper Circuits)</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Forbind et 3V knapcellebatteri til en LED-pære med kobbertape på et kort for at slutte strømmen.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Paper Circuits', 'Byg et lysende papirkredsløb.')">🖨️ Print forsøgsskema</button>
+                </div>
+                <div style="margin-top: 30px;">
+                    <h3>🤖 Analog kodning (Uden skærm)</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Skriv sekventielle instruktioner ("Gå 2 frem, drej 90&deg; højre"), som en person blindt udfører som robot.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Analog kodning', 'Skriv instrukser til en menneskelig robot.')">🖨️ Print forsøgsskema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENGINEERING VISNING -->
+        <div id="engineering-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>🏗️ Engineering (Ingeniørkunst)</h2>
+                <div>
+                    <h3>🚗 Ballonbilen (Bevægelse)</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Byg et chassi af en plastflaske med hjulaksler. Monter en ballon som reaktionsmotor.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Ballonbilen', 'Byg en bil og mål hastighed.')">🖨️ Print forsøgsskema</button>
+                </div>
+                <div style="margin-top: 30px;">
+                    <h3>📰 Avis-udfordringen</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Rul avispapir hårdt til cylindre og saml dem i fagværk (trekanter) for højeste bæreevne.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Avis-udfordring', 'Test byggeformers stabilitet.')">🖨️ Print forsøgsskema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MATH VISNING -->
+        <div id="math-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>➗ Math (Matematik)</h2>
+                <div>
+                    <h3>🍬 M&M-statistik og sandsynlighed</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Sorter efter farver, tæl elementerne, beregn procentvis fordeling og tegn et søjlediagram.</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('M&M-statistik', 'Lav statistik og diagrammer over slik.')">🖨️ Print forsøgsskema</button>
+                </div>
+                <div style="margin-top: 30px;">
+                    <h3>🧱 Lego-brøker</h3>
+                    <ul>
+                        <li><strong>Sådan gør du:</strong> Brug knoppernes antal til at visualisere brøker (f.eks. to 2x2 klodser udgør en 2x4 klods = 4/8 + 4/8 = 1 hel).</li>
+                    </ul>
+                    <button class="print-btn" onclick="printSheet('Lego-brøker', 'Forstå brøker visuelt med Lego.')">🖨️ Print forsøgsskema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOOLS VISNING -->
+        <div id="tools-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <h2>📐 Printbare Værktøjer</h2>
+                <p>Kvadratisk prikpapir til geometriske tegninger og modeller (afstand på præcis 1 cm).</p>
+                <button class="print-btn" onclick="printDotGrid()">🖨️ Print Kvadratisk Prikpapir (1 cm)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal til Levende Atomer -->
+    <div class="modal-overlay" id="element-modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="close-modal" onclick="document.getElementById('element-modal').classList.remove('active')">&times;</div>
+            <div style="font-size: 3.2rem;" id="modal-emoji">🎈</div>
+            <h2 id="modal-name" style="border:none; padding:0; margin-bottom: 2px;">Hydrogen</h2>
+            <div style="font-size: 1.4rem; font-weight: bold; color: var(--primary);" id="modal-symbol">H</div>
+            <div style="font-size: 0.95rem; color: #0284c7; font-weight: bold; margin-bottom: 8px;" id="modal-usage">Sol og stjerner</div>
+            
+            <div style="display: flex; justify-content: space-around; color: #475569; font-size: 0.9rem; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+                <div><strong>Atomnr:</strong> <span id="modal-number">1</span></div>
+                <div><strong>Elektroner:</strong> <span id="modal-elec-total">1</span> e⁻</div>
+                <div><strong>Vægt:</strong> <span id="modal-mass">1.008</span> u</div>
+            </div>
+
+            <div style="margin-top: 15px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="color: var(--secondary); font-weight: bold; font-size: 0.9rem; margin-bottom: 4px;">
+                    Fordeling i skaller: <span id="modal-config"></span>
+                </div>
+                <div class="atom-visual" id="atom-visual"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rawData = "H|Hydrogen|1.008|Sol og stjerner,He|Helium|4.002|Balloner,Li|Lithium|6.94|Batterier,Be|Beryllium|9.012|Smaragd,B|Bor|10.81|Sportsudstyr,C|Kulstof|12.011|Grundlag for liv,N|Kvælstof|14.007|Protein,O|Ilt|15.999|Luft og ilt,F|Fluor|18.998|Tandpasta,Ne|Neon|20.18|Reklameskilte,Na|Natrium|22.99|Salt,Mg|Magnesium|24.305|Klorofyl,Al|Aluminium|26.982|Flyvemaskiner,Si|Silicium|28.085|Sten og computere,P|Fosfor|30.974|Knogler,S|Svovl|32.06|Æg og tændstikker,Cl|Klor|35.45|Svømmebassiner,Ar|Argon|39.95|Lyspærer,K|Kalium|39.098|Frugt og grønt,Ca|Calcium|40.078|Skaller og knogler,Sc|Scandium|44.956|Cykler,Ti|Titanium|47.867|Rumfart,V|Vanadium|50.942|Fjedre,Cr|Krom|51.996|Rustfrit stål,Mn|Mangan|54.938|Jordarbejde,Fe|Jern|55.845|Stålkonstruktioner,Co|Kobolt|58.933|Magneter,Ni|Nikkel|58.693|Mønter,Cu|Kobber|63.546|Elektriske ledninger,Zn|Zink|65.38|Messinginstrumenter,Ga|Gallium|69.723|LED dioder,Ge|Germanium|72.63|Halvledere,As|Arsen|74.922|Gift,Se|Selen|78.971|Kopimaskiner,Br|Brom|79.904|Fotografisk film,Kr|Krypton|83.798|Lommelygter,Rb|Rubidium|85.468|Global navigation,Sr|Strontium|87.62|Fyrværkeri,Y|Yttrium|88.906|Lasere,Zr|Zirkonium|91.224|Kemiske rør,Nb|Niobium|92.906|Svævebaner,Mo|Molybdæn|95.95|Klippeværktøjer,Tc|Technetium|98|Diagnostik,Ru|Ruthenium|101.07|Kontakter,Rh|Rhodium|102.91|Søgelys,Pd|Palladium|106.42|Forureningskontrol,Ag|Sølv|107.87|Smykker,Cd|Cadmium|112.41|Maling,In|Indium|114.82|LCD skærme,Sn|Tin|118.71|Dåser,Sb|Antimon|121.76|Bilbatterier,Te|Tellur|127.6|Termoelektricitet,I|Jod|126.9|Desinfektion,Xe|Xenon|131.29|Høj-intense lamper,Cs|Cæsium|132.91|Atomure,Ba|Barium|137.33|Røntgenbillede,La|Lanthan|138.91|Teleskoplinser,Ce|Cerium|140.12|Lighter flintesten,Pr|Praseodym|140.91|Svejsebriller,Nd|Neodym|144.24|Stærke magneter,Pm|Promethium|145|Lysende displays,Sm|Samarium|150.36|Elektriske motorer,Eu|Europium|151.96|Farvefjernsyn,Gd|Gadolinium|157.25|MR scanning,Tb|Terbium|158.93|Lysstofrør,Dy|Dysprosium|162.5|CD diske,Ho|Holmium|164.93|Laseroperation,Er|Erbium|167.26|Optisk fibernet,Tm|Thulium|168.93|Laseroperationer,Yb|Ytterbium|173.05|Videnskabskabler,Lu|Lutetium|174.97|Kræftbehandling,Hf|Hafnium|178.49|Atomubåde,Ta|Tantal|180.95|Mobiltelefoner,W|Wolfram|183.84|Glødetråde,Re|Rhenium|186.21|Raketmotorer,Os|Osmium|190.23|Pennespidser,Ir|Iridium|192.22|Tændrør,Pt|Platin|195.08|Laboratorieudstyr,Au|Guld|196.97|Smykker og medaljer,Hg|Kviksølv|200.59|Termometre,Tl|Thallium|204.38|Lav-temperatur termometre,Pb|Bly|207.2|Vægte og afskærmning,Bi|Bismut|208.98|Brandsprinklere,Po|Polonium|209|Anti-statiske børster,At|Astat|210|Radioaktiv medicin,Rn|Radon|222|Kirurgiske implantater,Fr|Francium|223|Laser atom-fælder,Ra|Radium|226|Selvlysende ure,Ac|Actinium|227|Radioaktiv medicin,Th|Thorium|232.04|Gaslampeknapper,Pa|Protactinium|231.04|Radioaktivt spild,U|Uran|238.03|Atomkraft,Np|Neptunium|237|Radioaktivt spild,Pu|Plutonium|244|Atombomber,Am|Americium|243|Røgalarmer,Cm|Curium|247|Mineralanalyser,Bk|Berkelium|247|Radioaktivt spild,Cf|Californium|251|Mineralanalyser,Es|Einsteinium|252|Forskning,Fm|Fermium|257|Forskning,Md|Mendelevium|258|Forskning,No|Nobelium|259|Forskning,Lr|Lawrencium|266|Forskning,Rf|Rutherfordium|267|Forskning,Db|Dubnium|268|Forskning,Sg|Seaborgium|269|Forskning,Bh|Bohrium|270|Forskning,Hs|Hassium|277|Forskning,Mt|Meitnerium|278|Forskning,Ds|Darmstadtium|281|Forskning,Rg|Røntgenium|282|Forskning,Cn|Copernicium|285|Forskning,Nh|Nihonium|286|Forskning,Fl|Flerovium|289|Forskning,Mc|Moscovium|290|Forskning,Lv|Livermorium|293|Forskning,Ts|Tennessin|294|Forskning,Og|Oganesson|294|Forskning".split(",");
+
+        function getCategory(z) {
+            if ([2,10,18,36,54,86,118].includes(z)) return 'noble';
+            if ([1,6,7,8,15,16,34].includes(z)) return 'nonmetal';
+            if ([9,17,35,53,85,117].includes(z)) return 'halogen';
+            if ([3,11,19,37,55,87].includes(z)) return 'alkali';
+            if ([4,12,20,38,56,88].includes(z)) return 'alkaline';
+            if ([5,14,32,33,51,52].includes(z)) return 'metalloid';
+            if (z >= 57 && z <= 71) return 'lanthanide';
+            if (z >= 89 && z <= 103) return 'actinide';
+            if ([13,31,49,50,81,82,83,84,113,114,115,116].includes(z)) return 'post-transition';
+            return 'transition';
+        }
+
+        function getGridPos(z) {
+            if (z===1) return [1,1]; if (z===2) return [18,1];
+            if (z<=10) return [z<=4 ? z-2 : z+8, 2];
+            if (z<=18) return [z<=12 ? z-10 : z, 3];
+            if (z<=36) return [z-18, 4];
+            if (z<=54) return [z-36, 5];
+            if (z>=57 && z <=71) return [z-53, 9]; 
+            if (z>=89 && z <=103) return [z-85, 10]; 
+            if (z<=86) return [z<=56 ? z-54 : z-68, 6];
+            if (z<=118) return [z<=88 ? z-86 : z-100, 7];
+            return [1,1];
+        }
+
+        function calculateShells(z) {
+            if(z===24) return [2,8,13,1]; if(z===29) return [2,8,18,1]; 
+            if(z===47) return [2,8,18,18,1]; if(z===79) return [2,8,18,32,18,1];
+
+            const sequence = [
+                {n:1, m:2}, {n:2, m:2}, {n:2, m:6}, {n:3, m:2}, {n:3, m:6},
+                {n:4, m:2}, {n:3, m:10}, {n:4, m:6}, {n:5, m:2}, {n:4, m:10},
+                {n:5, m:6}, {n:6, m:2}, {n:4, m:14}, {n:5, m:10}, {n:6, m:6},
+                {n:7, m:2}, {n:5, m:14}, {n:6, m:10}, {n:7, m:6}
+            ];
+            let shells = [];
+            let remaining = z;
+            for (let orb of sequence) {
+                if (remaining <= 0) break;
+                let add = Math.min(remaining, orb.m);
+                shells[orb.n - 1] = (shells[orb.n - 1] || 0) + add;
+                remaining -= add;
+            }
+            return shells;
+        }
+
+        function buildPeriodicTable() {
+            const table = document.getElementById('periodic-table');
+            const placeholders = [
+                {c:3, r:6, t:"57-71", cat:"lanthanide"},
+                {c:3, r:7, t:"89-103", cat:"actinide"}
+            ];
+            placeholders.forEach(p => {
+                const div = document.createElement('div');
+                div.className = `el-placeholder ${p.cat}`;
+                div.style.gridColumn = p.c; div.style.gridRow = p.r;
+                div.innerText = p.t;
+                table.appendChild(div);
+            });
+
+            rawData.forEach((data, index) => {
+                const z = index + 1;
+                const [sym, name, mass, usage] = data.split('|');
+                const cat = getCategory(z);
+                const [col, row] = getGridPos(z);
+
+                const div = document.createElement('div');
+                div.className = `element ${cat}`;
+                div.style.gridColumn = col;
+                div.style.gridRow = row;
+                div.innerHTML = `
+                    <div class="el-top">
+                        <span class="el-number">${z}</span>
+                        <span class="el-electrons">${z}e⁻</span>
+                    </div>
+                    <div class="el-symbol">${sym}</div>
+                    <div class="el-name">${name}</div>
+                    <div class="el-mass">${mass}</div>
+                `;
+                div.onclick = () => openElementModal(z, sym, name, mass, usage);
+                table.appendChild(div);
+            });
+        }
+
+        function openElementModal(z, sym, name, mass, usage) {
+            document.getElementById('modal-number').innerText = z;
+            document.getElementById('modal-elec-total').innerText = z;
+            document.getElementById('modal-symbol').innerText = sym;
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-mass').innerText = mass;
+            document.getElementById('modal-usage').innerText = "Anvendelse: " + usage;
+            
+            const emojis = { 1:"☀️", 2:"🎈", 3:"🔋", 6:"💎", 7:"💨", 8:"🌬️", 9:"🪥", 10:"🚥", 11:"🧂", 12:"✨", 13:"✈️", 14:"💻", 17:"🏊", 20:"🥛", 26:"🧲", 29:"🥉", 47:"🥈", 79:"🥇", 80:"🌡️", 92:"☢️" };
+            document.getElementById('modal-emoji').innerText = emojis[z] || "⚛️";
+
+            const shellsConfig = calculateShells(z);
+            document.getElementById('modal-config').innerText = shellsConfig.join(", ") + " (i alt " + z + " e⁻)";
+
+            const visual = document.getElementById('atom-visual');
+            let html = `<div class="nucleus"></div>`;
+            
+            shellsConfig.forEach((electrons, index) => {
+                let radius = 25 + (index * 20); 
+                let diameter = radius * 2;
+                let duration = 6 + (index * 5); 
+                
+                html += `<div class="electron-shell" style="width: ${diameter}px; height: ${diameter}px; animation: spin ${duration}s linear infinite;">`;
+                for(let e = 0; e < electrons; e++) {
+                    let angle = (e / electrons) * 2 * Math.PI;
+                    let left = 50 + 50 * Math.cos(angle);
+                    let top = 50 + 50 * Math.sin(angle);
+                    html += `<div class="electron" style="top: calc(${top}% - 4px); left: calc(${left}% - 4px);"></div>`;
+                }
+                html += `</div>`;
+            });
+            visual.innerHTML = html;
+
+            document.getElementById('element-modal').classList.add('active');
+        }
+
+        function closeModal(e) {
+            if(e.target.id === 'element-modal') {
+                document.getElementById('element-modal').classList.remove('active');
+            }
+        }
+
+        const viewRoutes = {
+            'home-view': { slug: '', title: 'STEM Laboratoriet' },
+            'periodic-view': { slug: 'periodisk-system', title: 'Det Periodiske System – STEM Laboratoriet' },
+            'molecule-view': { slug: 'molekylebygger', title: 'Molekylebygger (2D & 3D) – STEM Laboratoriet' },
+            'microbio-lab-view': { slug: 'mikrobiologi-lab', title: 'Mikrobiologi-lab – STEM Laboratoriet' },
+            'microbio-exp-view': { slug: 'mikrobiologi-forsoeg', title: 'Mikrobiologi & Hygiejne Forsøg – STEM Laboratoriet' },
+            'science-view': { slug: 'science', title: 'Science Forsøg – STEM Laboratoriet' },
+            'technology-view': { slug: 'teknologi', title: 'Technology – STEM Laboratoriet' },
+            'engineering-view': { slug: 'ingenioerkunst', title: 'Engineering – STEM Laboratoriet' },
+            'math-view': { slug: 'matematik', title: 'Math – STEM Laboratoriet' },
+            'nerd-view': { slug: 'formler', title: 'Formelsamling & SI-enheder – STEM Laboratoriet' },
+            'tools-view': { slug: 'vaerktoejer', title: 'Værktøjer & Prikpapir – STEM Laboratoriet' }
+        };
+
+        const slugToView = Object.fromEntries(
+            Object.entries(viewRoutes).map(([id, info]) => [info.slug, id])
+        );
+
+        function showView(viewId, updateHash = true) {
+            const targetId = viewRoutes[viewId] ? viewId : 'home-view';
+            const views = document.querySelectorAll('.view');
+            views.forEach(v => v.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+
+            const route = viewRoutes[targetId];
+            document.title = route.title;
+
+            if (updateHash) {
+                const newHash = route.slug ? '#' + route.slug : '';
+                if (window.location.hash !== newHash) {
+                    if (newHash) {
+                        history.pushState(null, '', newHash);
+                    } else {
+                        history.pushState(null, '', window.location.pathname + window.location.search);
+                    }
+                }
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (targetId === 'molecule-view' && molAtoms.length === 0) {
+                loadPreset('H2O');
+            }
+            if (targetId === 'microbio-lab-view') {
+                updateGrowthSim();
+            }
+        }
+
+        function handleRouteChange() {
+            const slug = window.location.hash.replace(/^#/, '');
+            const viewId = slugToView[slug] || 'home-view';
+            showView(viewId, false);
+        }
+
+        window.addEventListener('hashchange', handleRouteChange);
+        window.addEventListener('popstate', handleRouteChange);
+
+        /* =========================================
+           MIKROBIOLOGI VÆKSTSIMULATOR
+           ========================================= */
+        function updateGrowthSim() {
+            const mins = parseInt(document.getElementById('growth-slider').value, 10);
+            const hrs = (mins / 60).toFixed(1).replace('.0', '');
+            document.getElementById('growth-time-label').innerText = `${hrs} timer (${mins} min)`;
+
+            const warmGens = mins / 20;
+            const warmCount = Math.round(Math.pow(2, warmGens));
+            document.getElementById('warm-count').innerText = `${warmCount.toLocaleString('da-DK')} bakterier`;
+            document.getElementById('warm-gens').innerText = `${warmGens} generationer (deling hver 20. min)`;
+
+            const coldGens = mins / 180;
+            const coldCount = Math.floor(Math.pow(2, coldGens));
+            document.getElementById('cold-count').innerText = `${coldCount.toLocaleString('da-DK')} ${coldCount === 1 ? 'bakterie' : 'bakterier'}`;
+            document.getElementById('cold-gens').innerText = `${coldGens.toFixed(1).replace('.', ',')} generationer (deling hver 180. min)`;
+
+            const warmPetri = document.getElementById('warm-petri');
+            warmPetri.innerHTML = '';
+            const maxDots = Math.min(warmCount, 220);
+            for (let i = 0; i < maxDots; i++) {
+                const d = document.createElement('div');
+                d.className = 'bac-dot';
+                d.style.background = '#dc2626';
+                warmPetri.appendChild(d);
+            }
+
+            const coldPetri = document.getElementById('cold-petri');
+            coldPetri.innerHTML = '';
+            for (let i = 0; i < Math.min(coldCount, 220); i++) {
+                const d = document.createElement('div');
+                d.className = 'bac-dot';
+                d.style.background = '#0284c7';
+                coldPetri.appendChild(d);
+            }
+        }
+
+        /* =========================================
+           MOLEKYLEBYGGER (2D + 3D HYBRID)
+           ========================================= */
+        const atomProps = {
+            H:  { valence: 1, color: '#ffffff', hex3d: 0xf8fafc, text: '#0f172a', radius: 18, r3d: 0.35, mass: 1.008 },
+            B:  { valence: 3, color: '#f472b6', hex3d: 0xf472b6, text: '#ffffff', radius: 22, r3d: 0.50, mass: 10.81 },
+            C:  { valence: 4, color: '#334155', hex3d: 0x334155, text: '#ffffff', radius: 24, r3d: 0.55, mass: 12.011 },
+            N:  { valence: 3, color: '#2563eb', hex3d: 0x2563eb, text: '#ffffff', radius: 23, r3d: 0.52, mass: 14.007 },
+            O:  { valence: 2, color: '#ef4444', hex3d: 0xef4444, text: '#ffffff', radius: 22, r3d: 0.50, mass: 15.999 },
+            F:  { valence: 1, color: '#86efac', hex3d: 0x86efac, text: '#0f172a', radius: 20, r3d: 0.44, mass: 18.998 },
+            Na: { valence: 1, color: '#a855f7', hex3d: 0xa855f7, text: '#ffffff', radius: 26, r3d: 0.65, mass: 22.99 },
+            Mg: { valence: 2, color: '#14b8a6', hex3d: 0x14b8a6, text: '#ffffff', radius: 25, r3d: 0.60, mass: 24.305 },
+            Si: { valence: 4, color: '#94a3b8', hex3d: 0x94a3b8, text: '#0f172a', radius: 25, r3d: 0.60, mass: 28.085 },
+            P:  { valence: 3, color: '#f97316', hex3d: 0xf97316, text: '#ffffff', radius: 25, r3d: 0.60, mass: 30.974 },
+            S:  { valence: 2, color: '#eab308', hex3d: 0xeab308, text: '#0f172a', radius: 25, r3d: 0.62, mass: 32.06 },
+            Cl: { valence: 1, color: '#22c55e', hex3d: 0x22c55e, text: '#ffffff', radius: 24, r3d: 0.58, mass: 35.45 },
+            K:  { valence: 1, color: '#c084fc', hex3d: 0xc084fc, text: '#0f172a', radius: 28, r3d: 0.70, mass: 39.098 },
+            Ca: { valence: 2, color: '#0d9488', hex3d: 0x0d9488, text: '#ffffff', radius: 27, r3d: 0.66, mass: 40.078 },
+            Fe: { valence: 2, color: '#b45309', hex3d: 0xb45309, text: '#ffffff', radius: 26, r3d: 0.64, mass: 55.845 },
+            Cu: { valence: 2, color: '#d97706', hex3d: 0xd97706, text: '#ffffff', radius: 26, r3d: 0.64, mass: 63.546 },
+            Br: { valence: 1, color: '#b91c1c', hex3d: 0xb91c1c, text: '#ffffff', radius: 26, r3d: 0.64, mass: 79.904 },
+            I:  { valence: 1, color: '#7e22ce', hex3d: 0x7e22ce, text: '#ffffff', radius: 28, r3d: 0.68, mass: 126.9 }
+        };
+
+        let molAtoms = [];
+        let molBonds = [];
+        let nextAtomId = 1;
+        let selectedAtomId = null;
+        let draggingAtomId = null;
+        let dragMoved = false;
+        let deleteMode = false;
+        let is3DMode = false;
+
+        function toggleDeleteMode() {
+            deleteMode = !deleteMode;
+            selectedAtomId = null;
+            const btn = document.getElementById('delete-tool-btn');
+            const svg = document.getElementById('mol-canvas');
+            if (deleteMode) {
+                btn.classList.add('active-delete');
+                btn.innerText = '🧹 Slet-tilstand AKTIV (klik atom/streg)';
+                svg.classList.add('delete-mode');
+            } else {
+                btn.classList.remove('active-delete');
+                btn.innerText = '🧹 Slet atom / streg';
+                svg.classList.remove('delete-mode');
+            }
+            renderMolecule();
+        }
+
+        function addAtom(type, x = null, y = null) {
+            if (is3DMode) toggle3DView();
+            const posX = x !== null ? x : 450 + (Math.random() * 180 - 90);
+            const posY = y !== null ? y : 225 + (Math.random() * 140 - 70);
+            const id = nextAtomId++;
+            molAtoms.push({ id, type, x: posX, y: posY });
+            selectedAtomId = null;
+            renderMolecule();
+            return id;
+        }
+
+        function addGroup(groupType) {
+            if (is3DMode) toggle3DView();
+            const cx = 450 + (Math.random() * 140 - 70);
+            const cy = 225 + (Math.random() * 100 - 50);
+
+            if (groupType === 'CH3') {
+                const cId = addAtom('C', cx, cy);
+                const h1 = addAtom('H', cx, cy - 75);
+                const h2 = addAtom('H', cx - 65, cy + 40);
+                const h3 = addAtom('H', cx + 65, cy + 40);
+                molBonds.push({ a: cId, b: h1, order: 1 }, { a: cId, b: h2, order: 1 }, { a: cId, b: h3, order: 1 });
+            } else if (groupType === 'CH2') {
+                const cId = addAtom('C', cx, cy);
+                const h1 = addAtom('H', cx, cy - 75);
+                const h2 = addAtom('H', cx, cy + 75);
+                molBonds.push({ a: cId, b: h1, order: 1 }, { a: cId, b: h2, order: 1 });
+            } else if (groupType === 'OH') {
+                const oId = addAtom('O', cx, cy);
+                const h1 = addAtom('H', cx + 70, cy - 35);
+                molBonds.push({ a: oId, b: h1, order: 1 });
+            } else if (groupType === 'NH2') {
+                const nId = addAtom('N', cx, cy);
+                const h1 = addAtom('H', cx + 65, cy - 45);
+                const h2 = addAtom('H', cx + 65, cy + 45);
+                molBonds.push({ a: nId, b: h1, order: 1 }, { a: nId, b: h2, order: 1 });
+            } else if (groupType === 'COOH') {
+                const cId = addAtom('C', cx, cy);
+                const o1 = addAtom('O', cx, cy - 85);
+                const o2 = addAtom('O', cx + 80, cy + 45);
+                const h1 = addAtom('H', cx + 150, cy + 45);
+                molBonds.push({ a: cId, b: o1, order: 2 }, { a: cId, b: o2, order: 1 }, { a: o2, b: h1, order: 1 });
+            }
+            renderMolecule();
+        }
+
+        function clearMolecule() {
+            molAtoms = [];
+            molBonds = [];
+            selectedAtomId = null;
+            if (is3DMode) build3DScene();
+            renderMolecule();
+        }
+
+        function loadPreset(preset) {
+            molAtoms = [];
+            molBonds = [];
+            nextAtomId = 1;
+            selectedAtomId = null;
+
+            if (preset === 'H2O') {
+                molAtoms.push({ id: 1, type: 'O', x: 450, y: 190 });
+                molAtoms.push({ id: 2, type: 'H', x: 370, y: 265 });
+                molAtoms.push({ id: 3, type: 'H', x: 530, y: 265 });
+                molBonds.push({ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 });
+                nextAtomId = 4;
+            } else if (preset === 'CO2') {
+                molAtoms.push({ id: 1, type: 'C', x: 450, y: 225 });
+                molAtoms.push({ id: 2, type: 'O', x: 330, y: 225 });
+                molAtoms.push({ id: 3, type: 'O', x: 570, y: 225 });
+                molBonds.push({ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 2 });
+                nextAtomId = 4;
+            } else if (preset === 'CH4') {
+                molAtoms.push({ id: 1, type: 'C', x: 450, y: 225 });
+                molAtoms.push({ id: 2, type: 'H', x: 450, y: 125 });
+                molAtoms.push({ id: 3, type: 'H', x: 450, y: 325 });
+                molAtoms.push({ id: 4, type: 'H', x: 350, y: 225 });
+                molAtoms.push({ id: 5, type: 'H', x: 550, y: 225 });
+                molBonds.push({ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 1, b: 5, order: 1 });
+                nextAtomId = 6;
+            } else if (preset === 'NH3') {
+                molAtoms.push({ id: 1, type: 'N', x: 450, y: 190 });
+                molAtoms.push({ id: 2, type: 'H', x: 365, y: 265 });
+                molAtoms.push({ id: 3, type: 'H', x: 450, y: 295 });
+                molAtoms.push({ id: 4, type: 'H', x: 535, y: 265 });
+                molBonds.push({ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 });
+                nextAtomId = 5;
+            } else if (preset === 'O2') {
+                molAtoms.push({ id: 1, type: 'O', x: 390, y: 225 });
+                molAtoms.push({ id: 2, type: 'O', x: 510, y: 225 });
+                molBonds.push({ a: 1, b: 2, order: 2 });
+                nextAtomId = 3;
+            } else if (preset === 'NaCl') {
+                molAtoms.push({ id: 1, type: 'Na', x: 390, y: 225 });
+                molAtoms.push({ id: 2, type: 'Cl', x: 510, y: 225 });
+                molBonds.push({ a: 1, b: 2, order: 1 });
+                nextAtomId = 3;
+            } else if (preset === 'CH3COOH') {
+                molAtoms.push({ id: 1, type: 'C', x: 360, y: 225 });
+                molAtoms.push({ id: 2, type: 'H', x: 270, y: 225 });
+                molAtoms.push({ id: 3, type: 'H', x: 360, y: 135 });
+                molAtoms.push({ id: 4, type: 'H', x: 360, y: 315 });
+                molAtoms.push({ id: 5, type: 'C', x: 470, y: 225 });
+                molAtoms.push({ id: 6, type: 'O', x: 470, y: 125 });
+                molAtoms.push({ id: 7, type: 'O', x: 565, y: 270 });
+                molAtoms.push({ id: 8, type: 'H', x: 645, y: 230 });
+                molBonds.push(
+                    { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 },
+                    { a: 1, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }
+                );
+                nextAtomId = 9;
+            } else if (preset === 'C2H5OH') {
+                molAtoms.push({ id: 1, type: 'C', x: 350, y: 225 });
+                molAtoms.push({ id: 2, type: 'C', x: 460, y: 225 });
+                molAtoms.push({ id: 3, type: 'O', x: 565, y: 225 });
+                molAtoms.push({ id: 4, type: 'H', x: 645, y: 270 });
+                molAtoms.push({ id: 5, type: 'H', x: 265, y: 225 });
+                molAtoms.push({ id: 6, type: 'H', x: 350, y: 135 });
+                molAtoms.push({ id: 7, type: 'H', x: 350, y: 315 });
+                molAtoms.push({ id: 8, type: 'H', x: 460, y: 135 });
+                molAtoms.push({ id: 9, type: 'H', x: 460, y: 315 });
+                molBonds.push(
+                    { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 },
+                    { a: 1, b: 5, order: 1 }, { a: 1, b: 6, order: 1 }, { a: 1, b: 7, order: 1 },
+                    { a: 2, b: 8, order: 1 }, { a: 2, b: 9, order: 1 }
+                );
+                nextAtomId = 10;
+            } else if (preset === 'C6H12O6') {
+                const ring = [
+                    { id: 1, type: 'O', x: 450, y: 130 },
+                    { id: 2, type: 'C', x: 545, y: 185 },
+                    { id: 3, type: 'C', x: 545, y: 285 },
+                    { id: 4, type: 'C', x: 450, y: 340 },
+                    { id: 5, type: 'C', x: 355, y: 285 },
+                    { id: 6, type: 'C', x: 355, y: 185 }
+                ];
+                molAtoms.push(...ring);
+                molBonds.push(
+                    { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 },
+                    { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 1, order: 1 }
+                );
+                nextAtomId = 7;
+            }
+            renderMolecule();
+            if (is3DMode) build3DScene();
+        }
+
+        function toggleBond(id1, id2) {
+            if (id1 === id2) return;
+            const idx = molBonds.findIndex(b => (b.a === id1 && b.b === id2) || (b.a === id2 && b.b === id1));
+            if (idx === -1) {
+                molBonds.push({ a: id1, b: id2, order: 1 });
+            } else {
+                if (molBonds[idx].order < 3) {
+                    molBonds[idx].order += 1;
+                } else {
+                    molBonds.splice(idx, 1);
+                }
+            }
+        }
+
+        function removeBond(bondIndex) {
+            molBonds.splice(bondIndex, 1);
+            renderMolecule();
+        }
+
+        function removeAtom(id) {
+            molAtoms = molAtoms.filter(a => a.id !== id);
+            molBonds = molBonds.filter(b => b.a !== id && b.b !== id);
+            if (selectedAtomId === id) selectedAtomId = null;
+            renderMolecule();
+        }
+
+        function getUsedBonds(atomId) {
+            return molBonds.reduce((sum, b) => (b.a === atomId || b.b === atomId) ? sum + b.order : sum, 0);
+        }
+
+        function renderMolecule() {
+            const svg = document.getElementById('mol-canvas');
+            svg.innerHTML = '';
+
+            // 1. Tegn bindinger
+            molBonds.forEach((bond, bIdx) => {
+                const atomA = molAtoms.find(a => a.id === bond.a);
+                const atomB = molAtoms.find(a => a.id === bond.b);
+                if (!atomA || !atomB) return;
+
+                const dx = atomB.x - atomA.x;
+                const dy = atomB.y - atomA.y;
+                const len = Math.hypot(dx, dy) || 1;
+                const nx = -dy / len;
+                const ny = dx / len;
+
+                const bondGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                bondGroup.style.cursor = 'pointer';
+
+                const hitLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                hitLine.setAttribute('x1', atomA.x);
+                hitLine.setAttribute('y1', atomA.y);
+                hitLine.setAttribute('x2', atomB.x);
+                hitLine.setAttribute('y2', atomB.y);
+                hitLine.setAttribute('stroke', 'transparent');
+                hitLine.setAttribute('stroke-width', '16');
+                bondGroup.appendChild(hitLine);
+
+                const offsets = bond.order === 1 ? [0] : (bond.order === 2 ? [-4, 4] : [-6, 0, 6]);
+                offsets.forEach(off => {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', atomA.x + nx * off);
+                    line.setAttribute('y1', atomA.y + ny * off);
+                    line.setAttribute('x2', atomB.x + nx * off);
+                    line.setAttribute('y2', atomB.y + ny * off);
+                    line.setAttribute('stroke', deleteMode ? '#ef4444' : '#475569');
+                    line.setAttribute('stroke-width', '3.5');
+                    line.setAttribute('stroke-linecap', 'round');
+                    bondGroup.appendChild(line);
+                });
+
+                bondGroup.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    if (deleteMode || e.button === 2) {
+                        removeBond(bIdx);
+                    }
+                });
+
+                svg.appendChild(bondGroup);
+            });
+
+            // 2. Tegn atomer
+            let allSatisfied = molAtoms.length > 0;
+            let overBonded = false;
+
+            molAtoms.forEach(atom => {
+                const prop = atomProps[atom.type];
+                const used = getUsedBonds(atom.id);
+                const isSelected = atom.id === selectedAtomId;
+
+                if (used !== prop.valence) allSatisfied = false;
+                if (used > prop.valence) overBonded = true;
+
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.style.cursor = deleteMode ? 'not-allowed' : 'grab';
+
+                const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                ring.setAttribute('cx', atom.x);
+                ring.setAttribute('cy', atom.y);
+                ring.setAttribute('r', prop.radius + 5);
+                ring.setAttribute('fill', 'none');
+                if (deleteMode) {
+                    ring.setAttribute('stroke', '#ef4444');
+                    ring.setAttribute('stroke-width', '2');
+                    ring.setAttribute('stroke-dasharray', '3 3');
+                } else if (isSelected) {
+                    ring.setAttribute('stroke', '#2563eb');
+                    ring.setAttribute('stroke-width', '3');
+                    ring.setAttribute('stroke-dasharray', '4 2');
+                } else if (used > prop.valence) {
+                    ring.setAttribute('stroke', '#ef4444');
+                    ring.setAttribute('stroke-width', '2.5');
+                } else if (used === prop.valence) {
+                    ring.setAttribute('stroke', '#10b981');
+                    ring.setAttribute('stroke-width', '2');
+                } else {
+                    ring.setAttribute('stroke', 'transparent');
+                }
+                g.appendChild(ring);
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', atom.x);
+                circle.setAttribute('cy', atom.y);
+                circle.setAttribute('r', prop.radius);
+                circle.setAttribute('fill', prop.color);
+                circle.setAttribute('stroke', '#334155');
+                circle.setAttribute('stroke-width', '2');
+                g.appendChild(circle);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', atom.x);
+                text.setAttribute('y', atom.y + 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', prop.text);
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('font-size', '15px');
+                text.textContent = atom.type;
+                g.appendChild(text);
+
+                const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                badge.setAttribute('x', atom.x + prop.radius - 2);
+                badge.setAttribute('y', atom.y - prop.radius + 4);
+                badge.setAttribute('font-size', '10px');
+                badge.setAttribute('font-weight', 'bold');
+                badge.setAttribute('fill', used > prop.valence ? '#dc2626' : (used === prop.valence ? '#059669' : '#64748b'));
+                badge.textContent = `${used}/${prop.valence}`;
+                g.appendChild(badge);
+
+                g.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    if (deleteMode || e.button === 2) {
+                        removeAtom(atom.id);
+                        return;
+                    }
+                    draggingAtomId = atom.id;
+                    dragMoved = false;
+                });
+
+                g.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    removeAtom(atom.id);
+                });
+
+                svg.appendChild(g);
+            });
+
+            updateMoleculeStatus(allSatisfied, overBonded);
+        }
+
+        function updateMoleculeStatus(allSatisfied, overBonded) {
+            const formulaEl = document.getElementById('mol-formula');
+            const massEl = document.getElementById('mol-mass');
+            const statusEl = document.getElementById('mol-octet-status');
+
+            if (molAtoms.length === 0) {
+                formulaEl.innerHTML = 'Ingen atomer på fladen';
+                massEl.innerText = '';
+                statusEl.innerText = '';
+                return;
+            }
+
+            const counts = {};
+            let totalMass = 0;
+            molAtoms.forEach(a => {
+                counts[a.type] = (counts[a.type] || 0) + 1;
+                totalMass += atomProps[a.type].mass;
+            });
+
+            const keys = Object.keys(counts).sort((a, b) => {
+                if (a === 'C') return -1;
+                if (b === 'C') return 1;
+                if (a === 'H' && counts['C']) return -1;
+                if (b === 'H' && counts['C']) return 1;
+                return a.localeCompare(b);
+            });
+
+            const formulaHtml = keys.map(k => `${k}${counts[k] > 1 ? `<sub>${counts[k]}</sub>` : ''}`).join('');
+            formulaEl.innerHTML = formulaHtml;
+            massEl.innerText = `(${totalMass.toFixed(2)} u)`;
+
+            if (overBonded) {
+                statusEl.style.color = '#dc2626';
+                statusEl.innerText = '⚠️ For mange bindinger på et atom (overskrider valens)';
+            } else if (allSatisfied) {
+                statusEl.style.color = '#059669';
+                statusEl.innerText = '✅ Stabilt molekyle! Alle atomer opfylder ædelgasreglen.';
+            } else {
+                statusEl.style.color = '#d97706';
+                statusEl.innerText = '🔸 Ledige bindinger tilbage (klik to atomer for at binde dem)';
+            }
+        }
+
+        const molSvg = document.getElementById('mol-canvas');
+        molSvg.addEventListener('pointermove', (e) => {
+            if (draggingAtomId === null) return;
+            dragMoved = true;
+            const rect = molSvg.getBoundingClientRect();
+            const scaleX = 900 / rect.width;
+            const scaleY = 450 / rect.height;
+            const x = Math.max(30, Math.min(870, (e.clientX - rect.left) * scaleX));
+            const y = Math.max(30, Math.min(420, (e.clientY - rect.top) * scaleY));
+
+            const atom = molAtoms.find(a => a.id === draggingAtomId);
+            if (atom) {
+                atom.x = x;
+                atom.y = y;
+                renderMolecule();
+            }
+        });
+
+        window.addEventListener('pointerup', () => {
+            if (draggingAtomId !== null) {
+                if (!dragMoved) {
+                    if (selectedAtomId === null) {
+                        selectedAtomId = draggingAtomId;
+                    } else if (selectedAtomId === draggingAtomId) {
+                        selectedAtomId = null;
+                    } else {
+                        toggleBond(selectedAtomId, draggingAtomId);
+                        selectedAtomId = null;
+                    }
+                    renderMolecule();
+                }
+                draggingAtomId = null;
+            }
+        });
+
+        molSvg.addEventListener('pointerdown', () => {
+            if (selectedAtomId !== null) {
+                selectedAtomId = null;
+                renderMolecule();
+            }
+        });
+
+        /* =========================================
+           3D VISNING (THREE.JS)
+           ========================================= */
+        let scene3D, camera3D, renderer3D, molGroup3D;
+        let isDragging3D = false, prevMouse3D = { x: 0, y: 0 };
+
+        function toggle3DView() {
+            const svg = document.getElementById('mol-canvas');
+            const container3d = document.getElementById('mol-3d-container');
+            const controls = document.getElementById('builder-controls');
+            const btn = document.getElementById('toggle-3d-btn');
+            const instr = document.getElementById('mol-instructions');
+
+            if (typeof THREE === 'undefined') {
+                alert('3D-motoren kræver internetforbindelse for at indlæse.');
+                return;
+            }
+
+            is3DMode = !is3DMode;
+
+            if (is3DMode) {
+                svg.style.display = 'none';
+                controls.style.display = 'none';
+                container3d.style.display = 'block';
+                btn.classList.add('is-3d');
+                btn.innerText = '✏️ Tilbage til 2D-byggeren';
+                instr.innerHTML = '<strong>3D-visning aktiv:</strong> Træk for at rotere molekylet i rummet. Skift tilbage til 2D for at tilføje eller slette atomer.';
+                init3DIfNeeded();
+                build3DScene();
+            } else {
+                container3d.style.display = 'none';
+                svg.style.display = 'block';
+                controls.style.display = 'block';
+                btn.classList.remove('is-3d');
+                btn.innerText = '🧊 Se molekylet i 3D';
+                instr.innerHTML = '<strong>Byg i 2D:</strong> Klik på et atom eller en byggeklods for at tilføje dem. <strong>Træk</strong> for at flytte. <strong>Klik på ét atom og derefter et andet</strong> for at lave bindinger. Brug <strong>Slet-værktøjet</strong> til at fjerne atomer eller streger.';
+            }
+        }
+
+        function init3DIfNeeded() {
+            if (renderer3D) return;
+            const container = document.getElementById('mol-3d-container');
+            const width = container.clientWidth || 850;
+            const height = 450;
+
+            scene3D = new THREE.Scene();
+            camera3D = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera3D.position.z = 8;
+
+            renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer3D.setSize(width, height);
+            renderer3D.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer3D.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+            scene3D.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+            dirLight.position.set(5, 10, 7);
+            scene3D.add(dirLight);
+
+            molGroup3D = new THREE.Group();
+            scene3D.add(molGroup3D);
+
+            const dom = renderer3D.domElement;
+            dom.addEventListener('pointerdown', (e) => {
+                isDragging3D = true;
+                prevMouse3D = { x: e.clientX, y: e.clientY };
+            });
+            window.addEventListener('pointerup', () => { isDragging3D = false; });
+            dom.addEventListener('pointermove', (e) => {
+                if (!isDragging3D) return;
+                const dx = e.clientX - prevMouse3D.x;
+                const dy = e.clientY - prevMouse3D.y;
+                molGroup3D.rotation.y += dx * 0.01;
+                molGroup3D.rotation.x += dy * 0.01;
+                prevMouse3D = { x: e.clientX, y: e.clientY };
+            });
+            dom.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera3D.position.z = Math.max(3, Math.min(20, camera3D.position.z + e.deltaY * 0.005));
+            }, { passive: false });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (is3DMode && !isDragging3D) {
+                    molGroup3D.rotation.y += 0.004;
+                }
+                if (is3DMode) renderer3D.render(scene3D, camera3D);
+            }
+            animate();
+        }
+
+        function compute3DCoordinates() {
+            if (molAtoms.length === 0) return {};
+            const cx = molAtoms.reduce((s, a) => s + a.x, 0) / molAtoms.length;
+            const cy = molAtoms.reduce((s, a) => s + a.y, 0) / molAtoms.length;
+
+            const coords = {};
+            molAtoms.forEach(a => {
+                coords[a.id] = new THREE.Vector3((a.x - cx) / 55, -(a.y - cy) / 55, 0);
+            });
+
+            molAtoms.forEach(center => {
+                const connected = molBonds.filter(b => b.a === center.id || b.b === center.id);
+                if (connected.length >= 3) {
+                    const terminalIds = connected
+                        .map(b => b.a === center.id ? b.b : b.a)
+                        .filter(nid => molBonds.filter(b => b.a === nid || b.b === nid).length === 1);
+
+                    terminalIds.forEach((tid, idx) => {
+                        const sign = idx % 2 === 0 ? 1 : -1;
+                        coords[tid].z += sign * 0.75;
+                    });
+                }
+            });
+
+            return coords;
+        }
+
+        function build3DScene() {
+            if (!molGroup3D) return;
+            while (molGroup3D.children.length > 0) {
+                molGroup3D.remove(molGroup3D.children[0]);
+            }
+
+            const coords = compute3DCoordinates();
+
+            molAtoms.forEach(atom => {
+                const prop = atomProps[atom.type];
+                const geom = new THREE.SphereGeometry(prop.r3d, 32, 32);
+                const mat = new THREE.MeshPhongMaterial({ color: prop.hex3d, shininess: 80 });
+                const mesh = new THREE.Mesh(geom, mat);
+                mesh.position.copy(coords[atom.id]);
+                molGroup3D.add(mesh);
+            });
+
+            molBonds.forEach(bond => {
+                const p1 = coords[bond.a];
+                const p2 = coords[bond.b];
+                if (!p1 || !p2) return;
+
+                const dir = new THREE.Vector3().subVectors(p2, p1);
+                const len = dir.length();
+                if (len < 0.01) return;
+
+                const up = new THREE.Vector3(0, 1, 0);
+                const quat = new THREE.Quaternion().setFromUnitVectors(up, dir.clone().normalize());
+
+                const perp = new THREE.Vector3(0, 0, 1);
+                if (Math.abs(dir.clone().normalize().dot(perp)) > 0.9) perp.set(1, 0, 0);
+                perp.crossVectors(dir, perp).normalize();
+
+                const offsets = bond.order === 1 ? [0] : (bond.order === 2 ? [-0.11, 0.11] : [-0.15, 0, 0.15]);
+                offsets.forEach(off => {
+                    const cylGeom = new THREE.CylinderGeometry(0.08, 0.08, len, 16);
+                    const cylMat = new THREE.MeshPhongMaterial({ color: 0xcbd5e1, shininess: 40 });
+                    const cyl = new THREE.Mesh(cylGeom, cylMat);
+
+                    const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+                    mid.addScaledVector(perp, off);
+                    cyl.position.copy(mid);
+                    cyl.quaternion.copy(quat);
+                    molGroup3D.add(cyl);
+                });
+            });
+        }
+
+        /* =========================================
+           OMREGNINGSLOGIK
+           ========================================= */
+        function convertTemp(source) {
+            const cInput = document.getElementById('celsius');
+            const kInput = document.getElementById('kelvin');
+            const fInput = document.getElementById('fahrenheit');
+            
+            let c = 0;
+            if (source === 'C') {
+                if (cInput.value === '') { kInput.value = ''; fInput.value = ''; return; }
+                c = parseFloat(cInput.value);
+            } else if (source === 'K') {
+                if (kInput.value === '') { cInput.value = ''; fInput.value = ''; return; }
+                c = parseFloat(kInput.value) - 273.15;
+            } else if (source === 'F') {
+                if (fInput.value === '') { cInput.value = ''; kInput.value = ''; return; }
+                c = (parseFloat(fInput.value) - 32) / 1.8;
+            }
+
+            if (source !== 'C') cInput.value = parseFloat(c.toFixed(2));
+            if (source !== 'K') kInput.value = parseFloat((c + 273.15).toFixed(2));
+            if (source !== 'F') fInput.value = parseFloat(((c * 1.8) + 32).toFixed(2));
+        }
+
+        function convertLength(source) {
+            const mInput = document.getElementById('len-m');
+            const cmInput = document.getElementById('len-cm');
+            const mmInput = document.getElementById('len-mm');
+            const inInput = document.getElementById('len-in');
+            const ftInput = document.getElementById('len-ft');
+            
+            let m = 0;
+            if (source === 'm') {
+                if (mInput.value === '') { cmInput.value = ''; mmInput.value = ''; inInput.value = ''; ftInput.value = ''; return; }
+                m = parseFloat(mInput.value);
+            } else if (source === 'cm') {
+                if (cmInput.value === '') { mInput.value = ''; mmInput.value = ''; inInput.value = ''; ftInput.value = ''; return; }
+                m = parseFloat(cmInput.value) / 100;
+            } else if (source === 'mm') {
+                if (mmInput.value === '') { mInput.value = ''; cmInput.value = ''; inInput.value = ''; ftInput.value = ''; return; }
+                m = parseFloat(mmInput.value) / 1000;
+            } else if (source === 'in') {
+                if (inInput.value === '') { mInput.value = ''; cmInput.value = ''; mmInput.value = ''; ftInput.value = ''; return; }
+                m = parseFloat(inInput.value) * 0.0254;
+            } else if (source === 'ft') {
+                if (ftInput.value === '') { mInput.value = ''; cmInput.value = ''; mmInput.value = ''; inInput.value = ''; return; }
+                m = parseFloat(ftInput.value) * 0.3048;
+            }
+
+            if (source !== 'm') mInput.value = parseFloat(m.toFixed(5));
+            if (source !== 'cm') cmInput.value = parseFloat((m * 100).toFixed(3));
+            if (source !== 'mm') mmInput.value = parseFloat((m * 1000).toFixed(2));
+            if (source !== 'in') inInput.value = parseFloat((m / 0.0254).toFixed(3));
+            if (source !== 'ft') ftInput.value = parseFloat((m / 0.3048).toFixed(3));
+        }
+
+        function convertArea(source) {
+            const m2Input = document.getElementById('area-m2');
+            const dm2Input = document.getElementById('area-dm2');
+            const cm2Input = document.getElementById('area-cm2');
+            const haInput = document.getElementById('area-ha');
+
+            let m2 = 0;
+            if (source === 'm2') {
+                if (m2Input.value === '') { dm2Input.value = ''; cm2Input.value = ''; haInput.value = ''; return; }
+                m2 = parseFloat(m2Input.value);
+            } else if (source === 'dm2') {
+                if (dm2Input.value === '') { m2Input.value = ''; cm2Input.value = ''; haInput.value = ''; return; }
+                m2 = parseFloat(dm2Input.value) / 100;
+            } else if (source === 'cm2') {
+                if (cm2Input.value === '') { m2Input.value = ''; dm2Input.value = ''; haInput.value = ''; return; }
+                m2 = parseFloat(cm2Input.value) / 10000;
+            } else if (source === 'ha') {
+                if (haInput.value === '') { m2Input.value = ''; dm2Input.value = ''; cm2Input.value = ''; return; }
+                m2 = parseFloat(haInput.value) * 10000;
+            }
+
+            if (source !== 'm2') m2Input.value = parseFloat(m2.toFixed(6));
+            if (source !== 'dm2') dm2Input.value = parseFloat((m2 * 100).toFixed(4));
+            if (source !== 'cm2') cm2Input.value = parseFloat((m2 * 10000).toFixed(2));
+            if (source !== 'ha') haInput.value = parseFloat((m2 / 10000).toFixed(6));
+        }
+
+        function convertVol(source) {
+            const m3Input = document.getElementById('vol-m3');
+            const lInput = document.getElementById('vol-l');
+            const dlInput = document.getElementById('vol-dl');
+            const cm3Input = document.getElementById('vol-cm3');
+
+            let m3 = 0;
+            if (source === 'm3') {
+                if (m3Input.value === '') { lInput.value = ''; dlInput.value = ''; cm3Input.value = ''; return; }
+                m3 = parseFloat(m3Input.value);
+            } else if (source === 'l') {
+                if (lInput.value === '') { m3Input.value = ''; dlInput.value = ''; cm3Input.value = ''; return; }
+                m3 = parseFloat(lInput.value) / 1000;
+            } else if (source === 'dl') {
+                if (dlInput.value === '') { m3Input.value = ''; lInput.value = ''; cm3Input.value = ''; return; }
+                m3 = parseFloat(dlInput.value) / 10000;
+            } else if (source === 'cm3') {
+                if (cm3Input.value === '') { m3Input.value = ''; lInput.value = ''; dlInput.value = ''; return; }
+                m3 = parseFloat(cm3Input.value) / 1000000;
+            }
+
+            if (source !== 'm3') m3Input.value = parseFloat(m3.toFixed(8));
+            if (source !== 'l') lInput.value = parseFloat((m3 * 1000).toFixed(4));
+            if (source !== 'dl') dlInput.value = parseFloat((m3 * 10000).toFixed(3));
+            if (source !== 'cm3') cm3Input.value = parseFloat((m3 * 1000000).toFixed(2));
+        }
+
+        function printSheet(title, description) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="da">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Forsøgsskema - ${title}</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; }
+                        h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+                        .box { border: 2px solid #94a3b8; border-radius: 6px; padding: 20px; margin-top: 20px; min-height: 120px; background: #fff; }
+                        .box h3 { margin-top: 0; color: #7c3aed; }
+                        .meta { font-size: 1.1rem; margin-bottom: 20px; }
+                        .meta p { margin: 6px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>🔬 STEM Laboratoriet: Forsøgsskema</h1>
+                    <div class="meta">
+                        <p><strong>Aktivitet:</strong> ${title}</p>
+                        <p><strong>Kort beskrivelse:</strong> ${description}</p>
+                        <p><strong>Navn / Forsker:</strong> ___________________________________ &nbsp;&nbsp;&nbsp; <strong>Dato:</strong> _______________</p>
+                    </div>
+                    <div class="box"><h3>1. Hvad tror du der sker? (Min Hypotese)</h3></div>
+                    <div class="box"><h3>2. Hvad skete der rent faktisk? (Observationer & Tegning)</h3></div>
+                    <div class="box"><h3>3. Hvorfor skete det? (Vores Konklusion)</h3></div>
+                    <script>window.onload = function() { window.print(); }<\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function printDotGrid() {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="da"><head><title>Kvadratisk Prikpapir</title>
+                <style>.grid-container { display: grid; grid-template-columns: repeat(16, 1fr); grid-template-rows: repeat(22, 1fr); gap: 35px; height: 850px; padding: 20px; } .dot { width: 6px; height: 6px; background: #64748b; border-radius: 50%; justify-self: center; align-self: center; }</style>
+                </head><body><div class="header"><strong>Kvadratisk Prikpapir (1 cm)</strong><br><br><strong>Navn: </strong>______________________</div><div class="grid-container" id="grid"></div><script>
+                const grid = document.getElementById('grid'); for(let i=0; i<16*22; i++) { let d = document.createElement('div'); d.className='dot'; grid.appendChild(d); } window.onload = () => window.print();
+                <\/script></body></html>
+            `);
+            printWindow.document.close();
+        }
+
+        window.onload = function() {
+            buildPeriodicTable();
+            handleRouteChange();
+        };
+    </script>
+</body>
+</html>
