@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STEM Laboratoriet for Børn</title>
     <meta property="og:title" content="STEM Laboratoriet – Interaktive værktøjer til fysik, kemi og mikrobiologi">
-    <meta property="og:description" content="Gratis interaktivt læringsværktøj med det periodiske system, 2D/3D-molekylebygger, vækstsimulator, formelsamling og forsøgsvejledninger.">
+    <meta property="og:description" content="Gratis interaktivt læringsværktøj med det periodiske system, 2D/3D-molekylebygger, vækstsimulator, flagel-animation, formelsamling og forsøgsvejledninger.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://stem-lab.bornsleepy-morten.workers.dev/">
     <!-- Three.js til 3D molekylevisning -->
@@ -165,6 +165,37 @@
         .actinide { background: #ccfbf1; }
 
         /* Mikrobiologi Styles */
+        .microbe-subnav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 10px;
+        }
+        .microbe-subtab {
+            flex: 1;
+            min-width: 210px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #475569;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .microbe-subtab:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .microbe-subtab.active {
+            background: #0d9488;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+        }
         .microbe-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -222,6 +253,158 @@
             height: 7px;
             border-radius: 50%;
             background: #0d9488;
+        }
+
+        /* Flagel Simulation Styles */
+        .flagella-box {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 18px;
+        }
+        .flag-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .flag-tab {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            color: #334155;
+            padding: 8px 13px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .flag-tab:hover {
+            border-color: #0d9488;
+            color: #0f766e;
+        }
+        .flag-tab.active {
+            background: #0f766e;
+            border-color: #0f766e;
+            color: #ffffff;
+        }
+        .flag-layout {
+            display: grid;
+            grid-template-columns: 1fr 310px;
+            gap: 16px;
+            align-items: start;
+        }
+        @media (max-width: 860px) {
+            .flag-layout { grid-template-columns: 1fr; }
+        }
+        .flag-canvas-wrap {
+            position: relative;
+            background: #071318;
+            border: 2px solid #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 430px;
+        }
+        #flag-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .flag-hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .flag-pill {
+            background: rgba(15, 23, 42, 0.86);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .flag-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .flag-panel {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .flag-panel h4 {
+            margin: 0;
+            color: #0f766e;
+            font-size: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+        .flag-ctrl label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .flag-ctrl input[type="range"] {
+            width: 100%;
+            accent-color: #0d9488;
+            cursor: pointer;
+        }
+        .flag-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .flag-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            padding: 7px 9px;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .flag-btn:hover { background: #e2e8f0; }
+        .flag-btn.active {
+            background: #ccfbf1;
+            border-color: #0d9488;
+            color: #0f766e;
+        }
+        .flag-info-card {
+            background: #f0fdfa;
+            border: 1px solid #99f6e4;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.84rem;
+            color: #134e4a;
+            line-height: 1.45;
+        }
+        .flag-info-card strong {
+            display: block;
+            color: #0f766e;
+            margin-bottom: 3px;
         }
 
         /* Molekylebygger Styles */
@@ -556,7 +739,7 @@
                 <div class="category-card" onclick="showView('microbio-lab-view')" style="background: #f0fdfa; border: 2px solid #5eead4;">
                     <div class="category-icon">🦠</div>
                     <h3 style="color: #0f766e; font-size: 1.25rem;">Mikrobiologi-lab</h3>
-                    <p>Bakterier, svampe og virus – udforsk den interaktive vækstsimulator (køleskab vs. stuetemperatur).</p>
+                    <p>Bakterier, svampe og virus – udforsk vækstsimulatoren samt interaktive flagel- og motoranimationer.</p>
                 </div>
             </div>
 
@@ -622,7 +805,7 @@
             </div>
         </div>
 
-        <!-- MIKROBIOLOGI-LAB VISNING (VÆKSTSIMULATOR & ORGANISMER) -->
+        <!-- MIKROBIOLOGI-LAB VISNING (VÆKSTSIMULATOR, ORGANISMER & FLAGELLER) -->
         <div id="microbio-lab-view" class="view">
             <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
             <div class="card">
@@ -630,52 +813,84 @@
                     <h2 style="border: none; margin: 0; padding: 0;">🦠 Mikrobiologi-lab (Den Usynlige Verden)</h2>
                     <button class="print-btn" style="margin-top: 0; background: #0d9488;" onclick="showView('microbio-exp-view')">🧼 Gå til forsøgene &rarr;</button>
                 </div>
-                <p>Mikroorganismer er levende organismer, der er så små, at de kun kan ses i et mikroskop. De findes overalt: i luften, i jorden, på huden og i vores mad.</p>
 
-                <!-- De tre hovedgrupper -->
-                <div class="microbe-grid">
-                    <div class="microbe-card" style="border-top: 4px solid #0d9488;">
-                        <h4>🧫 Bakterier</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 1–5 mikrometer (&mu;m)</p>
-                        <p style="font-size: 0.9rem; margin: 0;">Encellede organismer uden cellekerne (prokaryoter). De kan formere sig selv ved at dele sig i to. Nogle er nyttige (mælkesyrebakterier i yoghurt og tarmbakterier), mens andre kan give sygdom (fx <em>Salmonella</em>).</p>
+                <!-- To-faners undernavigation -->
+                <div class="microbe-subnav">
+                    <button id="subtab-growth" class="microbe-subtab active" onclick="switchMicrobeTab('growth')">📈 Vækstsimulator &amp; Organismer</button>
+                    <button id="subtab-flagella" class="microbe-subtab" onclick="switchMicrobeTab('flagella')">🧬 Flageller &amp; Bakteriebevægelse (Animation)</button>
+                </div>
+
+                <!-- FANE 1: VÆKSTSIMULATOR & ORGANISMER -->
+                <div id="microbe-section-growth">
+                    <p>Mikroorganismer er levende organismer, der er så små, at de kun kan ses i et mikroskop. De findes overalt: i luften, i jorden, på huden og i vores mad.</p>
+
+                    <!-- De tre hovedgrupper -->
+                    <div class="microbe-grid">
+                        <div class="microbe-card" style="border-top: 4px solid #0d9488;">
+                            <h4>🧫 Bakterier</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 1–5 mikrometer (&mu;m)</p>
+                            <p style="font-size: 0.9rem; margin: 0;">Encellede organismer uden cellekerne (prokaryoter). De kan formere sig selv ved at dele sig i to. Nogle er nyttige (mælkesyrebakterier i yoghurt og tarmbakterier), mens andre kan give sygdom (fx <em>Salmonella</em>).</p>
+                        </div>
+
+                        <div class="microbe-card" style="border-top: 4px solid #d97706;">
+                            <h4>🍄 Svampe (Gær & Skimmel)</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 5–50 mikrometer (&mu;m)</p>
+                            <p style="font-size: 0.9rem; margin: 0;">Har en rigtig cellekerne (eukaryoter). <strong>Gær</strong> er encellede svampe, der bruges til at hæve brød. <strong>Skimmelsvampe</strong> danner lange tråde (hyfer) og sporer på gammel mad – men bruges også til at lave penicillin og skimmelost.</p>
+                        </div>
+
+                        <div class="microbe-card" style="border-top: 4px solid #e11d48;">
+                            <h4>🧬 Virus</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 20–300 nanometer (nm)</p>
+                            <p style="font-size: 0.9rem; margin: 0;">Meget mindre end bakterier og har intet eget stofskifte. En virus består kun af arvemateriale (DNA/RNA) pakket ind i en proteinkappe. Den kan kun formere sig ved at trænge ind i en levende værtscelle.</p>
+                        </div>
                     </div>
 
-                    <div class="microbe-card" style="border-top: 4px solid #d97706;">
-                        <h4>🍄 Svampe (Gær & Skimmel)</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 5–50 mikrometer (&mu;m)</p>
-                        <p style="font-size: 0.9rem; margin: 0;">Har en rigtig cellekerne (eukaryoter). <strong>Gær</strong> er encellede svampe, der bruges til at hæve brød. <strong>Skimmelsvampe</strong> danner lange tråde (hyfer) og sporer på gammel mad – men bruges også til at lave penicillin og skimmelost.</p>
-                    </div>
+                    <!-- Interaktiv bakterievækst-simulator -->
+                    <div class="growth-sim-box">
+                        <h3 style="margin-top: 0; color: #0f766e;">📈 Simulator: Hvor hurtigt deler bakterier sig?</h3>
+                        <p style="font-size: 0.92rem; margin-bottom: 10px;">Træk i skyderen for at se, hvor mange bakterier <strong>1 enkelt bakterie</strong> bliver til over 6 timer ved stuetemperatur/kropstemperatur (37 &deg;C, deling hver 20. minut) sammenlignet med i køleskabet (5 &deg;C, deling hver 3. time):</p>
+                        
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <label for="growth-slider" style="font-weight: bold; color: #115e59;">Tid gået: <span id="growth-time-label" style="font-size: 1.15rem; color: #0284c7;">2 timer (120 min)</span></label>
+                            <input type="range" id="growth-slider" min="0" max="360" step="20" value="120" style="flex: 1; min-width: 200px;" oninput="updateGrowthSim()">
+                        </div>
 
-                    <div class="microbe-card" style="border-top: 4px solid #e11d48;">
-                        <h4>🧬 Virus</h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Størrelse:</strong> ca. 20–300 nanometer (nm)</p>
-                        <p style="font-size: 0.9rem; margin: 0;">Meget mindre end bakterier og har intet eget stofskifte. En virus består kun af arvemateriale (DNA/RNA) pakket ind i en proteinkappe. Den kan kun formere sig ved at trænge ind i en levende værtscelle.</p>
+                        <div class="growth-bars">
+                            <div class="growth-col">
+                                <strong style="color: #dc2626;">🌡️ På køkkenbordet (37 &deg;C)</strong>
+                                <div style="font-size: 1.25rem; font-weight: bold; margin-top: 4px;" id="warm-count">64 bakterier</div>
+                                <div style="font-size: 0.8rem; color: #64748b;" id="warm-gens">6 generationer (deling hver 20. min)</div>
+                                <div class="petri-dots" id="warm-petri"></div>
+                            </div>
+
+                            <div class="growth-col">
+                                <strong style="color: #0284c7;">❄️ I køleskabet (5 &deg;C)</strong>
+                                <div style="font-size: 1.25rem; font-weight: bold; margin-top: 4px;" id="cold-count">2 bakterier</div>
+                                <div style="font-size: 0.8rem; color: #64748b;" id="cold-gens">0,7 generationer (deling hver 180. min)</div>
+                                <div class="petri-dots" id="cold-petri"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Interaktiv bakterievækst-simulator -->
-                <div class="growth-sim-box">
-                    <h3 style="margin-top: 0; color: #0f766e;">📈 Simulator: Hvor hurtigt deler bakterier sig?</h3>
-                    <p style="font-size: 0.92rem; margin-bottom: 10px;">Træk i skyderen for at se, hvor mange bakterier <strong>1 enkelt bakterie</strong> bliver til over 6 timer ved stuetemperatur/kropstemperatur (37 &deg;C, deling hver 20. minut) sammenlignet med i køleskabet (5 &deg;C, deling hver 3. time):</p>
-                    
-                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                        <label for="growth-slider" style="font-weight: bold; color: #115e59;">Tid gået: <span id="growth-time-label" style="font-size: 1.15rem; color: #0284c7;">2 timer (120 min)</span></label>
-                        <input type="range" id="growth-slider" min="0" max="360" step="20" value="120" style="flex: 1; min-width: 200px;" oninput="updateGrowthSim()">
-                    </div>
+                <!-- FANE 2: FLAGELLER & BAKTERIEBEVÆGELSE -->
+                <div id="microbe-section-flagella" style="display: none;">
+                    <p style="margin-top: 0;">Bakterieflageller fungerer som mikroskopiske påhængsmotorer drevet af ionstrømme gennem cellevæggen. Udforsk de fire interaktive delmoduler herunder:</p>
 
-                    <div class="growth-bars">
-                        <div class="growth-col">
-                            <strong style="color: #dc2626;">🌡️ På køkkenbordet (37 &deg;C)</strong>
-                            <div style="font-size: 1.25rem; font-weight: bold; margin-top: 4px;" id="warm-count">64 bakterier</div>
-                            <div style="font-size: 0.8rem; color: #64748b;" id="warm-gens">6 generationer (deling hver 20. min)</div>
-                            <div class="petri-dots" id="warm-petri"></div>
+                    <div class="flagella-box">
+                        <div class="flag-tabs">
+                            <button class="flag-tab active" data-flagmode="swim" onclick="setFlagMode('swim')">1. Run &amp; Tumble (Kemotaksi)</button>
+                            <button class="flag-tab" data-flagmode="motor" onclick="setFlagMode('motor')">2. Flagelmotoren (Basallegemet)</button>
+                            <button class="flag-tab" data-flagmode="types" onclick="setFlagMode('types')">3. Flageltyper (4 arter)</button>
+                            <button class="flag-tab" data-flagmode="pili" onclick="setFlagMode('pili')">4. Flageller vs. Fimbrier &amp; Pili</button>
                         </div>
 
-                        <div class="growth-col">
-                            <strong style="color: #0284c7;">❄️ I køleskabet (5 &deg;C)</strong>
-                            <div style="font-size: 1.25rem; font-weight: bold; margin-top: 4px;" id="cold-count">2 bakterier</div>
-                            <div style="font-size: 0.8rem; color: #64748b;" id="cold-gens">0,7 generationer (deling hver 180. min)</div>
-                            <div class="petri-dots" id="cold-petri"></div>
+                        <div class="flag-layout">
+                            <div class="flag-canvas-wrap">
+                                <canvas id="flag-canvas"></canvas>
+                                <div class="flag-hud" id="flag-hud"></div>
+                            </div>
+                            <div class="flag-panel" id="flag-panel"></div>
                         </div>
                     </div>
                 </div>
@@ -688,7 +903,7 @@
             <div class="card">
                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
                     <h2 style="border: none; margin: 0; padding: 0;">🧼 Mikrobiologi & Hygiejne (Forsøg)</h2>
-                    <button class="print-btn" style="margin-top: 0; background: #0d9488;" onclick="showView('microbio-lab-view')">🦠 Åbn vækstsimulator &rarr;</button>
+                    <button class="print-btn" style="margin-top: 0; background: #0d9488;" onclick="showView('microbio-lab-view')">🦠 Åbn Mikrobiologi-lab &rarr;</button>
                 </div>
 
                 <div>
@@ -715,7 +930,7 @@
                     <h3>🍞 Dyrk mikroorganismer (Håndvask-testen)</h3>
                     <ul>
                         <li><strong>Materialer:</strong> 3 skiver lyst toastbrød (uden konserveringsmiddel) og 3 lynlåsposer med mærkater.</li>
-                        <li><strong>Sådan gør du:</strong>
+                        <li><strong>Sådan gør du:</strong><br>
                             1. Tag en skive med en ren tang/pose som <em>Kontrol</em>.<br>
                             2. Rør ved den anden skive med <em>uvaskede hænder</em> efter leg/skole.<br>
                             3. Vask hænderne grundigt med vand og sæbe i 20 sekunder, tør dem, og rør ved den tredje skive.<br>
@@ -1293,6 +1508,10 @@
                 <button class="print-btn" onclick="printDotGrid()">🖨️ Print Kvadratisk Prikpapir (1 cm)</button>
             </div>
         </div>
+
+        <footer style="text-align: center; padding: 14px 0 6px 0; font-size: 0.85rem; color: #64748b;">
+            Udviklet af Morten Vaaben Refsgaard &ndash; STEM Laboratoriet
+        </footer>
     </div>
 
     <!-- Modal til Levende Atomer -->
@@ -1320,6 +1539,9 @@
     </div>
 
     <script>
+        /* =========================================
+           DET PERIODISKE SYSTEM
+           ========================================= */
         const rawData = "H|Hydrogen|1.008|Sol og stjerner,He|Helium|4.002|Balloner,Li|Lithium|6.94|Batterier,Be|Beryllium|9.012|Smaragd,B|Bor|10.81|Sportsudstyr,C|Kulstof|12.011|Grundlag for liv,N|Kvælstof|14.007|Protein,O|Ilt|15.999|Luft og ilt,F|Fluor|18.998|Tandpasta,Ne|Neon|20.18|Reklameskilte,Na|Natrium|22.99|Salt,Mg|Magnesium|24.305|Klorofyl,Al|Aluminium|26.982|Flyvemaskiner,Si|Silicium|28.085|Sten og computere,P|Fosfor|30.974|Knogler,S|Svovl|32.06|Æg og tændstikker,Cl|Klor|35.45|Svømmebassiner,Ar|Argon|39.95|Lyspærer,K|Kalium|39.098|Frugt og grønt,Ca|Calcium|40.078|Skaller og knogler,Sc|Scandium|44.956|Cykler,Ti|Titanium|47.867|Rumfart,V|Vanadium|50.942|Fjedre,Cr|Krom|51.996|Rustfrit stål,Mn|Mangan|54.938|Jordarbejde,Fe|Jern|55.845|Stålkonstruktioner,Co|Kobolt|58.933|Magneter,Ni|Nikkel|58.693|Mønter,Cu|Kobber|63.546|Elektriske ledninger,Zn|Zink|65.38|Messinginstrumenter,Ga|Gallium|69.723|LED dioder,Ge|Germanium|72.63|Halvledere,As|Arsen|74.922|Gift,Se|Selen|78.971|Kopimaskiner,Br|Brom|79.904|Fotografisk film,Kr|Krypton|83.798|Lommelygter,Rb|Rubidium|85.468|Global navigation,Sr|Strontium|87.62|Fyrværkeri,Y|Yttrium|88.906|Lasere,Zr|Zirkonium|91.224|Kemiske rør,Nb|Niobium|92.906|Svævebaner,Mo|Molybdæn|95.95|Klippeværktøjer,Tc|Technetium|98|Diagnostik,Ru|Ruthenium|101.07|Kontakter,Rh|Rhodium|102.91|Søgelys,Pd|Palladium|106.42|Forureningskontrol,Ag|Sølv|107.87|Smykker,Cd|Cadmium|112.41|Maling,In|Indium|114.82|LCD skærme,Sn|Tin|118.71|Dåser,Sb|Antimon|121.76|Bilbatterier,Te|Tellur|127.6|Termoelektricitet,I|Jod|126.9|Desinfektion,Xe|Xenon|131.29|Høj-intense lamper,Cs|Cæsium|132.91|Atomure,Ba|Barium|137.33|Røntgenbillede,La|Lanthan|138.91|Teleskoplinser,Ce|Cerium|140.12|Lighter flintesten,Pr|Praseodym|140.91|Svejsebriller,Nd|Neodym|144.24|Stærke magneter,Pm|Promethium|145|Lysende displays,Sm|Samarium|150.36|Elektriske motorer,Eu|Europium|151.96|Farvefjernsyn,Gd|Gadolinium|157.25|MR scanning,Tb|Terbium|158.93|Lysstofrør,Dy|Dysprosium|162.5|CD diske,Ho|Holmium|164.93|Laseroperation,Er|Erbium|167.26|Optisk fibernet,Tm|Thulium|168.93|Laseroperationer,Yb|Ytterbium|173.05|Videnskabskabler,Lu|Lutetium|174.97|Kræftbehandling,Hf|Hafnium|178.49|Atomubåde,Ta|Tantal|180.95|Mobiltelefoner,W|Wolfram|183.84|Glødetråde,Re|Rhenium|186.21|Raketmotorer,Os|Osmium|190.23|Pennespidser,Ir|Iridium|192.22|Tændrør,Pt|Platin|195.08|Laboratorieudstyr,Au|Guld|196.97|Smykker og medaljer,Hg|Kviksølv|200.59|Termometre,Tl|Thallium|204.38|Lav-temperatur termometre,Pb|Bly|207.2|Vægte og afskærmning,Bi|Bismut|208.98|Brandsprinklere,Po|Polonium|209|Anti-statiske børster,At|Astat|210|Radioaktiv medicin,Rn|Radon|222|Kirurgiske implantater,Fr|Francium|223|Laser atom-fælder,Ra|Radium|226|Selvlysende ure,Ac|Actinium|227|Radioaktiv medicin,Th|Thorium|232.04|Gaslampeknapper,Pa|Protactinium|231.04|Radioaktivt spild,U|Uran|238.03|Atomkraft,Np|Neptunium|237|Radioaktivt spild,Pu|Plutonium|244|Atombomber,Am|Americium|243|Røgalarmer,Cm|Curium|247|Mineralanalyser,Bk|Berkelium|247|Radioaktivt spild,Cf|Californium|251|Mineralanalyser,Es|Einsteinium|252|Forskning,Fm|Fermium|257|Forskning,Md|Mendelevium|258|Forskning,No|Nobelium|259|Forskning,Lr|Lawrencium|266|Forskning,Rf|Rutherfordium|267|Forskning,Db|Dubnium|268|Forskning,Sg|Seaborgium|269|Forskning,Bh|Bohrium|270|Forskning,Hs|Hassium|277|Forskning,Mt|Meitnerium|278|Forskning,Ds|Darmstadtium|281|Forskning,Rg|Røntgenium|282|Forskning,Cn|Copernicium|285|Forskning,Nh|Nihonium|286|Forskning,Fl|Flerovium|289|Forskning,Mc|Moscovium|290|Forskning,Lv|Livermorium|293|Forskning,Ts|Tennessin|294|Forskning,Og|Oganesson|294|Forskning".split(",");
 
         function getCategory(z) {
@@ -1449,6 +1671,9 @@
             }
         }
 
+        /* =========================================
+           NAVIGATION & HASH-ROUTING
+           ========================================= */
         const viewRoutes = {
             'home-view': { slug: '', title: 'STEM Laboratoriet' },
             'periodic-view': { slug: 'periodisk-system', title: 'Det Periodiske System – STEM Laboratoriet' },
@@ -1493,6 +1718,9 @@
             }
             if (targetId === 'microbio-lab-view') {
                 updateGrowthSim();
+                if (activeMicrobeTab === 'flagella') {
+                    initFlagellaSim();
+                }
             }
         }
 
@@ -1506,8 +1734,22 @@
         window.addEventListener('popstate', handleRouteChange);
 
         /* =========================================
-           MIKROBIOLOGI VÆKSTSIMULATOR
+           MIKROBIOLOGI UNDERFANER & VÆKSTSIMULATOR
            ========================================= */
+        let activeMicrobeTab = 'growth';
+
+        function switchMicrobeTab(tab) {
+            activeMicrobeTab = tab;
+            document.getElementById('subtab-growth').classList.toggle('active', tab === 'growth');
+            document.getElementById('subtab-flagella').classList.toggle('active', tab === 'flagella');
+            document.getElementById('microbe-section-growth').style.display = tab === 'growth' ? 'block' : 'none';
+            document.getElementById('microbe-section-flagella').style.display = tab === 'flagella' ? 'block' : 'none';
+
+            if (tab === 'flagella') {
+                initFlagellaSim();
+            }
+        }
+
         function updateGrowthSim() {
             const mins = parseInt(document.getElementById('growth-slider').value, 10);
             const hrs = (mins / 60).toFixed(1).replace('.0', '');
@@ -1541,6 +1783,1113 @@
                 d.style.background = '#0284c7';
                 coldPetri.appendChild(d);
             }
+        }
+
+        /* =========================================
+           FLAGELLER & BAKTERIEBEVÆGELSE (CANVAS)
+           ========================================= */
+        let flagInitialized = false;
+        let flagMode = 'swim';
+        let flagW = 760, flagH = 430;
+        let flagLastTime = 0;
+
+        // Modul 1: Run & Tumble (Kemotaksi)
+        const swimState = {
+            x: 380, y: 215, angle: 0,
+            mode: 'run',
+            forceMode: 'auto',
+            timer: 1.6, phase: 0,
+            rpm: 120, viscosity: 1.0,
+            trail: [],
+            drops: [{ x: 560, y: 180, type: 'attract', radius: 68 }],
+            placeType: 'attract',
+            lastConc: 0
+        };
+
+        // Modul 2: Flagelmotoren (Basallegemet)
+        const motorState = {
+            pmf: 1.0, dir: 1, ion: 'H+',
+            angle: 0, ions: [],
+            hoveredPart: null, selectedPart: 'stator'
+        };
+
+        const motorParts = {
+            om:       { name: 'Ydre membran & L-ring', desc: 'Gram-negative bakterier har en ydre membran. L-ringen fungerer som et glat leje i lipopolysakkaridlaget.' },
+            pg:       { name: 'Peptidoglycan & P-ring', desc: 'Cellevæggens stive netværk. P-ringen forankrer og stabiliserer akslen gennem peptidoglycan-laget.' },
+            im:       { name: 'Indre membran (Cytoplasmamembran)', desc: 'Her opbygges den elektrokemiske iongradient (PMF/SMF), som leverer energien til rotationen.' },
+            stator:   { name: 'Stator (MotA / MotB-kompleks)', desc: 'Sidder fast i cellevæggen og fungerer som ionkanal. Når H⁺- eller Na⁺-ioner strømmer igennem, skubber statoren til rotoren.' },
+            rotor:    { name: 'Rotor (MS-ring & C-ring)', desc: 'Den roterende del (FliG/FliM/FliN). C-ringen fungerer som gearkasse, der skifter mellem mod uret (CCW) og med uret (CW).' },
+            hook:     { name: 'Krog (Hook – FlgE)', desc: 'Et fleksibelt kardanled, der overfører drejningsmomentet fra motoren til det lange spiralformede filament.' },
+            filament: { name: 'Filament (Flagellin-spiral)', desc: 'Op til 10–15 µm lang hul spiral af proteinet flagellin. Fungerer som en skruepropel i væske med lavt Reynolds-tal.' }
+        };
+
+        // Modul 3: Flageltyper (4 arter i samme mikroskopfelt)
+        const typesState = {
+            phase: 0,
+            species: [
+                { id: 'mono',  name: 'Monotrik',  org: 'Vibrio cholerae',     x: 185, y: 115, angle: 0.25, dir: 1, timer: 1.8, color: '#38bdf8' },
+                { id: 'lopho', name: 'Lofotrik',  org: 'Helicobacter pylori', x: 540, y: 115, angle: 2.7,  dir: 1, timer: 2.0, color: '#34d399' },
+                { id: 'amphi', name: 'Amfitrik',  org: 'Spirillum volutans',  x: 185, y: 315, angle: -0.3, dir: 1, timer: 2.2, color: '#a78bfa' },
+                { id: 'peri',  name: 'Peritrik',  org: 'Escherichia coli',    x: 540, y: 315, angle: -2.5, dir: 1, timer: 1.6, color: '#fbbf24' }
+            ]
+        };
+
+        // Modul 4: Flageller vs. Fimbrier & Pili
+        const piliState = {
+            phase: 0,
+            sub: 'compare',
+            plasmidProgress: 0,
+            washedX: 80,
+            flowParticles: Array.from({ length: 28 }, (_, i) => ({
+                x: (i * 47) % 760,
+                y: 65 + ((i * 31) % 210),
+                speed: 75 + (i % 5) * 18,
+                len: 10 + (i % 4) * 5
+            }))
+        };
+
+        function initFlagellaSim() {
+            const canvas = document.getElementById('flag-canvas');
+            if (!canvas) return;
+            resizeFlagCanvas();
+
+            if (!flagInitialized) {
+                flagInitialized = true;
+                window.addEventListener('resize', () => {
+                    if (activeMicrobeTab === 'flagella') resizeFlagCanvas();
+                });
+
+                canvas.addEventListener('pointerdown', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const mx = (e.clientX - rect.left) * (flagW / rect.width);
+                    const my = (e.clientY - rect.top) * (flagH / rect.height);
+
+                    if (flagMode === 'swim') {
+                        swimState.drops.push({ x: mx, y: my, type: swimState.placeType, radius: 68 });
+                        if (swimState.drops.length > 8) swimState.drops.shift();
+                    } else if (flagMode === 'motor') {
+                        const hit = getMotorPartAt(mx, my);
+                        if (hit) {
+                            motorState.selectedPart = hit;
+                            updateMotorInfoCard();
+                        }
+                    }
+                });
+
+                canvas.addEventListener('pointermove', (e) => {
+                    if (flagMode !== 'motor') return;
+                    const rect = canvas.getBoundingClientRect();
+                    const mx = (e.clientX - rect.left) * (flagW / rect.width);
+                    const my = (e.clientY - rect.top) * (flagH / rect.height);
+                    motorState.hoveredPart = getMotorPartAt(mx, my);
+                });
+
+                for (let i = 0; i < 22; i++) {
+                    motorState.ions.push({
+                        progress: i / 22,
+                        side: i % 2 === 0 ? -1 : 1,
+                        speed: 0.75 + (i % 4) * 0.1
+                    });
+                }
+
+                requestAnimationFrame(flagLoop);
+            }
+            setFlagMode(flagMode);
+        }
+
+        function resizeFlagCanvas() {
+            const canvas = document.getElementById('flag-canvas');
+            if (!canvas) return;
+            const wrap = canvas.parentElement;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            flagW = wrap.clientWidth || 760;
+            flagH = wrap.clientHeight || 430;
+            canvas.width = Math.floor(flagW * dpr);
+            canvas.height = Math.floor(flagH * dpr);
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function setFlagMode(mode) {
+            flagMode = mode;
+            document.querySelectorAll('.flag-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.flagmode === mode);
+            });
+            renderFlagPanel();
+        }
+
+        function renderFlagPanel() {
+            const panel = document.getElementById('flag-panel');
+            const hud = document.getElementById('flag-hud');
+            if (!panel || !hud) return;
+
+            if (flagMode === 'swim') {
+                hud.innerHTML = `
+                    <div class="flag-pill"><span class="flag-dot" id="hud-swim-dot" style="background:#10b981;"></span><span id="hud-swim-state">Tilstand: RUN (CCW)</span></div>
+                    <div class="flag-pill">Klik på feltet for at dryppe stof</div>
+                `;
+                panel.innerHTML = `
+                    <h4>1. Run &amp; Tumble (Kemotaksi)</h4>
+                    <div class="flag-ctrl">
+                        <label><span>Placér dråbe ved klik:</span></label>
+                        <div class="flag-btn-row">
+                            <button class="flag-btn ${swimState.placeType === 'attract' ? 'active' : ''}" onclick="swimState.placeType='attract'; renderFlagPanel();">🍬 Glukose (+)</button>
+                            <button class="flag-btn ${swimState.placeType === 'repel' ? 'active' : ''}" onclick="swimState.placeType='repel'; renderFlagPanel();">☣️ Giftstof (&minus;)</button>
+                        </div>
+                    </div>
+                    <div class="flag-ctrl">
+                        <label><span>Styr bevægelse:</span></label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+                            <button class="flag-btn ${swimState.forceMode === 'auto' ? 'active' : ''}" onclick="swimState.forceMode='auto'; renderFlagPanel();">Auto</button>
+                            <button class="flag-btn ${swimState.forceMode === 'run' ? 'active' : ''}" onclick="swimState.forceMode='run'; renderFlagPanel();">Run</button>
+                            <button class="flag-btn ${swimState.forceMode === 'tumble' ? 'active' : ''}" onclick="swimState.forceMode='tumble'; renderFlagPanel();">Tumble</button>
+                        </div>
+                    </div>
+                    <div class="flag-ctrl">
+                        <label><span>Motorhastighed:</span><span id="lbl-rpm">${swimState.rpm} RPM</span></label>
+                        <input type="range" min="30" max="240" value="${swimState.rpm}" oninput="swimState.rpm=+this.value; document.getElementById('lbl-rpm').innerText=this.value+' RPM';">
+                    </div>
+                    <div class="flag-ctrl">
+                        <label><span>Væskens viskositet:</span><span id="lbl-visc">${swimState.viscosity.toFixed(1)}×</span></label>
+                        <input type="range" min="0.5" max="2.5" step="0.1" value="${swimState.viscosity}" oninput="swimState.viscosity=+this.value; document.getElementById('lbl-visc').innerText=(+this.value).toFixed(1)+'×';">
+                    </div>
+                    <button class="flag-btn" onclick="swimState.drops=[]; swimState.trail=[];">🧹 Ryd dråber &amp; spor</button>
+                    <div class="flag-info-card">
+                        <strong>Hvordan finder bakterien vej?</strong>
+                        Under <em>Run</em> roterer flagellerne mod uret (CCW) og samles i ét samlet bundt bag cellen. Under <em>Tumble</em> vender en eller flere motorer til med uret (CW), bundtet springer op, og bakterien drejer tilfældigt. Mod glukose forlænges <em>Run</em>-fasen automatisk.
+                    </div>
+                `;
+            } else if (flagMode === 'motor') {
+                hud.innerHTML = `
+                    <div class="flag-pill"><span class="flag-dot" style="background:#38bdf8;"></span><span id="hud-motor-info">Ion-flow: ${motorState.ion} (${Math.round(motorState.pmf * 100)} %)</span></div>
+                    <div class="flag-pill">Klik på en del i tværsnittet</div>
+                `;
+                panel.innerHTML = `
+                    <h4>2. Flagelmotoren (Basallegemet)</h4>
+                    <div class="flag-ctrl">
+                        <label><span>Drivkraft (Ion-gradient):</span><span id="lbl-pmf">${Math.round(motorState.pmf * 100)} %</span></label>
+                        <input type="range" min="0" max="1.6" step="0.05" value="${motorState.pmf}" oninput="motorState.pmf=+this.value; document.getElementById('lbl-pmf').innerText=Math.round(this.value*100)+' %';">
+                    </div>
+                    <div class="flag-ctrl">
+                        <label><span>Rotationsretning (Gearkasse):</span></label>
+                        <div class="flag-btn-row">
+                            <button class="flag-btn ${motorState.dir === 1 ? 'active' : ''}" onclick="motorState.dir=1; renderFlagPanel();">↺ Mod uret (Run)</button>
+                            <button class="flag-btn ${motorState.dir === -1 ? 'active' : ''}" onclick="motorState.dir=-1; renderFlagPanel();">↻ Med uret (Tumble)</button>
+                        </div>
+                    </div>
+                    <div class="flag-ctrl">
+                        <label><span>Drivende iontype:</span></label>
+                        <div class="flag-btn-row">
+                            <button class="flag-btn ${motorState.ion === 'H+' ? 'active' : ''}" onclick="motorState.ion='H+'; renderFlagPanel();">H⁺ (Protoner)</button>
+                            <button class="flag-btn ${motorState.ion === 'Na+' ? 'active' : ''}" onclick="motorState.ion='Na+'; renderFlagPanel();">Na⁺ (Natrium)</button>
+                        </div>
+                    </div>
+                    <div class="flag-info-card" id="motor-part-info"></div>
+                `;
+                updateMotorInfoCard();
+            } else if (flagMode === 'types') {
+                hud.innerHTML = `
+                    <div class="flag-pill"><span class="flag-dot" style="background:#2dd4bf;"></span>4 klassiske flagel-arrangementer i samme felt</div>
+                `;
+                panel.innerHTML = `
+                    <h4>3. Flageltyper i bakterieriget</h4>
+                    <div class="flag-info-card">
+                        <strong>Monotrik (Vibrio cholerae)</strong>
+                        Én enkelt polær flagel i den ene ende. Skifter hurtigt mellem frem og bak.
+                    </div>
+                    <div class="flag-info-card">
+                        <strong>Lofotrik (Helicobacter pylori)</strong>
+                        Et helt bundt af flageller i den ene pol – giver høj fremdrift i maveslim.
+                    </div>
+                    <div class="flag-info-card">
+                        <strong>Amfitrik (Spirillum volutans)</strong>
+                        Flageller i begge ender af en spiralformet celle for præcis retningskontrol.
+                    </div>
+                    <div class="flag-info-card">
+                        <strong>Peritrik (Escherichia coli)</strong>
+                        Flageller fordelt over hele overfladen. Samles i et bundt under Run og spredes under Tumble.
+                    </div>
+                `;
+            } else if (flagMode === 'pili') {
+                const hudText = piliState.sub === 'compare'
+                    ? 'Side-om-side: Lange bølgede flageller vs. korte stive fimbrier'
+                    : (piliState.sub === 'adhesion'
+                        ? 'Fimbrier & Biofilm: Modstår kraftig væskestrøm'
+                        : 'Konjugationspilus (F-pilus): Ét langt, lige, hult DNA-rør');
+                const hudColor = piliState.sub === 'compare' ? '#2dd4bf' : (piliState.sub === 'adhesion' ? '#f59e0b' : '#c084fc');
+
+                hud.innerHTML = `
+                    <div class="flag-pill"><span class="flag-dot" style="background:${hudColor};"></span>${hudText}</div>
+                `;
+                panel.innerHTML = `
+                    <h4>4. Flageller vs. Fimbrier &amp; Pili</h4>
+                    <div class="flag-ctrl">
+                        <label><span>Vælg visning:</span></label>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <button class="flag-btn ${piliState.sub === 'compare' ? 'active' : ''}" onclick="piliState.sub='compare'; renderFlagPanel();">⚖️ Sammenligning (Side om side)</button>
+                            <button class="flag-btn ${piliState.sub === 'adhesion' ? 'active' : ''}" onclick="piliState.sub='adhesion'; piliState.washedX=40; renderFlagPanel();">🧲 Fimbrier &amp; Biofilm (Væskestrøm)</button>
+                            <button class="flag-btn ${piliState.sub === 'conjugation' ? 'active' : ''}" onclick="piliState.sub='conjugation'; piliState.plasmidProgress=0; renderFlagPanel();">🧬 Konjugationspilus (DNA-overførsel)</button>
+                        </div>
+                    </div>
+                    ${piliState.sub === 'conjugation' ? '<button class="flag-btn active" onclick="piliState.plasmidProgress=0;">🔄 Genstart plasmid-overførsel (F⁺ &rarr; F⁻)</button>' : ''}
+                    <div class="flag-info-card">
+                        ${piliState.sub === 'compare'
+                            ? '<strong>Tydelig forskel i bygning &amp; funktion</strong><em>Flageller</em> (venstre) er få, meget lange, tykke og bølgede propeller til svømning. <em>Fimbrier</em> (højre) er hundredvis af bittesmå, tynde, helt stive og lige hår uden motor – brugt som mikroskopisk velcro til fastgørelse.'
+                            : (piliState.sub === 'adhesion'
+                                ? '<strong>Fimbrier (hundredvis af korte, stive hår)</strong>Bruges ikke til svømning, men til <em>adhæsion</em>! Mens bakterier uden fimbrier skylles væk af væskestrømmen, griber fimbrierne fat i overfladens receptorer og starter dannelsen af <em>biofilm</em>.'
+                                : '<strong>Konjugationspilus (F-pilus)</strong>Adskiller sig fra både flageller og fimbrier ved at være ét enkelt langt, helt lige, hult proteinrør. Det trækker donor (F⁺) og modtager (F⁻) tæt sammen og overfører en kopi af et <em>plasmid</em> direkte mellem cellerne.')}
+                    </div>
+                `;
+            }
+        }
+
+        function updateMotorInfoCard() {
+            const el = document.getElementById('motor-part-info');
+            if (!el) return;
+            const part = motorParts[motorState.selectedPart] || motorParts.stator;
+            el.innerHTML = `<strong>${part.name}</strong>${part.desc}`;
+        }
+
+        function getMotorPartAt(mx, my) {
+            const cx = flagW * 0.46;
+            const omY = flagH * 0.40;
+            const pgY = flagH * 0.52;
+            const imY = flagH * 0.66;
+            const dx = mx - cx;
+
+            if (Math.abs(dx) < 110 && my < omY - 52) return 'filament';
+            if (Math.abs(dx) < 55 && my >= omY - 52 && my < omY - 10) return 'hook';
+            if (Math.abs(dx) < 88 && Math.abs(my - imY) < 26) return 'stator';
+            if (Math.abs(dx) < 62 && my >= imY + 12 && my <= imY + 72) return 'rotor';
+            if (Math.abs(my - omY) < 16) return 'om';
+            if (Math.abs(my - pgY) < 14) return 'pg';
+            if (Math.abs(my - imY) < 16) return 'im';
+            return null;
+        }
+
+        function drawFlagGrid(ctx) {
+            ctx.fillStyle = '#071318';
+            ctx.fillRect(0, 0, flagW, flagH);
+            ctx.strokeStyle = 'rgba(45, 212, 191, 0.06)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < flagW; x += 38) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, flagH); ctx.stroke();
+            }
+            for (let y = 0; y < flagH; y += 38) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(flagW, y); ctx.stroke();
+            }
+        }
+
+        function drawHelix(ctx, x0, y0, len, amp, freq, phase, color, lw) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lw;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            for (let s = 0; s <= len; s += 3) {
+                const env = Math.min(1, s / 12);
+                ctx.lineTo(x0 - s, y0 + Math.sin(s * freq - phase) * amp * env);
+            }
+            ctx.stroke();
+        }
+
+        function drawSwimModule(ctx, dt, t) {
+            drawFlagGrid(ctx);
+
+            // Tegn kemiske dråber
+            swimState.drops.forEach(d => {
+                const grad = ctx.createRadialGradient(d.x, d.y, 4, d.x, d.y, d.radius * 1.9);
+                if (d.type === 'attract') {
+                    grad.addColorStop(0, 'rgba(16, 185, 129, 0.45)');
+                    grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+                } else {
+                    grad.addColorStop(0, 'rgba(244, 63, 94, 0.45)');
+                    grad.addColorStop(1, 'rgba(244, 63, 94, 0)');
+                }
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, d.radius * 1.9, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = d.type === 'attract' ? '#34d399' : '#fb7185';
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Beregn lokal kemisk koncentration
+            let conc = 0;
+            swimState.drops.forEach(d => {
+                const dist = Math.hypot(swimState.x - d.x, swimState.y - d.y);
+                const v = Math.exp(-(dist * dist) / (2 * 95 * 95));
+                conc += d.type === 'attract' ? v : -v * 1.3;
+            });
+            const dConc = conc - swimState.lastConc;
+            swimState.lastConc = conc;
+
+            const speed = (swimState.rpm / 120) * (95 / swimState.viscosity);
+            if (swimState.forceMode !== 'auto') {
+                swimState.mode = swimState.forceMode;
+            } else {
+                swimState.timer -= dt;
+                if (swimState.mode === 'run') {
+                    if (dConc > 0.0004) swimState.timer += dt * 0.7;
+                    else if (dConc < -0.0004) swimState.timer -= dt * 1.1;
+                    if (swimState.timer <= 0) {
+                        swimState.mode = 'tumble';
+                        swimState.timer = 0.5 + Math.random() * 0.35;
+                    }
+                } else {
+                    if (swimState.timer <= 0) {
+                        swimState.mode = 'run';
+                        swimState.angle += (Math.random() - 0.5) * 1.5;
+                        swimState.timer = 1.1 + Math.random() * 1.0;
+                    }
+                }
+            }
+
+            if (swimState.mode === 'run') {
+                swimState.x += Math.cos(swimState.angle) * speed * dt;
+                swimState.y += Math.sin(swimState.angle) * speed * dt;
+                swimState.phase += dt * 18 * (swimState.rpm / 120);
+            } else {
+                swimState.angle += 4.2 * dt;
+                swimState.phase -= dt * 14 * (swimState.rpm / 120);
+                swimState.x += Math.cos(swimState.angle) * speed * 0.12 * dt;
+                swimState.y += Math.sin(swimState.angle) * speed * 0.12 * dt;
+            }
+
+            const pad = 48;
+            if (swimState.x < pad) { swimState.x = pad; swimState.angle = (Math.random() - 0.5) * 0.6; }
+            if (swimState.x > flagW - pad) { swimState.x = flagW - pad; swimState.angle = Math.PI + (Math.random() - 0.5) * 0.6; }
+            if (swimState.y < pad) { swimState.y = pad; swimState.angle = Math.PI / 2 + (Math.random() - 0.5) * 0.6; }
+            if (swimState.y > flagH - pad) { swimState.y = flagH - pad; swimState.angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.6; }
+
+            swimState.trail.push({ x: swimState.x, y: swimState.y, mode: swimState.mode });
+            if (swimState.trail.length > 85) swimState.trail.shift();
+
+            for (let i = 1; i < swimState.trail.length; i++) {
+                const a = (i / swimState.trail.length) * 0.5;
+                ctx.strokeStyle = swimState.trail[i].mode === 'run' ? `rgba(45,212,191,${a})` : `rgba(251,191,36,${a})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(swimState.trail[i - 1].x, swimState.trail[i - 1].y);
+                ctx.lineTo(swimState.trail[i].x, swimState.trail[i].y);
+                ctx.stroke();
+            }
+
+            const dotEl = document.getElementById('hud-swim-dot');
+            const stEl = document.getElementById('hud-swim-state');
+            if (dotEl && stEl) {
+                dotEl.style.background = swimState.mode === 'run' ? '#10b981' : '#fbbf24';
+                stEl.textContent = swimState.mode === 'run' ? 'Tilstand: RUN (CCW – Samlet bundt)' : 'Tilstand: TUMBLE (CW – Spredte flageller)';
+            }
+
+            ctx.save();
+            ctx.translate(swimState.x, swimState.y);
+            ctx.rotate(swimState.angle);
+
+            const offsets = [-6, -3, 0, 3, 6];
+            offsets.forEach((off, idx) => {
+                ctx.save();
+                if (swimState.mode === 'run') {
+                    drawHelix(ctx, -20, off * 0.6, 62, 6, 0.16, swimState.phase + idx * 0.3, '#2dd4bf', 1.8);
+                } else {
+                    ctx.rotate(Math.PI + (idx - 2) * 1.15 + Math.sin(t * 7 + idx) * 0.25);
+                    drawHelix(ctx, -10, 0, 48, 7.5, 0.22, swimState.phase + idx, '#fbbf24', 1.8);
+                }
+                ctx.restore();
+            });
+
+            ctx.fillStyle = '#0d9488';
+            ctx.strokeStyle = '#99f6e4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-22, -10, 44, 20, 10);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawMotorModule(ctx, dt) {
+            drawFlagGrid(ctx);
+            const cx = flagW * 0.46;
+            const omY = flagH * 0.40;
+            const pgY = flagH * 0.52;
+            const imY = flagH * 0.66;
+
+            motorState.angle += motorState.dir * motorState.pmf * 5.0 * dt;
+            const infoEl = document.getElementById('hud-motor-info');
+            if (infoEl) infoEl.textContent = `Ion-flow: ${motorState.ion} (${Math.round(motorState.pmf * 100)} % kraft)`;
+
+            function drawLayer(y, h, c1, c2, label) {
+                const gap = 42;
+                [[24, cx - gap], [cx + gap, flagW - 24]].forEach(([x1, x2]) => {
+                    if (x2 <= x1) return;
+                    const g = ctx.createLinearGradient(0, y - h / 2, 0, y + h / 2);
+                    g.addColorStop(0, c1); g.addColorStop(0.5, c2); g.addColorStop(1, c1);
+                    ctx.fillStyle = g;
+                    ctx.beginPath();
+                    ctx.roundRect(x1, y - h / 2, x2 - x1, h, 5);
+                    ctx.fill();
+                });
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '700 11px system-ui, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(label, 30, y - h / 2 - 5);
+            }
+
+            drawLayer(omY, 18, '#38bdf8', '#0284c7', 'Ydre membran (OM)');
+            drawLayer(pgY, 14, '#a78bfa', '#6d28d9', 'Peptidoglycan (PG)');
+            drawLayer(imY, 18, '#34d399', '#059669', 'Indre membran (IM)');
+
+            // Central aksel
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(cx - 7, omY - 14, 14, imY - omY + 26);
+
+            // L-ring & P-ring
+            ctx.fillStyle = '#0ea5e9';
+            ctx.beginPath(); ctx.roundRect(cx - 24, omY - 10, 48, 20, 5); ctx.fill();
+            ctx.fillStyle = '#8b5cf6';
+            ctx.beginPath(); ctx.roundRect(cx - 22, pgY - 8, 44, 16, 5); ctx.fill();
+
+            // MS-ring & C-ring (Rotor)
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.roundRect(cx - 34, imY - 9, 68, 18, 6); ctx.fill();
+
+            const cTop = imY + 12;
+            ctx.fillStyle = 'rgba(20, 184, 166, 0.35)';
+            ctx.strokeStyle = '#2dd4bf';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(cx - 42, cTop, 84, 38, 8); ctx.fill(); ctx.stroke();
+
+            for (let i = 0; i < 8; i++) {
+                const a = motorState.angle + (i / 8) * Math.PI * 2;
+                const rx = cx + Math.sin(a) * 34;
+                if (Math.cos(a) > -0.2) {
+                    ctx.fillStyle = '#5eead4';
+                    ctx.fillRect(rx - 3, cTop + 5, 6, 28);
+                }
+            }
+
+            // MotA/MotB Statorer
+            [-1, 1].forEach(side => {
+                const sx = cx + side * 52;
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(sx, pgY + 7); ctx.lineTo(sx, imY - 15); ctx.stroke();
+                ctx.fillStyle = '#d97706';
+                ctx.strokeStyle = '#fde68a';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.roundRect(sx - 13, imY - 15, 26, 32, 6); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#071318';
+                ctx.fillRect(sx - 2.5, imY - 15, 5, 32);
+            });
+
+            // Ion-strøm
+            const ionCol = motorState.ion === 'H+' ? '#38bdf8' : '#fbbf24';
+            motorState.ions.forEach(ion => {
+                ion.progress = (ion.progress + motorState.pmf * 0.75 * ion.speed * dt) % 1;
+                const sx = cx + ion.side * 52;
+                const iy = (omY + 18) + ion.progress * (imY + 54 - (omY + 18));
+                ctx.fillStyle = ionCol;
+                ctx.beginPath();
+                ctx.arc(sx, iy, 3.6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Krog (Hook) & Filament
+            ctx.strokeStyle = '#f472b6';
+            ctx.lineWidth = 9;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cx, omY - 12);
+            ctx.quadraticCurveTo(cx, omY - 40, cx + 18, omY - 48);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#22d3ee';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(cx + 18, omY - 48);
+            for (let s = 0; s <= 105; s += 3) {
+                const wv = Math.sin(s * 0.1 - motorState.angle * 1.4) * 18;
+                ctx.lineTo(cx + 18 + s * 0.45 + wv * 0.4, omY - 48 - s);
+            }
+            ctx.stroke();
+
+            // Etiketter til højre
+            ctx.textAlign = 'left';
+            ctx.font = '600 11.5px system-ui, sans-serif';
+            ctx.fillStyle = '#22d3ee'; ctx.fillText('← Filament', cx + 76, omY - 95);
+            ctx.fillStyle = '#f472b6'; ctx.fillText('← Krog (Hook)', cx + 28, omY - 42);
+            ctx.fillStyle = '#fde68a'; ctx.fillText(`← Stator (${motorState.ion})`, cx + 72, imY + 4);
+            ctx.fillStyle = '#5eead4'; ctx.fillText('← MS/C-ring (Rotor)', cx + 50, cTop + 23);
+        }
+
+        function drawTypesModule(ctx, dt, t) {
+            drawFlagGrid(ctx);
+            typesState.phase += dt * 16;
+
+            // Opdel feltet i 4 kvadranter
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(flagW / 2, 42); ctx.lineTo(flagW / 2, flagH - 12);
+            ctx.moveTo(12, flagH / 2 + 12); ctx.lineTo(flagW - 12, flagH / 2 + 12);
+            ctx.stroke();
+
+            const boxes = [
+                { x0: 12, y0: 44, x1: flagW / 2 - 8, y1: flagH / 2 + 6 },
+                { x0: flagW / 2 + 8, y0: 44, x1: flagW - 12, y1: flagH / 2 + 6 },
+                { x0: 12, y0: flagH / 2 + 18, x1: flagW / 2 - 8, y1: flagH - 12 },
+                { x0: flagW / 2 + 8, y0: flagH / 2 + 18, x1: flagW - 12, y1: flagH - 12 }
+            ];
+
+            typesState.species.forEach((sp, i) => {
+                const b = boxes[i];
+                sp.timer -= dt;
+                if (sp.timer <= 0) {
+                    if (sp.id === 'mono' || sp.id === 'amphi') {
+                        sp.dir *= -1;
+                        sp.angle += (Math.random() - 0.5) * 0.9;
+                        sp.timer = 1.6;
+                    } else if (sp.id === 'peri') {
+                        sp.dir = sp.dir === 1 ? 0 : 1;
+                        if (sp.dir === 1) sp.angle += (Math.random() - 0.5) * 1.4;
+                        sp.timer = sp.dir === 1 ? 1.6 : 0.6;
+                    } else {
+                        sp.timer = 2.0;
+                    }
+                }
+                if (sp.id === 'lopho') sp.angle += Math.sin(t * 1.5) * 0.7 * dt;
+                if (sp.id === 'peri' && sp.dir === 0) sp.angle += 4.0 * dt;
+
+                const spd = sp.dir === 0 ? 4 : 52 * sp.dir;
+                sp.x += Math.cos(sp.angle) * spd * dt;
+                sp.y += Math.sin(sp.angle) * spd * dt;
+
+                const m = 42;
+                if (sp.x < b.x0 + m) { sp.x = b.x0 + m; sp.angle = 0; }
+                if (sp.x > b.x1 - m) { sp.x = b.x1 - m; sp.angle = Math.PI; }
+                if (sp.y < b.y0 + m) { sp.y = b.y0 + m; sp.angle = Math.PI / 2; }
+                if (sp.y > b.y1 - m) { sp.y = b.y1 - m; sp.angle = -Math.PI / 2; }
+
+                // Label i hjørnet af kvadranten
+                ctx.textAlign = 'left';
+                ctx.font = '700 12px system-ui, sans-serif';
+                ctx.fillStyle = sp.color;
+                ctx.fillText(`${sp.name} (${sp.org})`, b.x0 + 8, b.y0 + 16);
+
+                ctx.save();
+                ctx.translate(sp.x, sp.y);
+                ctx.rotate(sp.angle);
+
+                if (sp.id === 'mono') {
+                    drawHelix(ctx, -18, 0, 48, 6, 0.18, typesState.phase * sp.dir, sp.color, 2.2);
+                    ctx.strokeStyle = sp.color; ctx.lineWidth = 12; ctx.lineCap = 'round';
+                    ctx.beginPath(); ctx.moveTo(-14, 3); ctx.quadraticCurveTo(0, -6, 15, 2); ctx.stroke();
+                } else if (sp.id === 'lopho') {
+                    [-4, 0, 4].forEach((o, k) => drawHelix(ctx, -20, o, 46, 5.5, 0.18, typesState.phase + k * 0.4, sp.color, 1.7));
+                    ctx.fillStyle = '#059669'; ctx.strokeStyle = sp.color; ctx.lineWidth = 1.8;
+                    ctx.beginPath(); ctx.roundRect(-20, -8, 40, 16, 8); ctx.fill(); ctx.stroke();
+                } else if (sp.id === 'amphi') {
+                    [-3, 3].forEach((o, k) => {
+                        drawHelix(ctx, -22, o, 40, 5, 0.2, typesState.phase * sp.dir + k, sp.color, 1.7);
+                        ctx.save(); ctx.scale(-1, 1);
+                        drawHelix(ctx, -22, o, 40, 5, 0.2, -typesState.phase * sp.dir + k, sp.color, 1.7);
+                        ctx.restore();
+                    });
+                    ctx.strokeStyle = sp.color; ctx.lineWidth = 10; ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    for (let x = -20; x <= 20; x += 2) {
+                        const y = Math.sin(x * 0.25) * 3.5;
+                        if (x === -20) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                } else {
+                    const angles = [-2.5, -2.9, Math.PI, 2.9, 2.5];
+                    angles.forEach((a, k) => {
+                        ctx.save();
+                        if (sp.dir === 1) drawHelix(ctx, -18, (k - 2) * 1.6, 44, 5, 0.18, typesState.phase + k * 0.3, sp.color, 1.6);
+                        else { ctx.rotate(a); drawHelix(ctx, -10, 0, 36, 6, 0.22, typesState.phase + k, sp.color, 1.6); }
+                        ctx.restore();
+                    });
+                    ctx.fillStyle = '#b45309'; ctx.strokeStyle = sp.color; ctx.lineWidth = 1.8;
+                    ctx.beginPath(); ctx.roundRect(-18, -8, 36, 16, 8); ctx.fill(); ctx.stroke();
+                }
+
+                ctx.restore();
+            });
+        }
+
+        function drawPiliModule(ctx, dt, t) {
+            drawFlagGrid(ctx);
+
+            // Hjælpefunktion: Tegn mange korte, tynde, helt LIGE og STIVE orange fimbrier rundt om en bakterie
+            function drawStiffFimbriae(cx, cy, halfW, halfH, count, hairLen, gripBottomY) {
+                for (let i = 0; i < count; i++) {
+                    const a = (i / count) * Math.PI * 2;
+                    const cosA = Math.cos(a);
+                    const sinA = Math.sin(a);
+                    const px = cx + cosA * halfW;
+                    const py = cy + sinA * halfH;
+                    // Helt lige, stive stritter (ingen bølgebevægelse)
+                    let tx = px + cosA * hairLen;
+                    let ty = py + sinA * hairLen;
+                    const gripped = gripBottomY !== null && sinA > 0.25 && ty >= gripBottomY - 3;
+                    if (gripped) ty = gripBottomY;
+
+                    ctx.strokeStyle = gripped ? '#fbbf24' : '#f59e0b';
+                    ctx.lineWidth = 1.05;
+                    ctx.beginPath();
+                    ctx.moveTo(px, py);
+                    ctx.lineTo(tx, ty);
+                    ctx.stroke();
+
+                    // Klæbepunkt (adhesin) når fimbrien griber fat i overfladen
+                    if (gripped) {
+                        ctx.fillStyle = '#fef08a';
+                        ctx.beginPath();
+                        ctx.arc(tx, ty, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            // Hjælpefunktion: Tegn overflade/epitel med små receptorer
+            function drawSurfaceWithReceptors(x1, x2, surfY) {
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.18)';
+                ctx.fillRect(x1, surfY, x2 - x1, flagH - surfY);
+                ctx.strokeStyle = '#34d399';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(x1, surfY);
+                ctx.lineTo(x2, surfY);
+                ctx.stroke();
+
+                // Små receptor-knopper langs overfladen
+                ctx.fillStyle = '#10b981';
+                for (let rx = x1 + 14; rx < x2 - 10; rx += 18) {
+                    ctx.beginPath();
+                    ctx.arc(rx, surfY, 3, Math.PI, 0);
+                    ctx.fill();
+                }
+            }
+
+            if (piliState.sub === 'compare') {
+                // === 1. SAMMENLIGNING (SIDE OM SIDE) ===
+                const midX = flagW * 0.5;
+                const surfY = flagH * 0.72;
+
+                // Midterlinje mellem de to zoner
+                ctx.save();
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+                ctx.setLineDash([6, 6]);
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(midX, 46);
+                ctx.lineTo(midX, flagH - 12);
+                ctx.stroke();
+                ctx.restore();
+
+                // --- VENSTRE ZONE: FLAGELLER (Svømning) ---
+                ctx.textAlign = 'center';
+                ctx.font = '800 13.5px system-ui, sans-serif';
+                ctx.fillStyle = '#2dd4bf';
+                ctx.fillText('FLAGELLER (Svømning)', midX * 0.5, 66);
+
+                // Aktiv svømmebane (blød ottetals-bevægelse inden i venstre halvdel)
+                const cxL = midX * 0.54;
+                const cyL = flagH * 0.48;
+                const rxL = Math.min(54, midX * 0.2);
+                const ryL = 34;
+                const bx = cxL + Math.sin(t * 1.15) * rxL;
+                const by = cyL + Math.sin(t * 2.3) * ryL;
+                const vx = Math.cos(t * 1.15) * rxL * 1.15;
+                const vy = Math.cos(t * 2.3) * ryL * 2.3;
+                const angle = Math.atan2(vy, vx);
+
+                // Svømmespor / kølvand
+                ctx.save();
+                ctx.strokeStyle = 'rgba(45, 212, 191, 0.16)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let k = 0; k <= 24; k++) {
+                    const tk = t - k * 0.05;
+                    const tx = cxL + Math.sin(tk * 1.15) * rxL;
+                    const ty = cyL + Math.sin(tk * 2.3) * ryL;
+                    if (k === 0) ctx.moveTo(tx, ty); else ctx.lineTo(tx, ty);
+                }
+                ctx.stroke();
+                ctx.restore();
+
+                // Tegn svømmende bakterie med FÅ (3 stk.), MEGET LANGE (3x cellelængde), TYKKE, BØLGEDE flageller
+                ctx.save();
+                ctx.translate(bx, by);
+                ctx.rotate(angle);
+
+                const bodyLen = 40;
+                const flagLen = bodyLen * 3.0; // 120 px = 3x cellens egen længde
+                [-5, 0, 5].forEach((off, idx) => {
+                    drawHelix(ctx, -bodyLen * 0.45, off, flagLen, 10, 0.13, t * 22 + idx * 0.55, '#2dd4bf', 3.4);
+                });
+
+                // Bakteriekrop
+                ctx.fillStyle = '#0d9488';
+                ctx.strokeStyle = '#99f6e4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(-bodyLen / 2, -9, bodyLen, 18, 9);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+
+                // Målestok- og fakta-label nederst til venstre
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+                ctx.beginPath();
+                ctx.roundRect(12, flagH - 56, midX - 24, 44, 8);
+                ctx.fill();
+                ctx.textAlign = 'center';
+                ctx.font = '700 11px system-ui, sans-serif';
+                ctx.fillStyle = '#5eead4';
+                ctx.fillText('Få (1–10 stk.) • Meget lange (5–15 µm)', midX * 0.5, flagH - 38);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '600 10.5px system-ui, sans-serif';
+                ctx.fillText('Tykke (20 nm) • Bølgede & roterende', midX * 0.5, flagH - 21);
+
+                // --- HØJRE ZONE: FIMBRIER (Fastgørelse / Velcro) ---
+                ctx.textAlign = 'center';
+                ctx.font = '800 13.5px system-ui, sans-serif';
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillText('FIMBRIER (Fastgørelse / Velcro)', midX + midX * 0.5, 66);
+
+                // Animeret væskestrøm forbi den fastsiddende bakterie i højre zone
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.32)';
+                ctx.lineWidth = 1.5;
+                piliState.flowParticles.forEach((p, idx) => {
+                    if (idx % 2 !== 0) return;
+                    p.x += p.speed * dt;
+                    if (p.x > flagW - 14) p.x = midX + 12;
+                    if (p.x < midX + 12) p.x = midX + 12 + (p.x % Math.max(40, midX - 24));
+                    const py = 86 + (p.y % (surfY - 102));
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, py);
+                    ctx.lineTo(Math.min(flagW - 10, p.x + p.len), py);
+                    ctx.stroke();
+                });
+
+                ctx.fillStyle = 'rgba(125, 211, 252, 0.75)';
+                ctx.font = '600 10.5px system-ui, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText('Væskestrøm →', flagW - 18, 92);
+
+                // Overflade med receptorer i højre zone
+                drawSurfaceWithReceptors(midX + 10, flagW - 10, surfY);
+
+                // Fastsiddende bakterie med 68 KORTE, TYNDE, HELT LIGE & STIVE orange fimbrier
+                const rBx = midX + midX * 0.5 + Math.sin(t * 10) * 0.4;
+                const rBy = surfY - 21;
+                drawStiffFimbriae(rBx, rBy, 24, 10, 68, 12, surfY);
+
+                ctx.fillStyle = '#92400e';
+                ctx.strokeStyle = '#fcd34d';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(rBx - 24, rBy - 10, 48, 20, 10);
+                ctx.fill();
+                ctx.stroke();
+
+                // Målestok- og fakta-label nederst til højre
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                ctx.beginPath();
+                ctx.roundRect(midX + 12, flagH - 56, midX - 24, 44, 8);
+                ctx.fill();
+                ctx.textAlign = 'center';
+                ctx.font = '700 11px system-ui, sans-serif';
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillText('Mange (100–1000 stk.) • Meget korte (0,2–1 µm)', midX + midX * 0.5, flagH - 38);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '600 10.5px system-ui, sans-serif';
+                ctx.fillText('Tynde (3–8 nm) • Stive & lige (ingen motor)', midX + midX * 0.5, flagH - 21);
+
+            } else if (piliState.sub === 'adhesion') {
+                // === 2. FIMBRIER & BIOFILM (VÆSKESTRØM) ===
+                const surfY = flagH * 0.72;
+
+                // Kraftig væskestrøm fra venstre mod højre
+                piliState.flowParticles.forEach(p => {
+                    p.x += p.speed * 1.45 * dt;
+                    if (p.x > flagW + 15) p.x = -20;
+                    const py = 58 + (p.y % (surfY - 76));
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.36)';
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, py);
+                    ctx.lineTo(p.x + p.len * 1.6, py);
+                    ctx.stroke();
+
+                    ctx.fillStyle = 'rgba(125, 211, 252, 0.55)';
+                    ctx.beginPath();
+                    ctx.arc(p.x + p.len * 1.6, py, 1.8, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                ctx.textAlign = 'left';
+                ctx.font = '700 12px system-ui, sans-serif';
+                ctx.fillStyle = '#7dd3fc';
+                ctx.fillText('Kraftig væskestrøm  →  →  →', 18, 66);
+
+                // Overflade med receptorer
+                drawSurfaceWithReceptors(0, flagW, surfY);
+                ctx.fillStyle = '#a7f3d0';
+                ctx.font = '700 11.5px system-ui, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('Epitel / Overflade med receptorer', 18, surfY + 24);
+
+                // A) Bakterie UDEN fimbrier, der skylles væk af strømmen
+                piliState.washedX += 145 * dt;
+                if (piliState.washedX > flagW + 90) piliState.washedX = -80;
+                const wx = piliState.washedX;
+                const wy = 135 + Math.sin(t * 4.5) * 14;
+
+                ctx.save();
+                ctx.translate(wx, wy);
+                ctx.rotate(Math.sin(t * 5) * 0.35);
+                drawHelix(ctx, -20, -3, 55, 7, 0.16, t * 20, '#2dd4bf', 2.4);
+                drawHelix(ctx, -20, 3, 55, 7, 0.16, t * 20 + 1.2, '#2dd4bf', 2.4);
+                ctx.fillStyle = '#0d9488';
+                ctx.strokeStyle = '#99f6e4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(-21, -9, 42, 18, 9);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.textAlign = 'center';
+                ctx.font = '700 11.5px system-ui, sans-serif';
+                ctx.fillStyle = '#fda4af';
+                ctx.fillText('Uden fimbrier → skylles væk!', Math.max(95, Math.min(flagW - 95, wx)), wy - 24);
+
+                // B) Begyndende biofilm-klynge MED tætte, korte, stive orange fimbrier
+                const clusterX = flagW * 0.56;
+                // Blød biofilm-slimkappe (EPS-matrix) rundt om klyngen
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.13)';
+                ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath();
+                ctx.ellipse(clusterX, surfY - 26, 98, 52, 0, Math.PI, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                const biofilmCells = [
+                    { x: clusterX - 38, y: surfY - 20, grip: surfY },
+                    { x: clusterX + 38, y: surfY - 20, grip: surfY },
+                    { x: clusterX,      y: surfY - 46, grip: null  }
+                ];
+                biofilmCells.forEach((cell, idx) => {
+                    const jitter = Math.sin(t * 9 + idx) * 0.35;
+                    drawStiffFimbriae(cell.x + jitter, cell.y, 23, 10, 56, 11, cell.grip);
+                    ctx.fillStyle = '#92400e';
+                    ctx.strokeStyle = '#fcd34d';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(cell.x + jitter - 23, cell.y - 10, 46, 20, 10);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+
+                ctx.textAlign = 'center';
+                ctx.font = '700 12px system-ui, sans-serif';
+                ctx.fillStyle = '#fcd34d';
+                ctx.fillText('Med fimbrier → sidder urokkeligt fast (begyndende biofilm)', clusterX, surfY - 86);
+
+            } else {
+                // === 3. KONJUGATIONSPILUS (DNA-OVERFØRSEL) ===
+                piliState.plasmidProgress = Math.min(1, piliState.plasmidProgress + dt * 0.14);
+                const p = piliState.plasmidProgress;
+                const pull = Math.min(1, Math.max(0, (p - 0.15) / 0.25));
+
+                const dx = flagW * 0.26 + pull * 42;
+                const rx = flagW * 0.74 - pull * 42;
+                const cy = flagH * 0.50;
+                const cellHW = 54;
+                const cellHH = 25;
+
+                // Ét enkelt langt, helt LIGE, hult rør i lilla/magenta med synlige dobbeltvægge
+                const tubeStart = dx + cellHW - 4;
+                const tubeMaxEnd = rx - cellHW + 4;
+                const tubeEnd = p < 0.16
+                    ? tubeStart + (tubeMaxEnd - tubeStart) * (p / 0.16)
+                    : tubeMaxEnd;
+
+                // Hult indre + øvre og nedre rørvæg
+                ctx.fillStyle = 'rgba(192, 132, 252, 0.16)';
+                ctx.fillRect(tubeStart, cy - 5, Math.max(0, tubeEnd - tubeStart), 10);
+
+                ctx.strokeStyle = '#c084fc';
+                ctx.lineWidth = 2.6;
+                ctx.beginPath();
+                ctx.moveTo(tubeStart, cy - 5); ctx.lineTo(tubeEnd, cy - 5);
+                ctx.moveTo(tubeStart, cy + 5); ctx.lineTo(tubeEnd, cy + 5);
+                ctx.stroke();
+
+                // Label til konjugationspilus
+                if (tubeEnd - tubeStart > 45) {
+                    const midTube = (tubeStart + tubeEnd) * 0.5;
+                    ctx.textAlign = 'center';
+                    ctx.font = '700 11.5px system-ui, sans-serif';
+                    ctx.fillStyle = '#e879f9';
+                    ctx.fillText('Konjugationspilus (F-pilus)', midTube, cy - 28);
+                    ctx.font = '600 10.5px system-ui, sans-serif';
+                    ctx.fillStyle = '#d8b4fe';
+                    ctx.fillText('1 langt, lige, hult rør', midTube, cy - 14);
+                }
+
+                // Donor-bakterie (F+)
+                ctx.fillStyle = '#701a75';
+                ctx.strokeStyle = '#f0abfc';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.roundRect(dx - cellHW, cy - cellHH, cellHW * 2, cellHH * 2, 24);
+                ctx.fill();
+                ctx.stroke();
+
+                // Kromosom-DNA inde i donor
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.ellipse(dx - 22, cy, 16, 10, 0.25, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.ellipse(dx - 20, cy + 2, 12, 7, -0.4, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Modtager-bakterie (F- -> F+)
+                const converted = p >= 0.86;
+                ctx.fillStyle = converted ? '#701a75' : '#1e3a8a';
+                ctx.strokeStyle = converted ? '#f0abfc' : '#93c5fd';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.roundRect(rx - cellHW, cy - cellHH, cellHW * 2, cellHH * 2, 24);
+                ctx.fill();
+                ctx.stroke();
+
+                // Kromosom-DNA inde i modtager
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+                ctx.lineWidth = 1.6;
+                ctx.beginPath();
+                ctx.ellipse(rx + 22, cy, 16, 10, -0.25, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.ellipse(rx + 20, cy - 2, 12, 7, 0.4, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Lysende cirkulært plasmid i donor
+                ctx.save();
+                ctx.shadowColor = '#fbbf24';
+                ctx.shadowBlur = 10;
+                ctx.strokeStyle = '#fde047';
+                ctx.lineWidth = 2.8;
+                ctx.beginPath();
+                ctx.arc(dx + 22, cy, 11, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
+                // Enkeltstrenget lysende DNA, der løber gennem det hule rør
+                if (p > 0.36 && p < 0.90) {
+                    const dnaFrac = Math.min(1, (p - 0.36) / 0.48);
+                    const dnaStart = dx + 33;
+                    const dnaEnd = dnaStart + dnaFrac * ((rx - 33) - dnaStart);
+                    ctx.save();
+                    ctx.shadowColor = '#fde047';
+                    ctx.shadowBlur = 8;
+                    ctx.strokeStyle = '#fef08a';
+                    ctx.lineWidth = 2.6;
+                    ctx.beginPath();
+                    ctx.moveTo(dnaStart, cy);
+                    ctx.lineTo(dnaEnd, cy);
+                    ctx.stroke();
+
+                    // Lysende spids i front af DNA-strengen
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(dnaEnd, cy, 3.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Ny plasmid-ring dannes i modtagercellen
+                if (p >= 0.78) {
+                    const ringFrac = Math.min(1, (p - 0.78) / 0.14);
+                    ctx.save();
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.shadowBlur = 10;
+                    ctx.strokeStyle = '#fde047';
+                    ctx.lineWidth = 2.8;
+                    ctx.beginPath();
+                    ctx.arc(rx - 22, cy, 11, -Math.PI, -Math.PI + Math.PI * 2 * ringFrac);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Overskrifter & interne labels
+                ctx.textAlign = 'center';
+                ctx.font = '800 12.5px system-ui, sans-serif';
+                ctx.fillStyle = '#f5d0fe';
+                ctx.fillText('Donor (F⁺)', dx, cy - 38);
+                ctx.fillStyle = converted ? '#f5d0fe' : '#bfdbfe';
+                ctx.fillText(converted ? 'Nu også F⁺!' : 'Modtager (F⁻)', rx, cy - 38);
+
+                ctx.font = '600 10px system-ui, sans-serif';
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillText('Kromosom', dx - 22, cy + 38);
+                ctx.fillStyle = '#fde047';
+                ctx.fillText('Plasmid', dx + 22, cy + 38);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillText('Kromosom', rx + 22, cy + 38);
+                if (p >= 0.78) {
+                    ctx.fillStyle = '#fde047';
+                    ctx.fillText('Nyt plasmid', rx - 22, cy + 38);
+                }
+
+                // Trin-for-trin forklaring nederst
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                ctx.beginPath();
+                ctx.roundRect(24, flagH - 48, flagW - 48, 34, 8);
+                ctx.fill();
+                ctx.font = '700 11.5px system-ui, sans-serif';
+                ctx.fillStyle = '#f5d0fe';
+                let msg = '1. Konjugationspilus strækker sig ud som et lige, hult rør mod modtagercellen...';
+                if (p >= 0.16 && p < 0.36) msg = '2. Pilusen trækker donor (F⁺) og modtager (F⁻) tættere sammen...';
+                if (p >= 0.36 && p < 0.86) msg = '3. En lysende DNA-streng overføres gennem det hule rør fra F⁺ til F⁻...';
+                if (p >= 0.86) msg = '4. Færdig! Modtageren har nu en kopi af plasmidet og er selv blevet F⁺.';
+                ctx.fillText(msg, flagW * 0.5, flagH - 27);
+            }
+        }
+
+        function flagLoop(ts) {
+            if (!flagLastTime) flagLastTime = ts;
+            const dt = Math.min(0.05, (ts - flagLastTime) / 1000);
+            flagLastTime = ts;
+            const t = ts / 1000;
+
+            const microView = document.getElementById('microbio-lab-view');
+            if (microView && microView.classList.contains('active') && activeMicrobeTab === 'flagella') {
+                const canvas = document.getElementById('flag-canvas');
+                const ctx = canvas ? canvas.getContext('2d') : null;
+                if (ctx) {
+                    if (flagMode === 'swim') drawSwimModule(ctx, dt, t);
+                    else if (flagMode === 'motor') drawMotorModule(ctx, dt);
+                    else if (flagMode === 'types') drawTypesModule(ctx, dt, t);
+                    else if (flagMode === 'pili') drawPiliModule(ctx, dt, t);
+                }
+            }
+            requestAnimationFrame(flagLoop);
         }
 
         /* =========================================
@@ -2008,7 +3357,7 @@
             const instr = document.getElementById('mol-instructions');
 
             if (typeof THREE === 'undefined') {
-                alert('3D-motoren kræver internetforbindelse for at indlæse.');
+                instr.innerHTML = '<strong style="color:#dc2626;">3D-motoren kræver internetforbindelse for at indlæse Three.js.</strong>';
                 return;
             }
 
@@ -2272,6 +3621,9 @@
             if (source !== 'cm3') cm3Input.value = parseFloat((m3 * 1000000).toFixed(2));
         }
 
+        /* =========================================
+           PRINT-VÆRKTØJER
+           ========================================= */
         function printSheet(title, description) {
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
