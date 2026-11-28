@@ -711,6 +711,709 @@
             border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background 0.2s;
         }
         .print-btn:hover { background: #6d28d9; }
+
+        /* =========================================
+           ARDUINO-VÆRKSTEDET (ISOLERET MED ard-*)
+           ========================================= */
+        .ard-workshop {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 28px;
+        }
+        .ard-presets-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        .ard-presets-label {
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #64748b;
+            margin-right: 4px;
+        }
+        .ard-preset-btn {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1.5px solid #bfdbfe;
+            padding: 6px 11px;
+            border-radius: 9px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ard-preset-btn:hover {
+            background: #dbeafe;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+        .ard-preset-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+        }
+        .ard-preset-btn.ard-clear-board {
+            background: #f8fafc;
+            color: #475569;
+            border-color: #cbd5e1;
+            margin-left: auto;
+        }
+        .ard-preset-btn.ard-clear-board:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: #fca5a5;
+        }
+        .ard-workspace-grid {
+            display: grid;
+            grid-template-columns: 1.08fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+        @media (max-width: 960px) {
+            .ard-workspace-grid { grid-template-columns: 1fr; }
+            .ard-preset-btn.ard-clear-board { margin-left: 0; }
+        }
+        .ard-subcard {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.04);
+        }
+        .ard-panel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .ard-panel-title h3 {
+            margin: 0;
+            font-size: 1.08rem;
+            color: var(--secondary);
+        }
+        .ard-hint-pill {
+            font-size: 0.76rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .ard-shelf {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            background: #f8fafc;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 9px;
+            margin-bottom: 12px;
+        }
+        .ard-shelf-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 9px;
+            padding: 6px 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+            cursor: grab;
+            user-select: none;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+        }
+        .ard-shelf-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgb(37 99 235 / 0.14);
+        }
+        .ard-shelf-item:active { cursor: grabbing; }
+        .ard-board-stage {
+            position: relative;
+            background: #f1f5f9;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 18px 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 205px 1fr;
+            gap: 24px;
+            align-items: center;
+            min-height: 430px;
+            overflow: hidden;
+        }
+        @media (max-width: 640px) {
+            .ard-board-stage { grid-template-columns: 1fr; gap: 16px; }
+        }
+        #ard-wire-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .ard-arduino-wrap {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ard-arduino-svg {
+            width: 198px;
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 6px 12px rgba(15, 23, 42, 0.18));
+        }
+        .ard-pin-dot { transition: fill 0.12s ease; }
+        .ard-pin-dot.ard-pin-high {
+            fill: #fde047 !important;
+            filter: drop-shadow(0 0 5px #facc15);
+        }
+        .ard-slots-grid {
+            position: relative;
+            z-index: 3;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        @media (max-width: 500px) {
+            .ard-slots-grid { grid-template-columns: 1fr; }
+        }
+        .ard-comp-slot {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px dashed #94a3b8;
+            border-radius: 11px;
+            padding: 8px 9px 8px 13px;
+            min-height: 122px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.15s ease;
+            box-sizing: border-box;
+        }
+        .ard-comp-slot.filled {
+            border-style: solid;
+            border-color: #cbd5e1;
+            box-shadow: 0 3px 6px rgba(15, 23, 42, 0.06);
+        }
+        .ard-comp-slot.drag-over {
+            border-color: var(--primary);
+            background: #eff6ff;
+            transform: scale(1.02);
+        }
+        .ard-slot-connector {
+            position: absolute;
+            left: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #94a3b8;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 1.5px #64748b;
+            z-index: 4;
+        }
+        .ard-slot-empty-msg {
+            margin: auto;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 600;
+            pointer-events: none;
+            line-height: 1.35;
+        }
+        .ard-slot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        .ard-slot-pin-select {
+            font-size: 0.76rem;
+            font-weight: 800;
+            color: #0f172a;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+        .ard-slot-remove {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            width: 21px;
+            height: 21px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ard-slot-remove:hover { background: #ef4444; color: #ffffff; }
+        .ard-slot-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 54px;
+            margin: 3px 0;
+        }
+        .ard-slot-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 700;
+        }
+        .ard-slot-state-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 1px 6px;
+            border-radius: 999px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.7rem;
+        }
+        .ard-slot-state-badge.on { background: #dcfce7; color: #15803d; }
+        .ard-led-bulb {
+            width: 30px;
+            height: 35px;
+            border-radius: 50% 50% 28% 28%;
+            position: relative;
+            border: 2px solid rgba(15, 23, 42, 0.25);
+            transition: all 0.1s ease;
+        }
+        .ard-led-bulb::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 6px;
+            width: 7px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
+            transform: rotate(-20deg);
+        }
+        .ard-led-red { background: #991b1b; }
+        .ard-led-red.lit { background: #ff3b3b; box-shadow: 0 0 18px 6px rgba(239, 68, 68, 0.75); border-color: #fecaca; }
+        .ard-led-yellow { background: #a16207; }
+        .ard-led-yellow.lit { background: #fde047; box-shadow: 0 0 18px 6px rgba(250, 204, 21, 0.8); border-color: #fef9c3; }
+        .ard-led-green { background: #166534; }
+        .ard-led-green.lit { background: #22c55e; box-shadow: 0 0 18px 6px rgba(34, 197, 94, 0.75); border-color: #bbf7d0; }
+        .ard-led-blue { background: #1e40af; }
+        .ard-led-blue.lit { background: #3b82f6; box-shadow: 0 0 18px 6px rgba(59, 130, 246, 0.8); border-color: #bfdbfe; }
+
+        .ard-buzzer-body {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #475569, #0f172a);
+            border: 3px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .ard-buzzer-hole {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            border: 2px solid #64748b;
+        }
+        @keyframes ardBuzzVibe {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-2px, 1px) scale(1.04); }
+            50% { transform: translate(2px, -1px) scale(1.05); }
+            75% { transform: translate(-1px, -2px) scale(1.03); }
+        }
+        .ard-buzzer-body.buzzing {
+            animation: ardBuzzVibe 0.08s linear infinite;
+            box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.35), 0 0 0 12px rgba(245, 158, 11, 0.15);
+            border-color: #f59e0b;
+        }
+
+        .ard-pushbtn-wrap { display: flex; align-items: center; gap: 6px; }
+        .ard-pushbtn-cap {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            border: 2px solid #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .ard-pushbtn-inner {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #f87171, #dc2626);
+            box-shadow: 0 4px 0 #991b1b;
+            transition: transform 0.06s ease, box-shadow 0.06s ease;
+        }
+        .ard-pushbtn-cap.pressed .ard-pushbtn-inner {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #991b1b;
+            background: radial-gradient(circle at 35% 30%, #4ade80, #16a34a);
+        }
+        .ard-btn-latch-toggle {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #475569;
+            cursor: pointer;
+        }
+        .ard-btn-latch-toggle.latched {
+            background: #dcfce7;
+            border-color: #16a34a;
+            color: #166534;
+        }
+
+        .ard-servo-svg { width: 78px; height: 54px; overflow: visible; }
+        .ard-servo-arm-group {
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            transform-origin: 41px 36px;
+        }
+
+        .ard-control-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 11px;
+            padding: 9px 11px;
+            margin-bottom: 12px;
+        }
+        .ard-ctrl-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 13px;
+            font-size: 0.86rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s ease;
+        }
+        .ard-btn-run {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        }
+        .ard-btn-run:hover { background: #059669; }
+        .ard-btn-run:disabled { opacity: 0.55; cursor: not-allowed; }
+        .ard-btn-stop {
+            background: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+        }
+        .ard-btn-stop:hover { background: #dc2626; }
+        .ard-btn-stop:disabled { opacity: 0.45; cursor: not-allowed; }
+        .ard-btn-sound { background: #e2e8f0; color: #1e293b; }
+        .ard-btn-sound:hover { background: #cbd5e1; }
+        .ard-btn-sound.muted { background: #fef3c7; color: #92400e; }
+
+        .ard-status-indicator {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            color: #475569;
+        }
+        .ard-status-indicator.running { background: #dcfce7; color: #166534; }
+        .ard-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+        .ard-status-indicator.running .ard-status-dot {
+            background: #16a34a;
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.25);
+        }
+
+        .ard-code-tabs {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 11px;
+        }
+        .ard-code-tab {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #475569;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ard-code-tab:hover { background: #e2e8f0; color: #0f172a; }
+        .ard-code-tab.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.28);
+        }
+
+        .ard-block-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+            padding: 9px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+        .ard-palette-chip {
+            border: 1.5px solid transparent;
+            border-radius: 8px;
+            padding: 5px 9px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.12s ease;
+        }
+        .ard-palette-chip:hover { transform: translateY(-1px); }
+        .ard-chip-io     { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .ard-chip-wait   { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .ard-chip-sound  { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+        .ard-chip-servo  { background: #dcfce7; color: #166534; border-color: #86efac; }
+        .ard-chip-serial { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+        .ard-chip-logic  { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
+
+        .ard-loop-wrapper {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 11px;
+            padding: 9px;
+        }
+        .ard-loop-header {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 7px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ard-block-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 175px;
+            max-height: 330px;
+            overflow-y: auto;
+            padding: 3px 2px;
+        }
+        .ard-block-list.drag-over {
+            background: #eff6ff;
+            border-radius: 8px;
+            outline: 2px dashed var(--primary);
+        }
+        .ard-code-block {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 7px 9px;
+            border-radius: 8px;
+            border: 1.5px solid transparent;
+            font-size: 0.81rem;
+            font-weight: 700;
+            cursor: grab;
+            transition: all 0.12s ease;
+        }
+        .ard-code-block.active-exec {
+            outline: 3px solid #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22);
+            transform: scale(1.01);
+        }
+        .ard-code-block select,
+        .ard-code-block input {
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 3px 5px;
+            border-radius: 6px;
+            border: 1px solid rgba(15, 23, 42, 0.2);
+            background: #ffffff;
+            color: #0f172a;
+        }
+        .ard-code-block input[type="number"] { width: 62px; }
+        .ard-code-block input[type="text"] { width: 125px; }
+        .ard-block-actions { margin-left: auto; display: inline-flex; gap: 3px; }
+        .ard-blk-act-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(15, 23, 42, 0.15);
+            color: #334155;
+            border-radius: 5px;
+            width: 22px;
+            height: 22px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ard-blk-act-btn:hover { background: #ffffff; color: #0f172a; }
+        .ard-blk-act-btn.del:hover { background: #ef4444; color: #ffffff; border-color: #ef4444; }
+        .ard-block-else-row {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+            padding-top: 5px;
+            border-top: 1px dashed rgba(107, 33, 168, 0.25);
+        }
+
+        .ard-cpp-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .ard-cpp-badge {
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .ard-cpp-badge.custom { background: #fef3c7; color: #92400e; }
+        .ard-cpp-btn-small {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 7px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .ard-cpp-btn-small:hover { background: #e2e8f0; }
+        .ard-cpp-btn-copy { background: var(--secondary); color: #ffffff; border: none; }
+        .ard-cpp-btn-copy:hover { background: #6d28d9; }
+        #ard-cpp-editor {
+            width: 100%;
+            height: 290px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            resize: vertical;
+            tab-size: 2;
+            box-sizing: border-box;
+        }
+        #ard-cpp-editor:focus { outline: none; border-color: var(--primary); }
+        .ard-cpp-explainer {
+            margin-top: 9px;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 9px 11px;
+            font-size: 0.81rem;
+            color: #0c4a6e;
+        }
+        .ard-cpp-explainer code {
+            background: #e0f2fe;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .ard-serial-box {
+            margin-top: 12px;
+            background: #0b1120;
+            border: 2px solid #1e293b;
+            border-radius: 11px;
+            overflow: hidden;
+        }
+        .ard-serial-header {
+            background: #1e293b;
+            color: #cbd5e1;
+            padding: 5px 11px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .ard-serial-clear-btn {
+            background: #334155;
+            color: #e2e8f0;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .ard-serial-clear-btn:hover { background: #475569; }
+        #ard-serial-output {
+            height: 105px;
+            overflow-y: auto;
+            padding: 9px 11px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.8rem;
+            color: #4ade80;
+            white-space: pre-wrap;
+        }
+        .ard-serial-line-err { color: #fca5a5; font-weight: 700; }
+        .ard-serial-line-sys { color: #38bdf8; }
     </style>
 </head>
 <body>
@@ -722,29 +1425,8 @@
 
         <!-- FORSIDE -->
         <div id="home-view" class="view active">
-            <div class="section-title" style="margin-top: 0;">Interaktive Laboratorier</div>
-            <div class="grid-top">
-                <div class="category-card" onclick="showView('periodic-view')" style="background: #f0fdf4; border: 2px solid #86efac;">
-                    <div class="category-icon">⚛️</div>
-                    <h3 style="color: #166534; font-size: 1.25rem;">Det Periodiske System</h3>
-                    <p>Udforsk samtlige 118 grundstoffer med atomnummer, atomvægt, elektroner og roterende skaller.</p>
-                </div>
-
-                <div class="category-card" onclick="showView('molecule-view')" style="background: #eff6ff; border: 2px solid #93c5fd;">
-                    <div class="category-icon">🧬</div>
-                    <h3 style="color: #1d4ed8; font-size: 1.25rem;">Molekylebyggeren (2D & 3D)</h3>
-                    <p>Byg molekyler med 18 forskellige atomer og grupper, og drej dem som ægte 3D-kuglemodeller!</p>
-                </div>
-
-                <div class="category-card" onclick="showView('microbio-lab-view')" style="background: #f0fdfa; border: 2px solid #5eead4;">
-                    <div class="category-icon">🦠</div>
-                    <h3 style="color: #0f766e; font-size: 1.25rem;">Mikrobiologi-lab</h3>
-                    <p>Bakterier, svampe og virus – udforsk vækstsimulatoren samt interaktive flagel- og motoranimationer.</p>
-                </div>
-            </div>
-
-            <div class="section-title">STEM Aktiviteter & Forsøg</div>
-            <div class="grid-stem">
+            <div class="section-title" style="margin-top: 0;">STEM Aktiviteter & Forsøg</div>
+            <div class="grid-stem" style="margin-bottom: 25px;">
                 <div class="category-card" onclick="showView('science-view')">
                     <div class="category-icon">🧪</div>
                     <h3>Science</h3>
@@ -773,6 +1455,33 @@
                     <div class="category-icon">➗</div>
                     <h3>Math</h3>
                     <p>Matematik: M&M-statistik, sandsynlighed og visuelle Lego-brøker.</p>
+                </div>
+            </div>
+
+            <div class="section-title">Interaktive Laboratorier</div>
+            <div class="grid-top">
+                <div class="category-card" onclick="showView('periodic-view')" style="background: #f0fdf4; border: 2px solid #86efac;">
+                    <div class="category-icon">⚛️</div>
+                    <h3 style="color: #166534; font-size: 1.25rem;">Det Periodiske System</h3>
+                    <p>Udforsk samtlige 118 grundstoffer med atomnummer, atomvægt, elektroner og roterende skaller.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('molecule-view')" style="background: #eff6ff; border: 2px solid #93c5fd;">
+                    <div class="category-icon">🧬</div>
+                    <h3 style="color: #1d4ed8; font-size: 1.25rem;">Molekylebyggeren (2D & 3D)</h3>
+                    <p>Byg molekyler med 18 forskellige atomer og grupper, og drej dem som ægte 3D-kuglemodeller!</p>
+                </div>
+
+                <div class="category-card" onclick="showView('microbio-lab-view')" style="background: #f0fdfa; border: 2px solid #5eead4;">
+                    <div class="category-icon">🦠</div>
+                    <h3 style="color: #0f766e; font-size: 1.25rem;">Mikrobiologi-lab</h3>
+                    <p>Bakterier, svampe og virus – udforsk vækstsimulatoren samt interaktive flagel- og motoranimationer.</p>
+                </div>
+
+                <div class="category-card" onclick="showView('arduino-lab-view')" style="background: #f5f3ff; border: 2px solid #c4b5fd;">
+                    <div class="category-icon">🔌</div>
+                    <h3 style="color: #6d28d9; font-size: 1.25rem;">Arduino-værkstedet</h3>
+                    <p>Byg kredsløb med LED, summer, knap og servo – med kodeblokke og ægte Arduino C++.</p>
                 </div>
             </div>
 
@@ -1433,11 +2142,199 @@
             </div>
         </div>
 
-        <!-- TECHNOLOGY VISNING -->
+        <!-- ARDUINO-VÆRKSTEDET VISNING (INTERAKTIVT LABORATORIUM) -->
+        <div id="arduino-lab-view" class="view">
+            <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
+            <div class="card">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h2 style="border: none; margin: 0; padding: 0;">🔌 Arduino-værkstedet (Virtuel Simulator &amp; Kode)</h2>
+                    <button class="print-btn" style="margin-top: 0; background: #6d28d9;" onclick="showView('technology-view')">💻 Gå til Technology-øvelser &rarr;</button>
+                </div>
+
+                <p style="font-size: 0.94rem; color: #475569; margin-top: 0;">
+                    Vælg et færdigt projekt eller træk lysdioder, summer, trykknap og servomotor over på Arduino-kortets 6 pin-slots (<code>D2</code>, <code>D3</code>, <code>D5</code>, <code>D6</code>, <code>D9</code>, <code>D13</code>). Programmér med kodeblokke eller redigér direkte i den ægte Arduino C++-kode!
+                </p>
+
+                <div class="ard-workshop" style="margin-bottom: 0;">
+                    <div class="ard-presets-bar">
+                        <span class="ard-presets-label">Færdige projekter:</span>
+                        <button class="ard-preset-btn active" data-ardpreset="blink" onclick="ardLoadProject('blink')">💡 1. Blink</button>
+                        <button class="ard-preset-btn" data-ardpreset="traffic" onclick="ardLoadProject('traffic')">🚦 2. Lyskryds</button>
+                        <button class="ard-preset-btn" data-ardpreset="police" onclick="ardLoadProject('police')">🚨 3. Politi + Sirene</button>
+                        <button class="ard-preset-btn" data-ardpreset="buttonLed" onclick="ardLoadProject('buttonLed')">🔘 4. Knap-styret lys</button>
+                        <button class="ard-preset-btn" data-ardpreset="servoGate" onclick="ardLoadProject('servoGate')">🚧 5. Servo-bom</button>
+                        <button class="ard-preset-btn ard-clear-board" data-ardpreset="empty" onclick="ardLoadProject('empty')">🧹 Tomt bord</button>
+                    </div>
+
+                    <div class="ard-workspace-grid">
+                        <!-- VENSTRE: KOMPONENT-HYLDE + ARDUINO UNO + 6 PIN-SLOTS -->
+                        <div class="ard-subcard">
+                            <div class="ard-panel-title">
+                                <h3>⚡ Virtuelt Arduino Uno &amp; Komponenter</h3>
+                                <span class="ard-hint-pill">Træk eller klik</span>
+                            </div>
+
+                            <div class="ard-shelf">
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="led-red" onclick="ardQuickAddComponent('led-red')">🔴 Rød LED</div>
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="led-yellow" onclick="ardQuickAddComponent('led-yellow')">🟡 Gul LED</div>
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="led-green" onclick="ardQuickAddComponent('led-green')">🟢 Grøn LED</div>
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="led-blue" onclick="ardQuickAddComponent('led-blue')">🔵 Blå LED</div>
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="buzzer" onclick="ardQuickAddComponent('buzzer')">🔊 Summer</div>
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="button" onclick="ardQuickAddComponent('button')">🔘 Trykknap</div>
+                                <div class="ard-shelf-item" draggable="true" data-ardtype="servo" onclick="ardQuickAddComponent('servo')">⚙️ Servo-motor</div>
+                            </div>
+
+                            <div class="ard-board-stage" id="ard-board-stage">
+                                <svg id="ard-wire-layer"></svg>
+
+                                <div class="ard-arduino-wrap">
+                                    <svg class="ard-arduino-svg" viewBox="0 0 230 390" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="30" y="2" width="52" height="34" rx="4" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+                                        <rect x="40" y="8" width="32" height="16" rx="2" fill="#cbd5e1"/>
+                                        <rect x="148" y="6" width="44" height="30" rx="4" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+
+                                        <rect x="14" y="28" width="202" height="352" rx="12" fill="#0e7490" stroke="#155e75" stroke-width="3"/>
+                                        <circle cx="28" cy="44" r="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                                        <circle cx="202" cy="44" r="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                                        <circle cx="28" cy="364" r="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                                        <circle cx="202" cy="364" r="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+
+                                        <text x="86" y="76" fill="#ffffff" font-size="14" font-weight="800" text-anchor="middle">ARDUINO</text>
+                                        <text x="86" y="92" fill="#a5f3fc" font-size="11" font-weight="700" text-anchor="middle">UNO R3</text>
+
+                                        <circle cx="122" cy="70" r="4.5" fill="#22c55e" stroke="#bbf7d0" stroke-width="1"/>
+                                        <text x="122" y="84" fill="#e0f2fe" font-size="7.5" font-weight="700" text-anchor="middle">ON</text>
+
+                                        <circle id="ard-uno-l-led" cx="144" cy="70" r="4.5" fill="#92400e" stroke="#fde68a" stroke-width="1"/>
+                                        <text x="144" y="84" fill="#e0f2fe" font-size="7.5" font-weight="700" text-anchor="middle">L13</text>
+
+                                        <rect x="34" y="64" width="18" height="18" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+                                        <circle cx="43" cy="73" r="5" fill="#ef4444"/>
+
+                                        <rect x="64" y="138" width="54" height="162" rx="5" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+                                        <text x="91" y="222" fill="#94a3b8" font-size="8.5" font-weight="700" text-anchor="middle" transform="rotate(-90 91 222)">ATMEGA328P</text>
+                                        <g fill="#cbd5e1">
+                                            <rect x="57" y="150" width="7" height="5"/><rect x="118" y="150" width="7" height="5"/>
+                                            <rect x="57" y="166" width="7" height="5"/><rect x="118" y="166" width="7" height="5"/>
+                                            <rect x="57" y="182" width="7" height="5"/><rect x="118" y="182" width="7" height="5"/>
+                                            <rect x="57" y="198" width="7" height="5"/><rect x="118" y="198" width="7" height="5"/>
+                                            <rect x="57" y="214" width="7" height="5"/><rect x="118" y="214" width="7" height="5"/>
+                                            <rect x="57" y="230" width="7" height="5"/><rect x="118" y="230" width="7" height="5"/>
+                                            <rect x="57" y="246" width="7" height="5"/><rect x="118" y="246" width="7" height="5"/>
+                                            <rect x="57" y="262" width="7" height="5"/><rect x="118" y="262" width="7" height="5"/>
+                                            <rect x="57" y="278" width="7" height="5"/><rect x="118" y="278" width="7" height="5"/>
+                                        </g>
+
+                                        <rect x="20" y="140" width="22" height="110" rx="3" fill="#0f172a"/>
+                                        <text x="46" y="163" fill="#fecaca" font-size="8.5" font-weight="800">5V</text>
+                                        <circle cx="31" cy="160" r="4" fill="#ef4444" stroke="#fca5a5" stroke-width="1"/>
+                                        <text x="46" y="187" fill="#cbd5e1" font-size="8.5" font-weight="800">GND</text>
+                                        <circle cx="31" cy="184" r="4" fill="#475569" stroke="#cbd5e1" stroke-width="1"/>
+                                        <text x="46" y="211" fill="#cbd5e1" font-size="8.5" font-weight="800">GND</text>
+                                        <circle cx="31" cy="208" r="4" fill="#475569" stroke="#cbd5e1" stroke-width="1"/>
+                                        <text x="46" y="235" fill="#fde68a" font-size="8.5" font-weight="800">VIN</text>
+                                        <circle cx="31" cy="232" r="4" fill="#f59e0b" stroke="#fde68a" stroke-width="1"/>
+
+                                        <rect x="184" y="96" width="24" height="256" rx="3" fill="#0f172a"/>
+                                        <g font-size="9.5" font-weight="800" fill="#f8fafc" text-anchor="end">
+                                            <text x="179" y="114">D13</text><circle class="ard-pin-dot" data-ardpin="13" cx="196" cy="110" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="134">D12</text><circle class="ard-pin-dot" data-ardpin="12" cx="196" cy="130" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="154">~D11</text><circle class="ard-pin-dot" data-ardpin="11" cx="196" cy="150" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="174">~D10</text><circle class="ard-pin-dot" data-ardpin="10" cx="196" cy="170" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="194">~D9</text><circle class="ard-pin-dot" data-ardpin="9" cx="196" cy="190" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="214">D8</text><circle class="ard-pin-dot" data-ardpin="8" cx="196" cy="210" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="234">D7</text><circle class="ard-pin-dot" data-ardpin="7" cx="196" cy="230" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="254">~D6</text><circle class="ard-pin-dot" data-ardpin="6" cx="196" cy="250" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="274">~D5</text><circle class="ard-pin-dot" data-ardpin="5" cx="196" cy="270" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="294">D4</text><circle class="ard-pin-dot" data-ardpin="4" cx="196" cy="290" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="314">~D3</text><circle class="ard-pin-dot" data-ardpin="3" cx="196" cy="310" r="4.5" fill="#94a3b8"/>
+                                            <text x="179" y="334">D2</text><circle class="ard-pin-dot" data-ardpin="2" cx="196" cy="330" r="4.5" fill="#94a3b8"/>
+                                        </g>
+                                    </svg>
+                                </div>
+
+                                <div class="ard-slots-grid" id="ard-slots-grid"></div>
+                            </div>
+                        </div>
+
+                        <!-- HØJRE: KONTROLPANEL + PROGRAMMERING + SERIAL MONITOR -->
+                        <div class="ard-subcard">
+                            <div class="ard-control-bar">
+                                <button id="ard-btn-run" class="ard-ctrl-btn ard-btn-run" onclick="ardStartProgram()">▶ Kør program</button>
+                                <button id="ard-btn-stop" class="ard-ctrl-btn ard-btn-stop" onclick="ardStopProgram()" disabled>⏹ Stop</button>
+                                <button id="ard-btn-sound" class="ard-ctrl-btn ard-btn-sound" onclick="ardToggleSound()">🔊 Lyd: Til</button>
+                                <div id="ard-run-status" class="ard-status-indicator">
+                                    <span class="ard-status-dot"></span>
+                                    <span id="ard-run-status-text">Stoppet</span>
+                                </div>
+                            </div>
+
+                            <div class="ard-code-tabs">
+                                <button id="ard-tab-blocks" class="ard-code-tab active" onclick="ardSwitchCodeTab('blocks')">🧩 Kodeblokke (Drag &amp; Drop)</button>
+                                <button id="ard-tab-cpp" class="ard-code-tab" onclick="ardSwitchCodeTab('cpp')">💻 Arduino C++-kode</button>
+                            </div>
+
+                            <div id="ard-pane-blocks">
+                                <div class="ard-block-palette">
+                                    <div class="ard-palette-chip ard-chip-io" draggable="true" data-ardblock="digitalWrite" onclick="ardAddBlock('digitalWrite')">💡 Tænd / Sluk pin</div>
+                                    <div class="ard-palette-chip ard-chip-wait" draggable="true" data-ardblock="delay" onclick="ardAddBlock('delay')">⏱️ Vent (ms)</div>
+                                    <div class="ard-palette-chip ard-chip-sound" draggable="true" data-ardblock="tone" onclick="ardAddBlock('tone')">🔊 Spil tone</div>
+                                    <div class="ard-palette-chip ard-chip-sound" draggable="true" data-ardblock="noTone" onclick="ardAddBlock('noTone')">🔇 Stop lyd</div>
+                                    <div class="ard-palette-chip ard-chip-servo" draggable="true" data-ardblock="servo" onclick="ardAddBlock('servo')">⚙️ Drej servo</div>
+                                    <div class="ard-palette-chip ard-chip-serial" draggable="true" data-ardblock="serial" onclick="ardAddBlock('serial')">💬 Skriv i Serial</div>
+                                    <div class="ard-palette-chip ard-chip-logic" draggable="true" data-ardblock="ifButton" onclick="ardAddBlock('ifButton')">🔘 Hvis knap trykkes</div>
+                                </div>
+
+                                <div class="ard-loop-wrapper">
+                                    <div class="ard-loop-header">
+                                        <span>void loop() &#123; <small style="font-family:system-ui; font-weight:600; color:#64748b;">(gentages igen og igen)</small></span>
+                                        <button class="ard-cpp-btn-small" onclick="ardClearBlocks()">Ryd blokke</button>
+                                    </div>
+                                    <div class="ard-block-list" id="ard-block-list"></div>
+                                    <div class="ard-loop-header" style="margin: 5px 0 0 0;">&#125;</div>
+                                </div>
+                            </div>
+
+                            <div id="ard-pane-cpp" style="display: none;">
+                                <div class="ard-cpp-toolbar">
+                                    <span id="ard-cpp-sync-badge" class="ard-cpp-badge">Synkroniseret med kodeblokke</span>
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <button id="ard-btn-resync" class="ard-cpp-btn-small" style="display: none;" onclick="ardResyncFromBlocks()">↩ Gendan fra blokke</button>
+                                        <button id="ard-btn-copy-cpp" class="ard-cpp-btn-small ard-cpp-btn-copy" onclick="ardCopyCppCode()">📋 Kopiér til rigtig Arduino</button>
+                                    </div>
+                                </div>
+
+                                <textarea id="ard-cpp-editor" spellcheck="false" oninput="ardOnCppManualEdit()"></textarea>
+
+                                <div class="ard-cpp-explainer">
+                                    <strong>Sådan virker et rigtigt Arduino-program:</strong><br>
+                                    <code>setup()</code> kører <strong>én gang</strong>, når Arduinoen får strøm (her fortæller vi, hvilke pins der er <code>OUTPUT</code> eller <code>INPUT</code>).<br>
+                                    <code>loop()</code> kører <strong>i ring for evigt</strong> – linje for linje. Ret gerne direkte i tider, frekvenser, <code>servoWrite()</code> eller pins ovenfor og tryk <strong>Kør program</strong>!
+                                </div>
+                            </div>
+
+                            <div class="ard-serial-box">
+                                <div class="ard-serial-header">
+                                    <span>📟 Serial Monitor (9600 baud)</span>
+                                    <button class="ard-serial-clear-btn" onclick="ardClearSerial()">Ryd</button>
+                                </div>
+                                <div id="ard-serial-output"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TECHNOLOGY VISNING (FYSISKE ØVELSER) -->
         <div id="technology-view" class="view">
             <button class="back-btn" onclick="showView('home-view')">⬅ Tilbage til oversigt</button>
             <div class="card">
-                <h2>💻 Technology (Teknologi)</h2>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h2 style="border: none; margin: 0; padding: 0;">💻 Technology (Teknologi)</h2>
+                    <button class="print-btn" style="margin-top: 0; background: #6d28d9;" onclick="showView('arduino-lab-view')">🔌 Åbn Arduino-værkstedet &rarr;</button>
+                </div>
+
                 <div>
                     <h3>⚡ Kredsløb med papir (Paper Circuits)</h3>
                     <ul>
@@ -1679,6 +2576,7 @@
             'periodic-view': { slug: 'periodisk-system', title: 'Det Periodiske System – STEM Laboratoriet' },
             'molecule-view': { slug: 'molekylebygger', title: 'Molekylebygger (2D & 3D) – STEM Laboratoriet' },
             'microbio-lab-view': { slug: 'mikrobiologi-lab', title: 'Mikrobiologi-lab – STEM Laboratoriet' },
+            'arduino-lab-view': { slug: 'arduino-vaerksted', title: 'Arduino-værkstedet – STEM Laboratoriet' },
             'microbio-exp-view': { slug: 'mikrobiologi-forsoeg', title: 'Mikrobiologi & Hygiejne Forsøg – STEM Laboratoriet' },
             'science-view': { slug: 'science', title: 'Science Forsøg – STEM Laboratoriet' },
             'technology-view': { slug: 'teknologi', title: 'Technology – STEM Laboratoriet' },
@@ -3671,10 +4569,2731 @@
             printWindow.document.close();
         }
 
+        /* =========================================================
+           ARDUINO-VÆRKSTEDET (INTERAKTIV SIMULATOR & C++-FORTOLKER)
+           ========================================================= */
+        const ARD_PINS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+        const ARD_SLOT_COUNT = 6;
+
+        const ARD_COMPONENT_META = {
+            'led-red':    { name: 'Rød LED',     wireColor: '#ef4444', defaultPin: 13 },
+            'led-yellow': { name: 'Gul LED',     wireColor: '#eab308', defaultPin: 12 },
+            'led-green':  { name: 'Grøn LED',    wireColor: '#22c55e', defaultPin: 11 },
+            'led-blue':   { name: 'Blå LED',     wireColor: '#3b82f6', defaultPin: 10 },
+            'buzzer':     { name: 'Summer',      wireColor: '#f97316', defaultPin: 8  },
+            'button':     { name: 'Trykknap',    wireColor: '#8b5cf6', defaultPin: 2  },
+            'servo':      { name: 'Servo-motor', wireColor: '#0d9488', defaultPin: 9  }
+        };
+
+        let ardInitialized = false;
+        let ardSlots = Array(ARD_SLOT_COUNT).fill(null);
+        const ardPinState = {};
+        const ardToneState = {};
+        const ardServoAngle = {};
+        ARD_PINS.forEach(p => {
+            ardPinState[p] = 0;
+            ardToneState[p] = 0;
+            ardServoAngle[p] = 0;
+        });
+
+        let ardBlocks = [];
+        let ardNextBlockId = 1;
+        let ardActiveTab = 'blocks';
+        let ardCppManuallyEdited = false;
+
+        let ardIsRunning = false;
+        let ardRunToken = 0;
+        let ardSoundEnabled = true;
+
+        let ardAudioCtx = null;
+        const ardActiveOscillators = {};
+
+        function ardEnsureAudioCtx() {
+            if (!ardAudioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    ardAudioCtx = new AudioContextClass();
+                }
+            }
+            if (ardAudioCtx && ardAudioCtx.state === 'suspended') {
+                ardAudioCtx.resume().catch(() => {});
+            }
+        }
+
+        function ardPlayToneAudio(pin, freq) {
+            ardToneState[pin] = freq;
+            ardUpdateBoardVisuals();
+            if (!ardSoundEnabled || freq <= 0) {
+                ardStopToneAudio(pin, false);
+                return;
+            }
+            ardEnsureAudioCtx();
+            if (!ardAudioCtx) return;
+
+            if (ardActiveOscillators[pin]) {
+                try {
+                    ardActiveOscillators[pin].osc.frequency.setTargetAtTime(freq, ardAudioCtx.currentTime, 0.015);
+                    return;
+                } catch (e) {}
+            }
+
+            try {
+                const osc = ardAudioCtx.createOscillator();
+                const gain = ardAudioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(Math.max(40, Math.min(4000, freq)), ardAudioCtx.currentTime);
+                gain.gain.setValueAtTime(0.0001, ardAudioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.07, ardAudioCtx.currentTime + 0.02);
+                osc.connect(gain);
+                gain.connect(ardAudioCtx.destination);
+                osc.start();
+                ardActiveOscillators[pin] = { osc, gain };
+            } catch (e) {}
+        }
+
+        function ardStopToneAudio(pin, clearState = true) {
+            if (clearState) {
+                ardToneState[pin] = 0;
+                ardUpdateBoardVisuals();
+            }
+            const node = ardActiveOscillators[pin];
+            if (node && ardAudioCtx) {
+                try {
+                    const now = ardAudioCtx.currentTime;
+                    node.gain.cancelScheduledValues(now);
+                    node.gain.setValueAtTime(node.gain.value, now);
+                    node.gain.linearRampToValueAtTime(0.0001, now + 0.025);
+                    node.osc.stop(now + 0.03);
+                } catch (e) {}
+            }
+            delete ardActiveOscillators[pin];
+        }
+
+        function ardStopAllAudio() {
+            ARD_PINS.forEach(p => ardStopToneAudio(p, true));
+        }
+
+        function ardToggleSound() {
+            ardSoundEnabled = !ardSoundEnabled;
+            const btn = document.getElementById('ard-btn-sound');
+            if (ardSoundEnabled) {
+                btn.textContent = '🔊 Lyd: Til';
+                btn.classList.remove('muted');
+                ardEnsureAudioCtx();
+                ARD_PINS.forEach(p => {
+                    if (ardToneState[p] > 0) ardPlayToneAudio(p, ardToneState[p]);
+                });
+            } else {
+                btn.textContent = '🔇 Lyd: Fra';
+                btn.classList.add('muted');
+                ARD_PINS.forEach(p => ardStopToneAudio(p, false));
+            }
+        }
+
+        function ardGetFreePin(preferred) {
+            const used = new Set(ardSlots.filter(Boolean).map(s => s.pin));
+            if (preferred && !used.has(preferred)) return preferred;
+            for (const p of [13, 12, 11, 10, 9, 8, 2, 3, 4, 5, 6, 7]) {
+                if (!used.has(p)) return p;
+            }
+            return 13;
+        }
+
+        function ardQuickAddComponent(type) {
+            const emptyIdx = ardSlots.findIndex(s => s === null);
+            if (emptyIdx === -1) {
+                ardAppendSerial('Bordet er fuldt (maks 6 komponenter). Slet én først med ×.', 'err');
+                return;
+            }
+            ardPlaceComponentInSlot(emptyIdx, type);
+        }
+
+        function ardPlaceComponentInSlot(slotIdx, type, forcedPin = null) {
+            const meta = ARD_COMPONENT_META[type];
+            if (!meta) return;
+            const pin = forcedPin !== null ? forcedPin : ardGetFreePin(meta.defaultPin);
+            ardSlots[slotIdx] = { type, pin, pressed: false, latched: false };
+            ardRenderSlots();
+            ardSyncCppIfAuto();
+        }
+
+        function ardRemoveSlot(slotIdx) {
+            const comp = ardSlots[slotIdx];
+            if (comp) {
+                ardStopToneAudio(comp.pin, true);
+                ardPinState[comp.pin] = 0;
+            }
+            ardSlots[slotIdx] = null;
+            ardRenderSlots();
+            ardSyncCppIfAuto();
+        }
+
+        function ardChangeSlotPin(slotIdx, newPin) {
+            const comp = ardSlots[slotIdx];
+            if (!comp) return;
+            ardStopToneAudio(comp.pin, true);
+            comp.pin = parseInt(newPin, 10);
+            ardRenderSlots();
+            ardSyncCppIfAuto();
+        }
+
+        function ardSetButtonPressed(slotIdx, isPressed) {
+            const comp = ardSlots[slotIdx];
+            if (!comp || comp.type !== 'button') return;
+            comp.pressed = isPressed;
+            ardUpdateBoardVisuals();
+        }
+
+        function ardToggleButtonLatch(slotIdx) {
+            const comp = ardSlots[slotIdx];
+            if (!comp || comp.type !== 'button') return;
+            comp.latched = !comp.latched;
+            comp.pressed = comp.latched;
+            ardRenderSlots();
+        }
+
+        function ardIsButtonPinActive(pin) {
+            return ardSlots.some(s => s && s.type === 'button' && s.pin === pin && (s.pressed || s.latched));
+        }
+
+        function ardRenderSlots() {
+            const grid = document.getElementById('ard-slots-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            ardSlots.forEach((comp, idx) => {
+                const slotEl = document.createElement('div');
+                slotEl.className = 'ard-comp-slot' + (comp ? ' filled' : '');
+                slotEl.dataset.ardslot = idx;
+
+                slotEl.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    slotEl.classList.add('drag-over');
+                });
+                slotEl.addEventListener('dragleave', () => slotEl.classList.remove('drag-over'));
+                slotEl.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    slotEl.classList.remove('drag-over');
+                    const compType = e.dataTransfer.getData('text/ard-comp-type');
+                    if (compType && ARD_COMPONENT_META[compType]) {
+                        ardPlaceComponentInSlot(idx, compType);
+                    }
+                });
+
+                const connector = document.createElement('div');
+                connector.className = 'ard-slot-connector';
+                connector.id = `ard-slot-conn-${idx}`;
+                if (comp) {
+                    connector.style.background = ARD_COMPONENT_META[comp.type].wireColor;
+                }
+                slotEl.appendChild(connector);
+
+                if (!comp) {
+                    const empty = document.createElement('div');
+                    empty.className = 'ard-slot-empty-msg';
+                    empty.innerHTML = `Plads ${idx + 1}<br><span style="font-weight:500;">Træk komponent hertil</span>`;
+                    slotEl.appendChild(empty);
+                } else {
+                    const meta = ARD_COMPONENT_META[comp.type];
+                    const pinOptions = ARD_PINS.map(p =>
+                        `<option value="${p}" ${comp.pin === p ? 'selected' : ''}>Pin D${p}</option>`
+                    ).join('');
+
+                    const header = document.createElement('div');
+                    header.className = 'ard-slot-header';
+                    header.innerHTML = `
+                        <select class="ard-slot-pin-select" onchange="ardChangeSlotPin(${idx}, this.value)">${pinOptions}</select>
+                        <button class="ard-slot-remove" title="Fjern komponent" onclick="ardRemoveSlot(${idx})">&times;</button>
+                    `;
+                    slotEl.appendChild(header);
+
+                    const visual = document.createElement('div');
+                    visual.className = 'ard-slot-visual';
+
+                    if (comp.type.startsWith('led-')) {
+                        visual.innerHTML = `<div class="ard-led-bulb ard-${comp.type}" id="ard-led-el-${idx}"></div>`;
+                    } else if (comp.type === 'buzzer') {
+                        visual.innerHTML = `<div class="ard-buzzer-body" id="ard-buzz-el-${idx}"><div class="ard-buzzer-hole"></div></div>`;
+                    } else if (comp.type === 'button') {
+                        const pressedNow = comp.pressed || comp.latched;
+                        visual.innerHTML = `
+                            <div class="ard-pushbtn-wrap">
+                                <div class="ard-pushbtn-cap ${pressedNow ? 'pressed' : ''}" id="ard-btn-cap-${idx}" title="Hold nede for at trykke">
+                                    <div class="ard-pushbtn-inner"></div>
+                                </div>
+                                <button class="ard-btn-latch-toggle ${comp.latched ? 'latched' : ''}" onclick="ardToggleButtonLatch(${idx})" title="Lås knappen nede">
+                                    ${comp.latched ? '🔒 Låst' : '🔓 Hold'}
+                                </button>
+                            </div>
+                        `;
+                    } else if (comp.type === 'servo') {
+                        visual.innerHTML = `
+                            <svg class="ard-servo-svg" viewBox="0 0 82 58">
+                                <rect x="13" y="22" width="56" height="30" rx="5" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+                                <rect x="6" y="30" width="70" height="7" rx="2" fill="#334155"/>
+                                <circle cx="41" cy="36" r="9" fill="#0d9488" stroke="#99f6e4" stroke-width="1.5"/>
+                                <g class="ard-servo-arm-group" id="ard-servo-arm-${idx}" style="transform: rotate(-90deg);">
+                                    <rect x="37" y="4" width="8" height="34" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
+                                    <circle cx="41" cy="10" r="2" fill="#0d9488"/>
+                                    <circle cx="41" cy="36" r="3.5" fill="#e2e8f0" stroke="#334155" stroke-width="1.2"/>
+                                </g>
+                            </svg>
+                        `;
+                    }
+                    slotEl.appendChild(visual);
+
+                    const footer = document.createElement('div');
+                    footer.className = 'ard-slot-footer';
+                    footer.innerHTML = `
+                        <span>${meta.name}</span>
+                        <span class="ard-slot-state-badge" id="ard-slot-badge-${idx}">LOW</span>
+                    `;
+                    slotEl.appendChild(footer);
+
+                    if (comp.type === 'button') {
+                        setTimeout(() => {
+                            const cap = document.getElementById(`ard-btn-cap-${idx}`);
+                            if (!cap) return;
+                            cap.addEventListener('pointerdown', (e) => {
+                                e.preventDefault();
+                                ardSetButtonPressed(idx, true);
+                            });
+                            const release = () => {
+                                if (!ardSlots[idx]?.latched) ardSetButtonPressed(idx, false);
+                            };
+                            cap.addEventListener('pointerup', release);
+                            cap.addEventListener('pointerleave', release);
+                            cap.addEventListener('pointercancel', release);
+                        }, 0);
+                    }
+                }
+
+                grid.appendChild(slotEl);
+            });
+
+            ardUpdateBoardVisuals();
+            requestAnimationFrame(ardDrawWires);
+        }
+
+        function ardUpdateBoardVisuals() {
+            document.querySelectorAll('.ard-pin-dot').forEach(dot => {
+                const p = parseInt(dot.dataset.ardpin, 10);
+                const active = ardPinState[p] === 1 || ardToneState[p] > 0 || ardIsButtonPinActive(p);
+                dot.classList.toggle('ard-pin-high', active);
+            });
+
+            const unoL = document.getElementById('ard-uno-l-led');
+            if (unoL) {
+                unoL.setAttribute('fill', ardPinState[13] ? '#facc15' : '#92400e');
+            }
+
+            ardSlots.forEach((comp, idx) => {
+                if (!comp) return;
+                const badge = document.getElementById(`ard-slot-badge-${idx}`);
+                if (!badge) return;
+
+                if (comp.type.startsWith('led-')) {
+                    const isOn = ardPinState[comp.pin] === 1;
+                    const bulb = document.getElementById(`ard-led-el-${idx}`);
+                    if (bulb) bulb.classList.toggle('lit', isOn);
+                    badge.textContent = isOn ? 'HIGH' : 'LOW';
+                    badge.classList.toggle('on', isOn);
+                } else if (comp.type === 'buzzer') {
+                    const hz = ardToneState[comp.pin] || (ardPinState[comp.pin] ? 440 : 0);
+                    const buzz = document.getElementById(`ard-buzz-el-${idx}`);
+                    if (buzz) buzz.classList.toggle('buzzing', hz > 0);
+                    badge.textContent = hz > 0 ? `${Math.round(hz)} Hz` : 'Stille';
+                    badge.classList.toggle('on', hz > 0);
+                } else if (comp.type === 'button') {
+                    const down = comp.pressed || comp.latched;
+                    const cap = document.getElementById(`ard-btn-cap-${idx}`);
+                    if (cap) cap.classList.toggle('pressed', down);
+                    badge.textContent = down ? 'HIGH' : 'LOW';
+                    badge.classList.toggle('on', down);
+                } else if (comp.type === 'servo') {
+                    const ang = Math.max(0, Math.min(180, ardServoAngle[comp.pin] || 0));
+                    const arm = document.getElementById(`ard-servo-arm-${idx}`);
+                    if (arm) arm.style.transform = `rotate(${ang - 90}deg)`;
+                    badge.textContent = `${Math.round(ang)}°`;
+                    badge.classList.toggle('on', ang > 0);
+                }
+            });
+        }
+
+        function ardDrawWires() {
+            const stage = document.getElementById('ard-board-stage');
+            const svg = document.getElementById('ard-wire-layer');
+            if (!stage || !svg) return;
+
+            const stageRect = stage.getBoundingClientRect();
+            if (stageRect.width === 0 || stageRect.height === 0) return;
+
+            svg.setAttribute('viewBox', `0 0 ${stageRect.width} ${stageRect.height}`);
+            svg.innerHTML = '';
+
+            ardSlots.forEach((comp, idx) => {
+                if (!comp) return;
+                const pinDot = document.querySelector(`.ard-pin-dot[data-ardpin="${comp.pin}"]`);
+                const connEl = document.getElementById(`ard-slot-conn-${idx}`);
+                if (!pinDot || !connEl) return;
+
+                const pRect = pinDot.getBoundingClientRect();
+                const cRect = connEl.getBoundingClientRect();
+
+                const x1 = pRect.left + pRect.width / 2 - stageRect.left;
+                const y1 = pRect.top + pRect.height / 2 - stageRect.top;
+                const x2 = cRect.left + cRect.width / 2 - stageRect.left;
+                const y2 = cRect.top + cRect.height / 2 - stageRect.top;
+
+                const dx = Math.max(32, Math.abs(x2 - x1) * 0.45);
+                const color = ARD_COMPONENT_META[comp.type].wireColor;
+
+                const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                shadow.setAttribute('d', `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`);
+                shadow.setAttribute('fill', 'none');
+                shadow.setAttribute('stroke', 'rgba(15, 23, 42, 0.16)');
+                shadow.setAttribute('stroke-width', '5');
+                shadow.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(shadow);
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`);
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke', color);
+                path.setAttribute('stroke-width', '3.2');
+                path.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(path);
+            });
+        }
+
+        function ardCreateDefaultBlock(type) {
+            const id = ardNextBlockId++;
+            if (type === 'digitalWrite') return { id, type, pin: 13, value: 'HIGH' };
+            if (type === 'delay')        return { id, type, ms: 500 };
+            if (type === 'tone')         return { id, type, pin: 8, freq: 523 };
+            if (type === 'noTone')       return { id, type, pin: 8 };
+            if (type === 'servo')        return { id, type, pin: 9, angle: 90 };
+            if (type === 'serial')       return { id, type, text: 'Hej Arduino!' };
+            if (type === 'ifButton') {
+                return {
+                    id, type,
+                    btnPin: 2,
+                    action: 'digitalWrite',
+                    targetPin: 13,
+                    thenVal: 'HIGH',
+                    elseVal: 'LOW'
+                };
+            }
+            return { id, type: 'delay', ms: 500 };
+        }
+
+        function ardAddBlock(type, atIndex = null) {
+            const blk = ardCreateDefaultBlock(type);
+            if (atIndex === null || atIndex >= ardBlocks.length) {
+                ardBlocks.push(blk);
+            } else {
+                ardBlocks.splice(atIndex, 0, blk);
+            }
+            ardCppManuallyEdited = false;
+            ardRenderBlocks();
+            ardSyncCppIfAuto();
+        }
+
+        function ardClearBlocks() {
+            ardBlocks = [];
+            ardCppManuallyEdited = false;
+            ardRenderBlocks();
+            ardSyncCppIfAuto();
+        }
+
+        function ardMoveBlock(idx, dir) {
+            const target = idx + dir;
+            if (target < 0 || target >= ardBlocks.length) return;
+            const [item] = ardBlocks.splice(idx, 1);
+            ardBlocks.splice(target, 0, item);
+            ardCppManuallyEdited = false;
+            ardRenderBlocks();
+            ardSyncCppIfAuto();
+        }
+
+        function ardDeleteBlock(idx) {
+            ardBlocks.splice(idx, 1);
+            ardCppManuallyEdited = false;
+            ardRenderBlocks();
+            ardSyncCppIfAuto();
+        }
+
+        function ardUpdateBlockField(idx, field, val) {
+            const b = ardBlocks[idx];
+            if (!b) return;
+            if (['pin', 'ms', 'freq', 'angle', 'btnPin', 'targetPin'].includes(field)) {
+                b[field] = parseInt(val, 10) || 0;
+            } else {
+                b[field] = val;
+            }
+            if (b.type === 'ifButton' && field === 'action') {
+                if (val === 'digitalWrite') {
+                    b.targetPin = 13; b.thenVal = 'HIGH'; b.elseVal = 'LOW';
+                } else if (val === 'tone') {
+                    b.targetPin = 8; b.thenVal = '660'; b.elseVal = '0';
+                } else if (val === 'servo') {
+                    b.targetPin = 9; b.thenVal = '90'; b.elseVal = '0';
+                }
+                ardRenderBlocks();
+            }
+            ardCppManuallyEdited = false;
+            ardSyncCppIfAuto();
+        }
+
+        function ardPinSelectHtml(selectedPin, idx, field) {
+            return `<select onchange="ardUpdateBlockField(${idx}, '${field}', this.value)">` +
+                ARD_PINS.map(p => `<option value="${p}" ${selectedPin === p ? 'selected' : ''}>D${p}</option>`).join('') +
+                `</select>`;
+        }
+
+        function ardRenderBlocks() {
+            const list = document.getElementById('ard-block-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (ardBlocks.length === 0) {
+                list.innerHTML = `<div style="margin:auto; text-align:center; color:#94a3b8; font-size:0.84rem; padding:22px;">
+                    Klik eller træk kodeblokke fra paletten ovenfor ind i <strong>loop()</strong>.
+                </div>`;
+                return;
+            }
+
+            ardBlocks.forEach((b, idx) => {
+                const el = document.createElement('div');
+                let cls = 'ard-chip-io';
+                if (b.type === 'delay') cls = 'ard-chip-wait';
+                else if (b.type === 'tone' || b.type === 'noTone') cls = 'ard-chip-sound';
+                else if (b.type === 'servo') cls = 'ard-chip-servo';
+                else if (b.type === 'serial') cls = 'ard-chip-serial';
+                else if (b.type === 'ifButton') cls = 'ard-chip-logic';
+
+                el.className = `ard-code-block ${cls}`;
+                el.id = `ard-blk-el-${b.id}`;
+                el.draggable = true;
+
+                el.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/ard-block-idx', String(idx));
+                });
+                el.addEventListener('dragover', (e) => e.preventDefault());
+                el.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const fromIdxStr = e.dataTransfer.getData('text/ard-block-idx');
+                    const newType = e.dataTransfer.getData('text/ard-new-block');
+                    if (newType) {
+                        ardAddBlock(newType, idx);
+                    } else if (fromIdxStr !== '') {
+                        const fromIdx = parseInt(fromIdxStr, 10);
+                        if (!isNaN(fromIdx) && fromIdx !== idx) {
+                            const [moved] = ardBlocks.splice(fromIdx, 1);
+                            ardBlocks.splice(idx, 0, moved);
+                            ardCppManuallyEdited = false;
+                            ardRenderBlocks();
+                            ardSyncCppIfAuto();
+                        }
+                    }
+                });
+
+                let inner = '';
+                if (b.type === 'digitalWrite') {
+                    inner = `
+                        <span>💡 Sæt pin</span>
+                        ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                        <span>&rarr;</span>
+                        <select onchange="ardUpdateBlockField(${idx}, 'value', this.value)">
+                            <option value="HIGH" ${b.value === 'HIGH' ? 'selected' : ''}>HIGH (Tænd)</option>
+                            <option value="LOW" ${b.value === 'LOW' ? 'selected' : ''}>LOW (Sluk)</option>
+                        </select>
+                    `;
+                } else if (b.type === 'delay') {
+                    inner = `
+                        <span>⏱️ Vent</span>
+                        <input type="number" min="10" max="10000" step="50" value="${b.ms}" oninput="ardUpdateBlockField(${idx}, 'ms', this.value)">
+                        <span>ms</span>
+                    `;
+                } else if (b.type === 'tone') {
+                    inner = `
+                        <span>🔊 Spil tone på</span>
+                        ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                        <span>med</span>
+                        <input type="number" min="50" max="3000" step="20" value="${b.freq}" oninput="ardUpdateBlockField(${idx}, 'freq', this.value)">
+                        <span>Hz</span>
+                    `;
+                } else if (b.type === 'noTone') {
+                    inner = `
+                        <span>🔇 Stop lyd på</span>
+                        ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                    `;
+                } else if (b.type === 'servo') {
+                    inner = `
+                        <span>⚙️ Drej servo på</span>
+                        ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                        <span>til</span>
+                        <input type="number" min="0" max="180" step="5" value="${b.angle}" oninput="ardUpdateBlockField(${idx}, 'angle', this.value)">
+                        <span>&deg;</span>
+                    `;
+                } else if (b.type === 'serial') {
+                    const safeVal = String(b.text).replace(/"/g, '&quot;');
+                    inner = `
+                        <span>💬 Skriv i Serial:</span>
+                        <input type="text" value="${safeVal}" oninput="ardUpdateBlockField(${idx}, 'text', this.value)">
+                    `;
+                } else if (b.type === 'ifButton') {
+                    let thenCtrl = '';
+                    let elseCtrl = '';
+                    if (b.action === 'digitalWrite') {
+                        thenCtrl = `<select onchange="ardUpdateBlockField(${idx}, 'thenVal', this.value)">
+                            <option value="HIGH" ${b.thenVal === 'HIGH' ? 'selected' : ''}>HIGH (Tænd)</option>
+                            <option value="LOW" ${b.thenVal === 'LOW' ? 'selected' : ''}>LOW (Sluk)</option>
+                        </select>`;
+                        elseCtrl = `<select onchange="ardUpdateBlockField(${idx}, 'elseVal', this.value)">
+                            <option value="LOW" ${b.elseVal === 'LOW' ? 'selected' : ''}>LOW (Sluk)</option>
+                            <option value="HIGH" ${b.elseVal === 'HIGH' ? 'selected' : ''}>HIGH (Tænd)</option>
+                        </select>`;
+                    } else if (b.action === 'tone') {
+                        thenCtrl = `<input type="number" min="50" max="3000" value="${b.thenVal}" oninput="ardUpdateBlockField(${idx}, 'thenVal', this.value)"> <span>Hz</span>`;
+                        elseCtrl = `<span>Stop lyd (noTone)</span>`;
+                    } else if (b.action === 'servo') {
+                        thenCtrl = `<input type="number" min="0" max="180" value="${b.thenVal}" oninput="ardUpdateBlockField(${idx}, 'thenVal', this.value)"> <span>&deg;</span>`;
+                        elseCtrl = `<input type="number" min="0" max="180" value="${b.elseVal}" oninput="ardUpdateBlockField(${idx}, 'elseVal', this.value)"> <span>&deg;</span>`;
+                    }
+
+                    inner = `
+                        <span>🔘 Hvis knap</span>
+                        ${ardPinSelectHtml(b.btnPin, idx, 'btnPin')}
+                        <span>trykkes &rarr;</span>
+                        <select onchange="ardUpdateBlockField(${idx}, 'action', this.value)">
+                            <option value="digitalWrite" ${b.action === 'digitalWrite' ? 'selected' : ''}>Tænd/sluk pin</option>
+                            <option value="tone" ${b.action === 'tone' ? 'selected' : ''}>Spil tone</option>
+                            <option value="servo" ${b.action === 'servo' ? 'selected' : ''}>Drej servo</option>
+                        </select>
+                        ${ardPinSelectHtml(b.targetPin, idx, 'targetPin')}
+                        ${thenCtrl}
+                        <div class="ard-block-else-row">
+                            <span>↳ Ellers:</span>
+                            ${elseCtrl}
+                        </div>
+                    `;
+                }
+
+                el.innerHTML = inner + `
+                    <div class="ard-block-actions">
+                        <button class="ard-blk-act-btn" title="Flyt op" onclick="ardMoveBlock(${idx}, -1)">↑</button>
+                        <button class="ard-blk-act-btn" title="Flyt ned" onclick="ardMoveBlock(${idx}, 1)">↓</button>
+                        <button class="ard-blk-act-btn del" title="Slet blok" onclick="ardDeleteBlock(${idx})">&times;</button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function ardGenerateCppFromBlocks() {
+            const outputPins = new Set();
+            const inputPins = new Set();
+            const servoPins = new Set();
+            let usesSerial = false;
+
+            ardSlots.forEach(s => {
+                if (!s) return;
+                if (s.type === 'button') inputPins.add(s.pin);
+                else if (s.type === 'servo') servoPins.add(s.pin);
+                else outputPins.add(s.pin);
+            });
+
+            ardBlocks.forEach(b => {
+                if (b.type === 'digitalWrite' || b.type === 'tone' || b.type === 'noTone') outputPins.add(b.pin);
+                if (b.type === 'servo') servoPins.add(b.pin);
+                if (b.type === 'serial') usesSerial = true;
+                if (b.type === 'ifButton') {
+                    inputPins.add(b.btnPin);
+                    if (b.action === 'servo') servoPins.add(b.targetPin);
+                    else outputPins.add(b.targetPin);
+                }
+            });
+
+            let lines = [];
+            if (servoPins.size > 0) {
+                lines.push('#include <Servo.h>');
+                lines.push('Servo minServo;');
+                lines.push('');
+            }
+
+            lines.push('void setup() {');
+            if (usesSerial) lines.push('  Serial.begin(9600);');
+            [...outputPins].sort((a, b) => a - b).forEach(p => {
+                lines.push(`  pinMode(${p}, OUTPUT);`);
+            });
+            [...inputPins].sort((a, b) => a - b).forEach(p => {
+                lines.push(`  pinMode(${p}, INPUT);`);
+            });
+            const firstServo = [...servoPins][0];
+            if (firstServo !== undefined) {
+                lines.push(`  minServo.attach(${firstServo});`);
+            }
+            lines.push('}');
+            lines.push('');
+            lines.push('void loop() {');
+
+            ardBlocks.forEach(b => {
+                if (b.type === 'digitalWrite') {
+                    lines.push(`  digitalWrite(${b.pin}, ${b.value});`);
+                } else if (b.type === 'delay') {
+                    lines.push(`  delay(${b.ms});`);
+                } else if (b.type === 'tone') {
+                    lines.push(`  tone(${b.pin}, ${b.freq});`);
+                } else if (b.type === 'noTone') {
+                    lines.push(`  noTone(${b.pin});`);
+                } else if (b.type === 'servo') {
+                    lines.push(`  minServo.write(${b.angle});`);
+                } else if (b.type === 'serial') {
+                    const esc = String(b.text).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+                    lines.push(`  Serial.println("${esc}");`);
+                } else if (b.type === 'ifButton') {
+                    lines.push(`  if (digitalRead(${b.btnPin}) == HIGH) {`);
+                    if (b.action === 'digitalWrite') {
+                        lines.push(`    digitalWrite(${b.targetPin}, ${b.thenVal});`);
+                        lines.push(`  } else {`);
+                        lines.push(`    digitalWrite(${b.targetPin}, ${b.elseVal});`);
+                    } else if (b.action === 'tone') {
+                        lines.push(`    tone(${b.targetPin}, ${b.thenVal});`);
+                        lines.push(`  } else {`);
+                        lines.push(`    noTone(${b.targetPin});`);
+                    } else if (b.action === 'servo') {
+                        lines.push(`    minServo.write(${b.thenVal});`);
+                        lines.push(`  } else {`);
+                        lines.push(`    minServo.write(${b.elseVal});`);
+                    }
+                    lines.push('  }');
+                }
+            });
+
+            lines.push('}');
+            return lines.join('\n');
+        }
+
+        function ardSyncCppIfAuto() {
+            if (ardCppManuallyEdited) return;
+            const ed = document.getElementById('ard-cpp-editor');
+            if (ed) ed.value = ardGenerateCppFromBlocks();
+            ardUpdateCppBadge();
+        }
+
+        function ardOnCppManualEdit() {
+            ardCppManuallyEdited = true;
+            ardUpdateCppBadge();
+        }
+
+        function ardResyncFromBlocks() {
+            ardCppManuallyEdited = false;
+            ardSyncCppIfAuto();
+        }
+
+        function ardUpdateCppBadge() {
+            const badge = document.getElementById('ard-cpp-sync-badge');
+            const resyncBtn = document.getElementById('ard-btn-resync');
+            if (!badge || !resyncBtn) return;
+            if (ardCppManuallyEdited) {
+                badge.textContent = 'Brugerdefineret C++-kode (kører fra editoren)';
+                badge.classList.add('custom');
+                resyncBtn.style.display = 'inline-block';
+            } else {
+                badge.textContent = 'Synkroniseret med kodeblokke';
+                badge.classList.remove('custom');
+                resyncBtn.style.display = 'none';
+            }
+        }
+
+        function ardSwitchCodeTab(tab) {
+            ardActiveTab = tab;
+            document.getElementById('ard-tab-blocks').classList.toggle('active', tab === 'blocks');
+            document.getElementById('ard-tab-cpp').classList.toggle('active', tab === 'cpp');
+            document.getElementById('ard-pane-blocks').style.display = tab === 'blocks' ? 'block' : 'none';
+            document.getElementById('ard-pane-cpp').style.display = tab === 'cpp' ? 'block' : 'none';
+            if (tab === 'cpp') ardSyncCppIfAuto();
+        }
+
+        function ardCopyCppCode() {
+            const editor = document.getElementById('ard-cpp-editor');
+            const btn = document.getElementById('ard-btn-copy-cpp');
+            const prevDisplay = document.getElementById('ard-pane-cpp').style.display;
+            if (prevDisplay === 'none') {
+                const tmp = document.createElement('textarea');
+                tmp.value = editor.value;
+                document.body.appendChild(tmp);
+                tmp.select();
+                document.execCommand('copy');
+                document.body.removeChild(tmp);
+            } else {
+                editor.select();
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+            }
+            const oldText = btn.textContent;
+            btn.textContent = '✅ Kopieret!';
+            setTimeout(() => { btn.textContent = oldText; }, 1600);
+        }
+
+        function ardAppendSerial(text, kind = 'normal') {
+            const out = document.getElementById('ard-serial-output');
+            if (!out) return;
+            const div = document.createElement('div');
+            if (kind === 'err') div.className = 'ard-serial-line-err';
+            else if (kind === 'sys') div.className = 'ard-serial-line-sys';
+            div.textContent = text;
+            out.appendChild(div);
+            while (out.children.length > 120) {
+                out.removeChild(out.firstChild);
+            }
+            out.scrollTop = out.scrollHeight;
+        }
+
+        function ardClearSerial() {
+            const out = document.getElementById('ard-serial-output');
+            if (out) out.innerHTML = '';
+        }
+
+        function ardAbortableDelay(ms, token) {
+            const safeMs = Math.max(0, Math.min(30000, Number(ms) || 0));
+            return new Promise((resolve) => {
+                const start = performance.now();
+                function step() {
+                    if (!ardIsRunning || token !== ardRunToken) return resolve(false);
+                    if (performance.now() - start >= safeMs) return resolve(true);
+                    requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            });
+        }
+
+        function ardHighlightBlock(blockId) {
+            document.querySelectorAll('.ard-code-block.active-exec').forEach(el => el.classList.remove('active-exec'));
+            if (blockId !== null) {
+                const el = document.getElementById(`ard-blk-el-${blockId}`);
+                if (el) el.classList.add('active-exec');
+            }
+        }
+
+        function ardResetOutputs() {
+            ardStopAllAudio();
+            ARD_PINS.forEach(p => {
+                ardPinState[p] = 0;
+                ardToneState[p] = 0;
+                ardServoAngle[p] = 0;
+            });
+            ardHighlightBlock(null);
+            ardUpdateBoardVisuals();
+        }
+
+        function ardSetRunningUI(running) {
+            ardIsRunning = running;
+            const runBtn = document.getElementById('ard-btn-run');
+            const stopBtn = document.getElementById('ard-btn-stop');
+            const st = document.getElementById('ard-run-status');
+            const stText = document.getElementById('ard-run-status-text');
+            if (runBtn) runBtn.disabled = running;
+            if (stopBtn) stopBtn.disabled = !running;
+            if (st) st.classList.toggle('running', running);
+            if (stText) stText.textContent = running ? 'Kører...' : 'Stoppet';
+        }
+
+        function ardStopProgram() {
+            ardRunToken++;
+            ardSetRunningUI(false);
+            ardResetOutputs();
+            ardAppendSerial('⏹ Program stoppet.', 'sys');
+        }
+
+        async function ardStartProgram() {
+            if (ardIsRunning) return;
+            ardEnsureAudioCtx();
+            ardRunToken++;
+            const myToken = ardRunToken;
+            ardResetOutputs();
+            ardSetRunningUI(true);
+
+            const useCppEngine = ardCppManuallyEdited || ardActiveTab === 'cpp';
+            if (useCppEngine) {
+                ardAppendSerial('▶ Kører Arduino C++-kode...', 'sys');
+                await ardRunCppInterpreter(document.getElementById('ard-cpp-editor').value, myToken);
+            } else {
+                ardAppendSerial('▶ Kører kodeblokke...', 'sys');
+                await ardRunBlocksLoop(myToken);
+            }
+        }
+
+        async function ardRunBlocksLoop(token) {
+            if (ardBlocks.length === 0) {
+                ardAppendSerial('Ingen kodeblokke i loop(). Tilføj mindst én blok først!', 'err');
+                ardStopProgram();
+                return;
+            }
+
+            while (ardIsRunning && token === ardRunToken) {
+                let hadDelay = false;
+
+                for (const b of ardBlocks) {
+                    if (!ardIsRunning || token !== ardRunToken) break;
+                    ardHighlightBlock(b.id);
+
+                    if (b.type === 'digitalWrite') {
+                        ardPinState[b.pin] = b.value === 'HIGH' ? 1 : 0;
+                        ardUpdateBoardVisuals();
+                    } else if (b.type === 'delay') {
+                        hadDelay = true;
+                        const ok = await ardAbortableDelay(b.ms, token);
+                        if (!ok) break;
+                    } else if (b.type === 'tone') {
+                        ardPlayToneAudio(b.pin, b.freq);
+                    } else if (b.type === 'noTone') {
+                        ardStopToneAudio(b.pin, true);
+                    } else if (b.type === 'servo') {
+                        ardServoAngle[b.pin] = Math.max(0, Math.min(180, b.angle));
+                        ardUpdateBoardVisuals();
+                    } else if (b.type === 'serial') {
+                        ardAppendSerial(String(b.text));
+                    } else if (b.type === 'ifButton') {
+                        const pressed = ardIsButtonPinActive(b.btnPin);
+                        if (b.action === 'digitalWrite') {
+                            const v = pressed ? b.thenVal : b.elseVal;
+                            ardPinState[b.targetPin] = v === 'HIGH' ? 1 : 0;
+                            ardUpdateBoardVisuals();
+                        } else if (b.action === 'tone') {
+                            if (pressed) ardPlayToneAudio(b.targetPin, parseInt(b.thenVal, 10) || 440);
+                            else ardStopToneAudio(b.targetPin, true);
+                        } else if (b.action === 'servo') {
+                            const ang = parseInt(pressed ? b.thenVal : b.elseVal, 10) || 0;
+                            ardServoAngle[b.targetPin] = Math.max(0, Math.min(180, ang));
+                            ardUpdateBoardVisuals();
+                        }
+                    }
+                }
+
+                if (!hadDelay) {
+                    const ok = await ardAbortableDelay(30, token);
+                    if (!ok) break;
+                }
+            }
+            ardHighlightBlock(null);
+        }
+
+        function ardStripComments(src) {
+            return src
+                .replace(/\/\*[\s\S]*?\*\//g, '')
+                .replace(/\/\/[^\n]*/g, '');
+        }
+
+        function ardExtractFunctionBody(src, fnName) {
+            const re = new RegExp(`void\\s+${fnName}\\s*\\(\\s*\\)\\s*\\{`);
+            const match = re.exec(src);
+            if (!match) return null;
+            let i = match.index + match[0].length;
+            let depth = 1;
+            let start = i;
+            while (i < src.length && depth > 0) {
+                if (src[i] === '{') depth++;
+                else if (src[i] === '}') depth--;
+                i++;
+            }
+            if (depth !== 0) {
+                throw new Error(`Manglende afsluttende '}' i ${fnName}(). Tjek dine krøllede parenteser.`);
+            }
+            return src.slice(start, i - 1);
+        }
+
+        function ardParseStatements(code) {
+            const stmts = [];
+            let i = 0;
+            const n = code.length;
+
+            function skipWs() {
+                while (i < n && /\s/.test(code[i])) i++;
+            }
+
+            function readBalanced(openCh, closeCh) {
+                if (code[i] !== openCh) return null;
+                i++;
+                const start = i;
+                let depth = 1;
+                let inStr = false;
+                while (i < n && depth > 0) {
+                    const c = code[i];
+                    if (c === '"' && code[i - 1] !== '\\') inStr = !inStr;
+                    if (!inStr) {
+                        if (c === openCh) depth++;
+                        else if (c === closeCh) depth--;
+                    }
+                    i++;
+                }
+                if (depth !== 0) {
+                    throw new Error(`Manglende '${closeCh}' – tjek at alle parenteser og blokke er lukket.`);
+                }
+                return code.slice(start, i - 1);
+            }
+
+            while (i < n) {
+                skipWs();
+                if (i >= n) break;
+
+                if (code.slice(i).startsWith('if') && /^if\s*\(/.test(code.slice(i))) {
+                    i += 2;
+                    skipWs();
+                    const cond = readBalanced('(', ')');
+                    skipWs();
+                    const thenBody = readBalanced('{', '}');
+                    if (thenBody === null) {
+                        throw new Error(`Forventede '{' efter if (${cond}).`);
+                    }
+                    skipWs();
+                    let elseBody = null;
+                    if (code.slice(i).startsWith('else') && /^else\b/.test(code.slice(i))) {
+                        i += 4;
+                        skipWs();
+                        elseBody = readBalanced('{', '}');
+                        if (elseBody === null) {
+                            throw new Error(`Forventede '{' efter else.`);
+                        }
+                    }
+                    stmts.push({
+                        kind: 'if',
+                        cond,
+                        thenStmts: ardParseStatements(thenBody),
+                        elseStmts: elseBody ? ardParseStatements(elseBody) : []
+                    });
+                } else {
+                    const start = i;
+                    let inStr = false;
+                    while (i < n && (inStr || code[i] !== ';')) {
+                        if (code[i] === '"' && code[i - 1] !== '\\') inStr = !inStr;
+                        if (!inStr && (code[i] === '{' || code[i] === '}')) {
+                            throw new Error(`Uventet '${code[i]}' nær "${code.slice(start, i).trim()}". Mangler der et semikolon ';'?`);
+                        }
+                        i++;
+                    }
+                    if (i >= n) {
+                        const rem = code.slice(start).trim();
+                        if (rem) throw new Error(`Mangler semikolon ';' i slutningen af linjen: "${rem}"`);
+                        break;
+                    }
+                    const line = code.slice(start, i).trim();
+                    i++;
+                    if (line) stmts.push({ kind: 'stmt', raw: line });
+                }
+            }
+            return stmts;
+        }
+
+        function ardEvalExpr(expr, env) {
+            const s = expr.trim();
+            if (s === 'HIGH' || s === 'true') return 1;
+            if (s === 'LOW' || s === 'false') return 0;
+            if (s === 'OUTPUT' || s === 'INPUT' || s === 'INPUT_PULLUP') return s;
+
+            if (s.startsWith('"') && s.endsWith('"')) {
+                return s.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+            }
+
+            const dr = /^digitalRead\s*\((.+)\)$/.exec(s);
+            if (dr) {
+                const p = Number(ardEvalExpr(dr[1], env));
+                return ardIsButtonPinActive(p) ? 1 : (ardPinState[p] ? 1 : 0);
+            }
+
+            const cmp = /^(.+?)\s*(==|!=|<=|>=|<|>)\s*(.+)$/.exec(s);
+            if (cmp) {
+                const l = ardEvalExpr(cmp[1], env);
+                const r = ardEvalExpr(cmp[3], env);
+                const op = cmp[2];
+                if (op === '==') return l == r ? 1 : 0;
+                if (op === '!=') return l != r ? 1 : 0;
+                if (op === '<=') return l <= r ? 1 : 0;
+                if (op === '>=') return l >= r ? 1 : 0;
+                if (op === '<')  return l < r ? 1 : 0;
+                if (op === '>')  return l > r ? 1 : 0;
+            }
+
+            if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+
+            if (Object.prototype.hasOwnProperty.call(env.vars, s)) {
+                return env.vars[s];
+            }
+
+            const arith = /^(.+?)\s*([+\-*/])\s*(.+)$/.exec(s);
+            if (arith) {
+                const l = Number(ardEvalExpr(arith[1], env));
+                const r = Number(ardEvalExpr(arith[3], env));
+                if (arith[2] === '+') return l + r;
+                if (arith[2] === '-') return l - r;
+                if (arith[2] === '*') return l * r;
+                if (arith[2] === '/') return r !== 0 ? l / r : 0;
+            }
+
+            throw new Error(`Forstod ikke værdien "${s}". Tjek stavning eller gåseøjne.`);
+        }
+
+        function ardSplitArgs(argStr) {
+            const res = [];
+            let cur = '';
+            let inStr = false;
+            let depth = 0;
+            for (let i = 0; i < argStr.length; i++) {
+                const c = argStr[i];
+                if (c === '"' && argStr[i - 1] !== '\\') inStr = !inStr;
+                if (!inStr) {
+                    if (c === '(') depth++;
+                    else if (c === ')') depth--;
+                    else if (c === ',' && depth === 0) {
+                        res.push(cur.trim());
+                        cur = '';
+                        continue;
+                    }
+                }
+                cur += c;
+            }
+            if (cur.trim()) res.push(cur.trim());
+            return res;
+        }
+
+        async function ardExecStatements(stmts, env, token) {
+            let hadDelay = false;
+            for (const st of stmts) {
+                if (!ardIsRunning || token !== ardRunToken) return hadDelay;
+
+                if (st.kind === 'if') {
+                    const condVal = ardEvalExpr(st.cond, env);
+                    const subDelay = await ardExecStatements(condVal ? st.thenStmts : st.elseStmts, env, token);
+                    if (subDelay) hadDelay = true;
+                    continue;
+                }
+
+                const raw = st.raw;
+
+                const varDecl = /^(?:const\s+)?(?:int|long|float|bool)\s+([a-zA-Z_]\w*)\s*=\s*(.+)$/.exec(raw);
+                if (varDecl) {
+                    env.vars[varDecl[1]] = ardEvalExpr(varDecl[2], env);
+                    continue;
+                }
+
+                const varAssign = /^([a-zA-Z_]\w*)\s*=\s*(.+)$/.exec(raw);
+                if (varAssign && !raw.includes('(')) {
+                    env.vars[varAssign[1]] = ardEvalExpr(varAssign[2], env);
+                    continue;
+                }
+
+                const call = /^([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)?)\s*\((.*)\)$/.exec(raw);
+                if (!call) {
+                    throw new Error(`Ukendt kommando: "${raw}". Tjek stavefejl og parenteser.`);
+                }
+
+                const fn = call[1];
+                const argStr = call[2].trim();
+                const args = argStr ? ardSplitArgs(argStr) : [];
+
+                if (fn === 'pinMode') {
+                    const p = Number(ardEvalExpr(args[0], env));
+                    if (!ARD_PINS.includes(p)) throw new Error(`Pin D${p} findes ikke på kortet (brug D2–D13).`);
+                } else if (fn === 'digitalWrite') {
+                    const p = Number(ardEvalExpr(args[0], env));
+                    const v = Number(ardEvalExpr(args[1], env));
+                    ardPinState[p] = v ? 1 : 0;
+                    ardUpdateBoardVisuals();
+                } else if (fn === 'delay') {
+                    hadDelay = true;
+                    const ms = Number(ardEvalExpr(args[0], env));
+                    const ok = await ardAbortableDelay(ms, token);
+                    if (!ok) return hadDelay;
+                } else if (fn === 'tone') {
+                    const p = Number(ardEvalExpr(args[0], env));
+                    const hz = Number(ardEvalExpr(args[1], env));
+                    ardPlayToneAudio(p, hz);
+                    if (args[2]) {
+                        hadDelay = true;
+                        const dur = Number(ardEvalExpr(args[2], env));
+                        const ok = await ardAbortableDelay(dur, token);
+                        ardStopToneAudio(p, true);
+                        if (!ok) return hadDelay;
+                    }
+                } else if (fn === 'noTone') {
+                    const p = Number(ardEvalExpr(args[0], env));
+                    ardStopToneAudio(p, true);
+                } else if (fn === 'Serial.begin') {
+                    // Ok
+                } else if (fn === 'Serial.println' || fn === 'Serial.print') {
+                    const val = args.length ? ardEvalExpr(args[0], env) : '';
+                    ardAppendSerial(String(val));
+                } else if (fn.endsWith('.attach')) {
+                    const objName = fn.split('.')[0];
+                    const p = Number(ardEvalExpr(args[0], env));
+                    env.servos[objName] = p;
+                } else if (fn.endsWith('.write')) {
+                    const objName = fn.split('.')[0];
+                    const ang = Number(ardEvalExpr(args[0], env));
+                    const targetPin = env.servos[objName] !== undefined
+                        ? env.servos[objName]
+                        : (ardSlots.find(s => s && s.type === 'servo')?.pin || 9);
+                    ardServoAngle[targetPin] = Math.max(0, Math.min(180, ang));
+                    ardUpdateBoardVisuals();
+                } else {
+                    throw new Error(`Ukendt Arduino-kommando "${fn}()". Prøv fx digitalWrite, delay, tone, noTone eller Serial.println.`);
+                }
+            }
+            return hadDelay;
+        }
+
+        async function ardRunCppInterpreter(source, token) {
+            try {
+                const clean = ardStripComments(source);
+                const env = { vars: {}, servos: {} };
+
+                const globalMatches = clean.matchAll(/^(?:const\s+)?(?:int|long|float)\s+([a-zA-Z_]\w*)\s*=\s*([^;]+);/gm);
+                for (const m of globalMatches) {
+                    env.vars[m[1]] = ardEvalExpr(m[2], env);
+                }
+
+                const setupBody = ardExtractFunctionBody(clean, 'setup');
+                const loopBody = ardExtractFunctionBody(clean, 'loop');
+
+                if (setupBody === null) {
+                    throw new Error('Kunne ikke finde "void setup() { ... }" i koden.');
+                }
+                if (loopBody === null) {
+                    throw new Error('Kunne ikke finde "void loop() { ... }" i koden.');
+                }
+
+                const setupStmts = ardParseStatements(setupBody);
+                const loopStmts = ardParseStatements(loopBody);
+
+                await ardExecStatements(setupStmts, env, token);
+
+                while (ardIsRunning && token === ardRunToken) {
+                    const hadDelay = await ardExecStatements(loopStmts, env, token);
+                    if (!hadDelay) {
+                        const ok = await ardAbortableDelay(30, token);
+                        if (!ok) break;
+                    }
+                }
+            } catch (err) {
+                ardAppendSerial(`⚠️ Fejl i koden: ${err.message}`, 'err');
+                ardRunToken++;
+                ardSetRunningUI(false);
+                ardResetOutputs();
+            }
+        }
+
+        function ardLoadProject(name) {
+            if (ardIsRunning) ardStopProgram();
+
+            document.querySelectorAll('.ard-preset-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.ardpreset === name);
+            });
+
+            ardSlots = Array(ARD_SLOT_COUNT).fill(null);
+            ardBlocks = [];
+            ardNextBlockId = 1;
+            ardCppManuallyEdited = false;
+
+            if (name === 'blink') {
+                ardSlots[0] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                ardBlocks = [
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'serial', text: 'LED tændt!' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 600 },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 600 }
+                ];
+            } else if (name === 'traffic') {
+                ardSlots[0] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                ardSlots[1] = { type: 'led-yellow', pin: 12, pressed: false, latched: false };
+                ardSlots[2] = { type: 'led-green', pin: 11, pressed: false, latched: false };
+                ardBlocks = [
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 12, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 11, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'serial', text: 'STOP (Rød)' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 1600 },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 12, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'serial', text: 'Gør klar (Rød + Gul)' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 700 },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 12, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 11, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'serial', text: 'KØR (Grøn)' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 1600 },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 11, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 12, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 700 }
+                ];
+            } else if (name === 'police') {
+                ardSlots[0] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                ardSlots[1] = { type: 'led-blue', pin: 12, pressed: false, latched: false };
+                ardSlots[2] = { type: 'buzzer', pin: 8, pressed: false, latched: false };
+                ardBlocks = [
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 12, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'tone', pin: 8, freq: 660 },
+                    { id: ardNextBlockId++, type: 'delay', ms: 350 },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'LOW' },
+                    { id: ardNextBlockId++, type: 'digitalWrite', pin: 12, value: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'tone', pin: 8, freq: 440 },
+                    { id: ardNextBlockId++, type: 'delay', ms: 350 }
+                ];
+            } else if (name === 'buttonLed') {
+                ardSlots[0] = { type: 'button', pin: 2, pressed: false, latched: false };
+                ardSlots[1] = { type: 'led-green', pin: 13, pressed: false, latched: false };
+                ardSlots[2] = { type: 'buzzer', pin: 8, pressed: false, latched: false };
+                ardBlocks = [
+                    { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'digitalWrite', targetPin: 13, thenVal: 'HIGH', elseVal: 'LOW' },
+                    { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'tone', targetPin: 8, thenVal: '784', elseVal: '0' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 50 }
+                ];
+            } else if (name === 'servoGate') {
+                ardSlots[0] = { type: 'button', pin: 2, pressed: false, latched: false };
+                ardSlots[1] = { type: 'servo', pin: 9, pressed: false, latched: false };
+                ardSlots[2] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                ardSlots[3] = { type: 'led-green', pin: 11, pressed: false, latched: false };
+                ardBlocks = [
+                    { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'servo', targetPin: 9, thenVal: '90', elseVal: '0' },
+                    { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'digitalWrite', targetPin: 11, thenVal: 'HIGH', elseVal: 'LOW' },
+                    { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'digitalWrite', targetPin: 13, thenVal: 'LOW', elseVal: 'HIGH' },
+                    { id: ardNextBlockId++, type: 'delay', ms: 50 }
+                ];
+            }
+
+            ardRenderSlots();
+            ardRenderBlocks();
+            ardSyncCppIfAuto();
+            ardClearSerial();
+            ardAppendSerial('Klar! Tryk på "▶ Kør program" for at starte simuleringen.', 'sys');
+        }
+
+        function ardInitWorkshop() {
+            if (ardInitialized) return;
+            ardInitialized = true;
+
+            document.querySelectorAll('.ard-shelf-item').forEach(el => {
+                el.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/ard-comp-type', el.dataset.ardtype);
+                });
+            });
+
+            document.querySelectorAll('.ard-palette-chip').forEach(chip => {
+                chip.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/ard-new-block', chip.dataset.ardblock);
+                });
+            });
+
+            const blockListEl = document.getElementById('ard-block-list');
+            if (blockListEl) {
+                blockListEl.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    blockListEl.classList.add('drag-over');
+                });
+                blockListEl.addEventListener('dragleave', () => blockListEl.classList.remove('drag-over'));
+                blockListEl.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    blockListEl.classList.remove('drag-over');
+                    const newType = e.dataTransfer.getData('text/ard-new-block');
+                    if (newType) ardAddBlock(newType);
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                const techView = document.getElementById('technology-view');
+                if (techView && techView.classList.contains('active')) {
+                    requestAnimationFrame(ardDrawWires);
+                }
+            });
+
+            ardLoadProject('blink');
+        }
+
         window.onload = function() {
             buildPeriodicTable();
             handleRouteChange();
         };
+    </script>
+
+    <!-- SEPARAT SCRIPT-BLOK TIL ARDUINO-VÆRKSTEDET -->
+    <script>
+        (function() {
+            const ARD_SLOT_PINS = [2, 3, 5, 6, 9, 13];
+            const ARD_ALL_PINS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+            const ARD_SLOT_COUNT = 6;
+
+            const ARD_COMPONENT_META = {
+                'led-red':    { name: 'Rød LED',     wireColor: '#ef4444', defaultPin: 13 },
+                'led-yellow': { name: 'Gul LED',     wireColor: '#eab308', defaultPin: 6  },
+                'led-green':  { name: 'Grøn LED',    wireColor: '#22c55e', defaultPin: 5  },
+                'led-blue':   { name: 'Blå LED',     wireColor: '#3b82f6', defaultPin: 3  },
+                'buzzer':     { name: 'Summer',      wireColor: '#f97316', defaultPin: 6  },
+                'button':     { name: 'Trykknap',    wireColor: '#8b5cf6', defaultPin: 2  },
+                'servo':      { name: 'Servo-motor', wireColor: '#0d9488', defaultPin: 9  }
+            };
+
+            let ardInitialized = false;
+            let ardSlots = Array(ARD_SLOT_COUNT).fill(null);
+            const ardPinState = {};
+            const ardToneState = {};
+            const ardServoAngle = {};
+            ARD_ALL_PINS.forEach(p => {
+                ardPinState[p] = 0;
+                ardToneState[p] = 0;
+                ardServoAngle[p] = 0;
+            });
+
+            let ardBlocks = [];
+            let ardNextBlockId = 1;
+            let ardActiveTab = 'blocks';
+            let ardCppManuallyEdited = false;
+
+            let ardIsRunning = false;
+            let ardRunToken = 0;
+            let ardSoundEnabled = true;
+
+            let ardAudioCtx = null;
+            const ardActiveOscillators = {};
+
+            function ardEnsureAudioCtx() {
+                if (!ardAudioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) {
+                        ardAudioCtx = new AudioContextClass();
+                    }
+                }
+                if (ardAudioCtx && ardAudioCtx.state === 'suspended') {
+                    ardAudioCtx.resume().catch(() => {});
+                }
+            }
+
+            function ardPlayToneAudio(pin, freq) {
+                ardToneState[pin] = freq;
+                ardUpdateBoardVisuals();
+                if (!ardSoundEnabled || freq <= 0) {
+                    ardStopToneAudio(pin, false);
+                    return;
+                }
+                ardEnsureAudioCtx();
+                if (!ardAudioCtx) return;
+
+                if (ardActiveOscillators[pin]) {
+                    try {
+                        ardActiveOscillators[pin].osc.frequency.setTargetAtTime(freq, ardAudioCtx.currentTime, 0.015);
+                        return;
+                    } catch (e) {}
+                }
+
+                try {
+                    const osc = ardAudioCtx.createOscillator();
+                    const gain = ardAudioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(Math.max(40, Math.min(4000, freq)), ardAudioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.0001, ardAudioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.07, ardAudioCtx.currentTime + 0.02);
+                    osc.connect(gain);
+                    gain.connect(ardAudioCtx.destination);
+                    osc.start();
+                    ardActiveOscillators[pin] = { osc, gain };
+                } catch (e) {}
+            }
+
+            function ardStopToneAudio(pin, clearState = true) {
+                if (clearState) {
+                    ardToneState[pin] = 0;
+                    ardUpdateBoardVisuals();
+                }
+                const node = ardActiveOscillators[pin];
+                if (node && ardAudioCtx) {
+                    try {
+                        const now = ardAudioCtx.currentTime;
+                        node.gain.cancelScheduledValues(now);
+                        node.gain.setValueAtTime(node.gain.value, now);
+                        node.gain.linearRampToValueAtTime(0.0001, now + 0.025);
+                        node.osc.stop(now + 0.03);
+                    } catch (e) {}
+                }
+                delete ardActiveOscillators[pin];
+            }
+
+            function ardStopAllAudio() {
+                ARD_ALL_PINS.forEach(p => ardStopToneAudio(p, true));
+            }
+
+            window.ardToggleSound = function() {
+                ardSoundEnabled = !ardSoundEnabled;
+                const btn = document.getElementById('ard-btn-sound');
+                if (ardSoundEnabled) {
+                    btn.textContent = '🔊 Lyd: Til';
+                    btn.classList.remove('muted');
+                    ardEnsureAudioCtx();
+                    ARD_ALL_PINS.forEach(p => {
+                        if (ardToneState[p] > 0) ardPlayToneAudio(p, ardToneState[p]);
+                    });
+                } else {
+                    btn.textContent = '🔇 Lyd: Fra';
+                    btn.classList.add('muted');
+                    ARD_ALL_PINS.forEach(p => ardStopToneAudio(p, false));
+                }
+            };
+
+            function ardGetFreePin(preferred, slotIdx) {
+                const used = new Set(ardSlots.filter(Boolean).map(s => s.pin));
+                if (preferred && !used.has(preferred)) return preferred;
+                const slotDefault = ARD_SLOT_PINS[slotIdx];
+                if (slotDefault && !used.has(slotDefault)) return slotDefault;
+                for (const p of ARD_SLOT_PINS) {
+                    if (!used.has(p)) return p;
+                }
+                return ARD_SLOT_PINS[slotIdx] || 13;
+            }
+
+            window.ardQuickAddComponent = function(type) {
+                const emptyIdx = ardSlots.findIndex(s => s === null);
+                if (emptyIdx === -1) {
+                    ardAppendSerial('Bordet er fuldt (maks 6 komponenter). Slet én først med ×.', 'err');
+                    return;
+                }
+                ardPlaceComponentInSlot(emptyIdx, type);
+            };
+
+            function ardPlaceComponentInSlot(slotIdx, type, forcedPin = null) {
+                const meta = ARD_COMPONENT_META[type];
+                if (!meta) return;
+                const pin = forcedPin !== null ? forcedPin : ardGetFreePin(meta.defaultPin, slotIdx);
+                ardSlots[slotIdx] = { type, pin, pressed: false, latched: false };
+                ardRenderSlots();
+                ardSyncCppIfAuto();
+            }
+
+            window.ardRemoveSlot = function(slotIdx) {
+                const comp = ardSlots[slotIdx];
+                if (comp) {
+                    ardStopToneAudio(comp.pin, true);
+                    ardPinState[comp.pin] = 0;
+                }
+                ardSlots[slotIdx] = null;
+                ardRenderSlots();
+                ardSyncCppIfAuto();
+            };
+
+            window.ardChangeSlotPin = function(slotIdx, newPin) {
+                const comp = ardSlots[slotIdx];
+                if (!comp) return;
+                ardStopToneAudio(comp.pin, true);
+                comp.pin = parseInt(newPin, 10);
+                ardRenderSlots();
+                ardSyncCppIfAuto();
+            };
+
+            function ardSetButtonPressed(slotIdx, isPressed) {
+                const comp = ardSlots[slotIdx];
+                if (!comp || comp.type !== 'button') return;
+                comp.pressed = isPressed;
+                ardUpdateBoardVisuals();
+            }
+
+            window.ardToggleButtonLatch = function(slotIdx) {
+                const comp = ardSlots[slotIdx];
+                if (!comp || comp.type !== 'button') return;
+                comp.latched = !comp.latched;
+                comp.pressed = comp.latched;
+                ardRenderSlots();
+            };
+
+            function ardIsButtonPinActive(pin) {
+                return ardSlots.some(s => s && s.type === 'button' && s.pin === pin && (s.pressed || s.latched));
+            }
+
+            function ardRenderSlots() {
+                const grid = document.getElementById('ard-slots-grid');
+                if (!grid) return;
+                grid.innerHTML = '';
+
+                ardSlots.forEach((comp, idx) => {
+                    const slotEl = document.createElement('div');
+                    slotEl.className = 'ard-comp-slot' + (comp ? ' filled' : '');
+                    slotEl.dataset.ardslot = idx;
+
+                    slotEl.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        slotEl.classList.add('drag-over');
+                    });
+                    slotEl.addEventListener('dragleave', () => slotEl.classList.remove('drag-over'));
+                    slotEl.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        slotEl.classList.remove('drag-over');
+                        const compType = e.dataTransfer.getData('text/ard-comp-type');
+                        if (compType && ARD_COMPONENT_META[compType]) {
+                            ardPlaceComponentInSlot(idx, compType);
+                        }
+                    });
+
+                    const connector = document.createElement('div');
+                    connector.className = 'ard-slot-connector';
+                    connector.id = `ard-slot-conn-${idx}`;
+                    if (comp) {
+                        connector.style.background = ARD_COMPONENT_META[comp.type].wireColor;
+                    }
+                    slotEl.appendChild(connector);
+
+                    if (!comp) {
+                        const defaultPin = ARD_SLOT_PINS[idx];
+                        const empty = document.createElement('div');
+                        empty.className = 'ard-slot-empty-msg';
+                        empty.innerHTML = `Pin D${defaultPin} (Plads ${idx + 1})<br><span style="font-weight:500;">Træk komponent hertil</span>`;
+                        slotEl.appendChild(empty);
+                    } else {
+                        const meta = ARD_COMPONENT_META[comp.type];
+                        const pinOptions = ARD_SLOT_PINS.map(p =>
+                            `<option value="${p}" ${comp.pin === p ? 'selected' : ''}>Pin D${p}</option>`
+                        ).join('');
+
+                        const header = document.createElement('div');
+                        header.className = 'ard-slot-header';
+                        header.innerHTML = `
+                            <select class="ard-slot-pin-select" onchange="ardChangeSlotPin(${idx}, this.value)">${pinOptions}</select>
+                            <button class="ard-slot-remove" title="Fjern komponent" onclick="ardRemoveSlot(${idx})">&times;</button>
+                        `;
+                        slotEl.appendChild(header);
+
+                        const visual = document.createElement('div');
+                        visual.className = 'ard-slot-visual';
+
+                        if (comp.type.startsWith('led-')) {
+                            visual.innerHTML = `<div class="ard-led-bulb ard-${comp.type}" id="ard-led-el-${idx}"></div>`;
+                        } else if (comp.type === 'buzzer') {
+                            visual.innerHTML = `<div class="ard-buzzer-body" id="ard-buzz-el-${idx}"><div class="ard-buzzer-hole"></div></div>`;
+                        } else if (comp.type === 'button') {
+                            const pressedNow = comp.pressed || comp.latched;
+                            visual.innerHTML = `
+                                <div class="ard-pushbtn-wrap">
+                                    <div class="ard-pushbtn-cap ${pressedNow ? 'pressed' : ''}" id="ard-btn-cap-${idx}" title="Hold nede for at trykke">
+                                        <div class="ard-pushbtn-inner"></div>
+                                    </div>
+                                    <button class="ard-btn-latch-toggle ${comp.latched ? 'latched' : ''}" onclick="ardToggleButtonLatch(${idx})" title="Lås knappen nede">
+                                        ${comp.latched ? '🔒 Låst' : '🔓 Hold'}
+                                    </button>
+                                </div>
+                            `;
+                        } else if (comp.type === 'servo') {
+                            visual.innerHTML = `
+                                <svg class="ard-servo-svg" viewBox="0 0 82 58">
+                                    <rect x="13" y="22" width="56" height="30" rx="5" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+                                    <rect x="6" y="30" width="70" height="7" rx="2" fill="#334155"/>
+                                    <circle cx="41" cy="36" r="9" fill="#0d9488" stroke="#99f6e4" stroke-width="1.5"/>
+                                    <g class="ard-servo-arm-group" id="ard-servo-arm-${idx}" style="transform: rotate(-90deg);">
+                                        <rect x="37" y="4" width="8" height="34" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
+                                        <circle cx="41" cy="10" r="2" fill="#0d9488"/>
+                                        <circle cx="41" cy="36" r="3.5" fill="#e2e8f0" stroke="#334155" stroke-width="1.2"/>
+                                    </g>
+                                </svg>
+                            `;
+                        }
+                        slotEl.appendChild(visual);
+
+                        const footer = document.createElement('div');
+                        footer.className = 'ard-slot-footer';
+                        footer.innerHTML = `
+                            <span>${meta.name}</span>
+                            <span class="ard-slot-state-badge" id="ard-slot-badge-${idx}">LOW</span>
+                        `;
+                        slotEl.appendChild(footer);
+
+                        if (comp.type === 'button') {
+                            setTimeout(() => {
+                                const cap = document.getElementById(`ard-btn-cap-${idx}`);
+                                if (!cap) return;
+                                cap.addEventListener('pointerdown', (e) => {
+                                    e.preventDefault();
+                                    ardSetButtonPressed(idx, true);
+                                });
+                                const release = () => {
+                                    if (!ardSlots[idx]?.latched) ardSetButtonPressed(idx, false);
+                                };
+                                cap.addEventListener('pointerup', release);
+                                cap.addEventListener('pointerleave', release);
+                                cap.addEventListener('pointercancel', release);
+                            }, 0);
+                        }
+                    }
+
+                    grid.appendChild(slotEl);
+                });
+
+                ardUpdateBoardVisuals();
+                requestAnimationFrame(ardDrawWires);
+            }
+
+            function ardUpdateBoardVisuals() {
+                document.querySelectorAll('.ard-pin-dot').forEach(dot => {
+                    const p = parseInt(dot.dataset.ardpin, 10);
+                    const active = ardPinState[p] === 1 || ardToneState[p] > 0 || ardIsButtonPinActive(p);
+                    dot.classList.toggle('ard-pin-high', active);
+                });
+
+                const unoL = document.getElementById('ard-uno-l-led');
+                if (unoL) {
+                    unoL.setAttribute('fill', ardPinState[13] ? '#facc15' : '#92400e');
+                }
+
+                ardSlots.forEach((comp, idx) => {
+                    if (!comp) return;
+                    const badge = document.getElementById(`ard-slot-badge-${idx}`);
+                    if (!badge) return;
+
+                    if (comp.type.startsWith('led-')) {
+                        const isOn = ardPinState[comp.pin] === 1;
+                        const bulb = document.getElementById(`ard-led-el-${idx}`);
+                        if (bulb) bulb.classList.toggle('lit', isOn);
+                        badge.textContent = isOn ? 'HIGH' : 'LOW';
+                        badge.classList.toggle('on', isOn);
+                    } else if (comp.type === 'buzzer') {
+                        const hz = ardToneState[comp.pin] || (ardPinState[comp.pin] ? 440 : 0);
+                        const buzz = document.getElementById(`ard-buzz-el-${idx}`);
+                        if (buzz) buzz.classList.toggle('buzzing', hz > 0);
+                        badge.textContent = hz > 0 ? `${Math.round(hz)} Hz` : 'Stille';
+                        badge.classList.toggle('on', hz > 0);
+                    } else if (comp.type === 'button') {
+                        const down = comp.pressed || comp.latched;
+                        const cap = document.getElementById(`ard-btn-cap-${idx}`);
+                        if (cap) cap.classList.toggle('pressed', down);
+                        badge.textContent = down ? 'HIGH' : 'LOW';
+                        badge.classList.toggle('on', down);
+                    } else if (comp.type === 'servo') {
+                        const ang = Math.max(0, Math.min(180, ardServoAngle[comp.pin] || 0));
+                        const arm = document.getElementById(`ard-servo-arm-${idx}`);
+                        if (arm) arm.style.transform = `rotate(${ang - 90}deg)`;
+                        badge.textContent = `${Math.round(ang)}°`;
+                        badge.classList.toggle('on', ang > 0);
+                    }
+                });
+            }
+
+            function ardDrawWires() {
+                const stage = document.getElementById('ard-board-stage');
+                const svg = document.getElementById('ard-wire-layer');
+                if (!stage || !svg) return;
+
+                const stageRect = stage.getBoundingClientRect();
+                if (stageRect.width === 0 || stageRect.height === 0) return;
+
+                svg.setAttribute('viewBox', `0 0 ${stageRect.width} ${stageRect.height}`);
+                svg.innerHTML = '';
+
+                ardSlots.forEach((comp, idx) => {
+                    if (!comp) return;
+                    const pinDot = document.querySelector(`.ard-pin-dot[data-ardpin="${comp.pin}"]`);
+                    const connEl = document.getElementById(`ard-slot-conn-${idx}`);
+                    if (!pinDot || !connEl) return;
+
+                    const pRect = pinDot.getBoundingClientRect();
+                    const cRect = connEl.getBoundingClientRect();
+
+                    const x1 = pRect.left + pRect.width / 2 - stageRect.left;
+                    const y1 = pRect.top + pRect.height / 2 - stageRect.top;
+                    const x2 = cRect.left + cRect.width / 2 - stageRect.left;
+                    const y2 = cRect.top + cRect.height / 2 - stageRect.top;
+
+                    const dx = Math.max(32, Math.abs(x2 - x1) * 0.45);
+                    const color = ARD_COMPONENT_META[comp.type].wireColor;
+
+                    const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    shadow.setAttribute('d', `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`);
+                    shadow.setAttribute('fill', 'none');
+                    shadow.setAttribute('stroke', 'rgba(15, 23, 42, 0.16)');
+                    shadow.setAttribute('stroke-width', '5');
+                    shadow.setAttribute('stroke-linecap', 'round');
+                    svg.appendChild(shadow);
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', color);
+                    path.setAttribute('stroke-width', '3.2');
+                    path.setAttribute('stroke-linecap', 'round');
+                    svg.appendChild(path);
+                });
+            }
+
+            function ardCreateDefaultBlock(type) {
+                const id = ardNextBlockId++;
+                if (type === 'digitalWrite') return { id, type, pin: 13, value: 'HIGH' };
+                if (type === 'delay')        return { id, type, ms: 500 };
+                if (type === 'tone')         return { id, type, pin: 6, freq: 523 };
+                if (type === 'noTone')       return { id, type, pin: 6 };
+                if (type === 'servo')        return { id, type, pin: 9, angle: 90 };
+                if (type === 'serial')       return { id, type, text: 'Hej Arduino!' };
+                if (type === 'ifButton') {
+                    return {
+                        id, type,
+                        btnPin: 2,
+                        action: 'digitalWrite',
+                        targetPin: 13,
+                        thenVal: 'HIGH',
+                        elseVal: 'LOW'
+                    };
+                }
+                return { id, type: 'delay', ms: 500 };
+            }
+
+            window.ardAddBlock = function(type, atIndex = null) {
+                const blk = ardCreateDefaultBlock(type);
+                if (atIndex === null || atIndex >= ardBlocks.length) {
+                    ardBlocks.push(blk);
+                } else {
+                    ardBlocks.splice(atIndex, 0, blk);
+                }
+                ardCppManuallyEdited = false;
+                ardRenderBlocks();
+                ardSyncCppIfAuto();
+            };
+
+            window.ardClearBlocks = function() {
+                ardBlocks = [];
+                ardCppManuallyEdited = false;
+                ardRenderBlocks();
+                ardSyncCppIfAuto();
+            };
+
+            window.ardMoveBlock = function(idx, dir) {
+                const target = idx + dir;
+                if (target < 0 || target >= ardBlocks.length) return;
+                const [item] = ardBlocks.splice(idx, 1);
+                ardBlocks.splice(target, 0, item);
+                ardCppManuallyEdited = false;
+                ardRenderBlocks();
+                ardSyncCppIfAuto();
+            };
+
+            window.ardDeleteBlock = function(idx) {
+                ardBlocks.splice(idx, 1);
+                ardCppManuallyEdited = false;
+                ardRenderBlocks();
+                ardSyncCppIfAuto();
+            };
+
+            window.ardUpdateBlockField = function(idx, field, val) {
+                const b = ardBlocks[idx];
+                if (!b) return;
+                if (['pin', 'ms', 'freq', 'angle', 'btnPin', 'targetPin'].includes(field)) {
+                    b[field] = parseInt(val, 10) || 0;
+                } else {
+                    b[field] = val;
+                }
+                if (b.type === 'ifButton' && field === 'action') {
+                    if (val === 'digitalWrite') {
+                        b.targetPin = 13; b.thenVal = 'HIGH'; b.elseVal = 'LOW';
+                    } else if (val === 'tone') {
+                        b.targetPin = 6; b.thenVal = '660'; b.elseVal = '0';
+                    } else if (val === 'servo') {
+                        b.targetPin = 9; b.thenVal = '90'; b.elseVal = '0';
+                    }
+                    ardRenderBlocks();
+                }
+                ardCppManuallyEdited = false;
+                ardSyncCppIfAuto();
+            };
+
+            function ardPinSelectHtml(selectedPin, idx, field) {
+                return `<select onchange="ardUpdateBlockField(${idx}, '${field}', this.value)">` +
+                    ARD_SLOT_PINS.map(p => `<option value="${p}" ${selectedPin === p ? 'selected' : ''}>D${p}</option>`).join('') +
+                    `</select>`;
+            }
+
+            function ardRenderBlocks() {
+                const list = document.getElementById('ard-block-list');
+                if (!list) return;
+                list.innerHTML = '';
+
+                if (ardBlocks.length === 0) {
+                    list.innerHTML = `<div style="margin:auto; text-align:center; color:#94a3b8; font-size:0.84rem; padding:22px;">
+                        Klik eller træk kodeblokke fra paletten ovenfor ind i <strong>loop()</strong>.
+                    </div>`;
+                    return;
+                }
+
+                ardBlocks.forEach((b, idx) => {
+                    const el = document.createElement('div');
+                    let cls = 'ard-chip-io';
+                    if (b.type === 'delay') cls = 'ard-chip-wait';
+                    else if (b.type === 'tone' || b.type === 'noTone') cls = 'ard-chip-sound';
+                    else if (b.type === 'servo') cls = 'ard-chip-servo';
+                    else if (b.type === 'serial') cls = 'ard-chip-serial';
+                    else if (b.type === 'ifButton') cls = 'ard-chip-logic';
+
+                    el.className = `ard-code-block ${cls}`;
+                    el.id = `ard-blk-el-${b.id}`;
+                    el.draggable = true;
+
+                    el.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/ard-block-idx', String(idx));
+                    });
+                    el.addEventListener('dragover', (e) => e.preventDefault());
+                    el.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const fromIdxStr = e.dataTransfer.getData('text/ard-block-idx');
+                        const newType = e.dataTransfer.getData('text/ard-new-block');
+                        if (newType) {
+                            ardAddBlock(newType, idx);
+                        } else if (fromIdxStr !== '') {
+                            const fromIdx = parseInt(fromIdxStr, 10);
+                            if (!isNaN(fromIdx) && fromIdx !== idx) {
+                                const [moved] = ardBlocks.splice(fromIdx, 1);
+                                ardBlocks.splice(idx, 0, moved);
+                                ardCppManuallyEdited = false;
+                                ardRenderBlocks();
+                                ardSyncCppIfAuto();
+                            }
+                        }
+                    });
+
+                    let inner = '';
+                    if (b.type === 'digitalWrite') {
+                        inner = `
+                            <span>💡 Sæt pin</span>
+                            ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                            <span>&rarr;</span>
+                            <select onchange="ardUpdateBlockField(${idx}, 'value', this.value)">
+                                <option value="HIGH" ${b.value === 'HIGH' ? 'selected' : ''}>HIGH (Tænd)</option>
+                                <option value="LOW" ${b.value === 'LOW' ? 'selected' : ''}>LOW (Sluk)</option>
+                            </select>
+                        `;
+                    } else if (b.type === 'delay') {
+                        inner = `
+                            <span>⏱️ Vent</span>
+                            <input type="number" min="10" max="10000" step="50" value="${b.ms}" oninput="ardUpdateBlockField(${idx}, 'ms', this.value)">
+                            <span>ms</span>
+                        `;
+                    } else if (b.type === 'tone') {
+                        inner = `
+                            <span>🔊 Spil tone på</span>
+                            ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                            <span>med</span>
+                            <input type="number" min="50" max="3000" step="20" value="${b.freq}" oninput="ardUpdateBlockField(${idx}, 'freq', this.value)">
+                            <span>Hz</span>
+                        `;
+                    } else if (b.type === 'noTone') {
+                        inner = `
+                            <span>🔇 Stop lyd på</span>
+                            ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                        `;
+                    } else if (b.type === 'servo') {
+                        inner = `
+                            <span>⚙️ Drej servo på</span>
+                            ${ardPinSelectHtml(b.pin, idx, 'pin')}
+                            <span>til</span>
+                            <input type="number" min="0" max="180" step="5" value="${b.angle}" oninput="ardUpdateBlockField(${idx}, 'angle', this.value)">
+                            <span>&deg;</span>
+                        `;
+                    } else if (b.type === 'serial') {
+                        const safeVal = String(b.text).replace(/"/g, '&quot;');
+                        inner = `
+                            <span>💬 Skriv i Serial:</span>
+                            <input type="text" value="${safeVal}" oninput="ardUpdateBlockField(${idx}, 'text', this.value)">
+                        `;
+                    } else if (b.type === 'ifButton') {
+                        let thenCtrl = '';
+                        let elseCtrl = '';
+                        if (b.action === 'digitalWrite') {
+                            thenCtrl = `<select onchange="ardUpdateBlockField(${idx}, 'thenVal', this.value)">
+                                <option value="HIGH" ${b.thenVal === 'HIGH' ? 'selected' : ''}>HIGH (Tænd)</option>
+                                <option value="LOW" ${b.thenVal === 'LOW' ? 'selected' : ''}>LOW (Sluk)</option>
+                            </select>`;
+                            elseCtrl = `<select onchange="ardUpdateBlockField(${idx}, 'elseVal', this.value)">
+                                <option value="LOW" ${b.elseVal === 'LOW' ? 'selected' : ''}>LOW (Sluk)</option>
+                                <option value="HIGH" ${b.elseVal === 'HIGH' ? 'selected' : ''}>HIGH (Tænd)</option>
+                            </select>`;
+                        } else if (b.action === 'tone') {
+                            thenCtrl = `<input type="number" min="50" max="3000" value="${b.thenVal}" oninput="ardUpdateBlockField(${idx}, 'thenVal', this.value)"> <span>Hz</span>`;
+                            elseCtrl = `<span>Stop lyd (noTone)</span>`;
+                        } else if (b.action === 'servo') {
+                            thenCtrl = `<input type="number" min="0" max="180" value="${b.thenVal}" oninput="ardUpdateBlockField(${idx}, 'thenVal', this.value)"> <span>&deg;</span>`;
+                            elseCtrl = `<input type="number" min="0" max="180" value="${b.elseVal}" oninput="ardUpdateBlockField(${idx}, 'elseVal', this.value)"> <span>&deg;</span>`;
+                        }
+
+                        inner = `
+                            <span>🔘 Hvis knap</span>
+                            ${ardPinSelectHtml(b.btnPin, idx, 'btnPin')}
+                            <span>trykkes &rarr;</span>
+                            <select onchange="ardUpdateBlockField(${idx}, 'action', this.value)">
+                                <option value="digitalWrite" ${b.action === 'digitalWrite' ? 'selected' : ''}>Tænd/sluk pin</option>
+                                <option value="tone" ${b.action === 'tone' ? 'selected' : ''}>Spil tone</option>
+                                <option value="servo" ${b.action === 'servo' ? 'selected' : ''}>Drej servo</option>
+                            </select>
+                            ${ardPinSelectHtml(b.targetPin, idx, 'targetPin')}
+                            ${thenCtrl}
+                            <div class="ard-block-else-row">
+                                <span>↳ Ellers:</span>
+                                ${elseCtrl}
+                            </div>
+                        `;
+                    }
+
+                    el.innerHTML = inner + `
+                        <div class="ard-block-actions">
+                            <button class="ard-blk-act-btn" title="Flyt op" onclick="ardMoveBlock(${idx}, -1)">↑</button>
+                            <button class="ard-blk-act-btn" title="Flyt ned" onclick="ardMoveBlock(${idx}, 1)">↓</button>
+                            <button class="ard-blk-act-btn del" title="Slet blok" onclick="ardDeleteBlock(${idx})">&times;</button>
+                        </div>
+                    `;
+                    list.appendChild(el);
+                });
+            }
+
+            function ardGenerateCppFromBlocks() {
+                const outputPins = new Set();
+                const inputPins = new Set();
+                const servoPins = new Set();
+                let usesSerial = false;
+
+                ardSlots.forEach(s => {
+                    if (!s) return;
+                    if (s.type === 'button') inputPins.add(s.pin);
+                    else if (s.type === 'servo') servoPins.add(s.pin);
+                    else outputPins.add(s.pin);
+                });
+
+                ardBlocks.forEach(b => {
+                    if (b.type === 'digitalWrite' || b.type === 'tone' || b.type === 'noTone') outputPins.add(b.pin);
+                    if (b.type === 'servo') servoPins.add(b.pin);
+                    if (b.type === 'serial') usesSerial = true;
+                    if (b.type === 'ifButton') {
+                        inputPins.add(b.btnPin);
+                        if (b.action === 'servo') servoPins.add(b.targetPin);
+                        else outputPins.add(b.targetPin);
+                    }
+                });
+
+                let lines = [];
+                if (servoPins.size > 0) {
+                    lines.push('#include <Servo.h>');
+                    lines.push('Servo minServo;');
+                    lines.push('');
+                }
+
+                lines.push('void setup() {');
+                if (usesSerial) lines.push('  Serial.begin(9600);');
+                [...outputPins].sort((a, b) => a - b).forEach(p => {
+                    lines.push(`  pinMode(${p}, OUTPUT);`);
+                });
+                [...inputPins].sort((a, b) => a - b).forEach(p => {
+                    lines.push(`  pinMode(${p}, INPUT);`);
+                });
+                const firstServo = [...servoPins][0];
+                if (firstServo !== undefined) {
+                    lines.push(`  minServo.attach(${firstServo});`);
+                }
+                lines.push('}');
+                lines.push('');
+                lines.push('void loop() {');
+
+                ardBlocks.forEach(b => {
+                    if (b.type === 'digitalWrite') {
+                        lines.push(`  digitalWrite(${b.pin}, ${b.value});`);
+                    } else if (b.type === 'delay') {
+                        lines.push(`  delay(${b.ms});`);
+                    } else if (b.type === 'tone') {
+                        lines.push(`  tone(${b.pin}, ${b.freq});`);
+                    } else if (b.type === 'noTone') {
+                        lines.push(`  noTone(${b.pin});`);
+                    } else if (b.type === 'servo') {
+                        lines.push(`  minServo.write(${b.angle});`);
+                    } else if (b.type === 'serial') {
+                        const esc = String(b.text).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+                        lines.push(`  Serial.println("${esc}");`);
+                    } else if (b.type === 'ifButton') {
+                        lines.push(`  if (digitalRead(${b.btnPin}) == HIGH) {`);
+                        if (b.action === 'digitalWrite') {
+                            lines.push(`    digitalWrite(${b.targetPin}, ${b.thenVal});`);
+                            lines.push(`  } else {`);
+                            lines.push(`    digitalWrite(${b.targetPin}, ${b.elseVal});`);
+                        } else if (b.action === 'tone') {
+                            lines.push(`    tone(${b.targetPin}, ${b.thenVal});`);
+                            lines.push(`  } else {`);
+                            lines.push(`    noTone(${b.targetPin});`);
+                        } else if (b.action === 'servo') {
+                            lines.push(`    minServo.write(${b.thenVal});`);
+                            lines.push(`  } else {`);
+                            lines.push(`    minServo.write(${b.elseVal});`);
+                        }
+                        lines.push('  }');
+                    }
+                });
+
+                lines.push('}');
+                return lines.join('\n');
+            }
+
+            function ardSyncCppIfAuto() {
+                if (ardCppManuallyEdited) return;
+                const ed = document.getElementById('ard-cpp-editor');
+                if (ed) ed.value = ardGenerateCppFromBlocks();
+                ardUpdateCppBadge();
+            }
+
+            window.ardOnCppManualEdit = function() {
+                ardCppManuallyEdited = true;
+                ardUpdateCppBadge();
+            };
+
+            window.ardResyncFromBlocks = function() {
+                ardCppManuallyEdited = false;
+                ardSyncCppIfAuto();
+            };
+
+            function ardUpdateCppBadge() {
+                const badge = document.getElementById('ard-cpp-sync-badge');
+                const resyncBtn = document.getElementById('ard-btn-resync');
+                if (!badge || !resyncBtn) return;
+                if (ardCppManuallyEdited) {
+                    badge.textContent = 'Brugerdefineret C++-kode (kører fra editoren)';
+                    badge.classList.add('custom');
+                    resyncBtn.style.display = 'inline-block';
+                } else {
+                    badge.textContent = 'Synkroniseret med kodeblokke';
+                    badge.classList.remove('custom');
+                    resyncBtn.style.display = 'none';
+                }
+            }
+
+            window.ardSwitchCodeTab = function(tab) {
+                ardActiveTab = tab;
+                document.getElementById('ard-tab-blocks').classList.toggle('active', tab === 'blocks');
+                document.getElementById('ard-tab-cpp').classList.toggle('active', tab === 'cpp');
+                document.getElementById('ard-pane-blocks').style.display = tab === 'blocks' ? 'block' : 'none';
+                document.getElementById('ard-pane-cpp').style.display = tab === 'cpp' ? 'block' : 'none';
+                if (tab === 'cpp') ardSyncCppIfAuto();
+            };
+
+            window.ardCopyCppCode = function() {
+                const editor = document.getElementById('ard-cpp-editor');
+                const btn = document.getElementById('ard-btn-copy-cpp');
+                const prevDisplay = document.getElementById('ard-pane-cpp').style.display;
+                if (prevDisplay === 'none') {
+                    const tmp = document.createElement('textarea');
+                    tmp.value = editor.value;
+                    document.body.appendChild(tmp);
+                    tmp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tmp);
+                } else {
+                    editor.select();
+                    document.execCommand('copy');
+                    window.getSelection().removeAllRanges();
+                }
+                const oldText = btn.textContent;
+                btn.textContent = '✅ Kopieret!';
+                setTimeout(() => { btn.textContent = oldText; }, 1600);
+            };
+
+            function ardAppendSerial(text, kind = 'normal') {
+                const out = document.getElementById('ard-serial-output');
+                if (!out) return;
+                const div = document.createElement('div');
+                if (kind === 'err') div.className = 'ard-serial-line-err';
+                else if (kind === 'sys') div.className = 'ard-serial-line-sys';
+                div.textContent = text;
+                out.appendChild(div);
+                while (out.children.length > 120) {
+                    out.removeChild(out.firstChild);
+                }
+                out.scrollTop = out.scrollHeight;
+            }
+
+            window.ardClearSerial = function() {
+                const out = document.getElementById('ard-serial-output');
+                if (out) out.innerHTML = '';
+            };
+
+            function ardAbortableDelay(ms, token) {
+                const safeMs = Math.max(0, Math.min(30000, Number(ms) || 0));
+                return new Promise((resolve) => {
+                    const start = performance.now();
+                    function step() {
+                        if (!ardIsRunning || token !== ardRunToken) return resolve(false);
+                        if (performance.now() - start >= safeMs) return resolve(true);
+                        requestAnimationFrame(step);
+                    }
+                    requestAnimationFrame(step);
+                });
+            }
+
+            function ardHighlightBlock(blockId) {
+                document.querySelectorAll('.ard-code-block.active-exec').forEach(el => el.classList.remove('active-exec'));
+                if (blockId !== null) {
+                    const el = document.getElementById(`ard-blk-el-${blockId}`);
+                    if (el) el.classList.add('active-exec');
+                }
+            }
+
+            function ardResetOutputs() {
+                ardStopAllAudio();
+                ARD_ALL_PINS.forEach(p => {
+                    ardPinState[p] = 0;
+                    ardToneState[p] = 0;
+                    ardServoAngle[p] = 0;
+                });
+                ardHighlightBlock(null);
+                ardUpdateBoardVisuals();
+            }
+
+            function ardSetRunningUI(running) {
+                ardIsRunning = running;
+                const runBtn = document.getElementById('ard-btn-run');
+                const stopBtn = document.getElementById('ard-btn-stop');
+                const st = document.getElementById('ard-run-status');
+                const stText = document.getElementById('ard-run-status-text');
+                if (runBtn) runBtn.disabled = running;
+                if (stopBtn) stopBtn.disabled = !running;
+                if (st) st.classList.toggle('running', running);
+                if (stText) stText.textContent = running ? 'Kører...' : 'Stoppet';
+            }
+
+            window.ardStopProgram = function() {
+                ardRunToken++;
+                ardSetRunningUI(false);
+                ardResetOutputs();
+                ardAppendSerial('⏹ Program stoppet.', 'sys');
+            };
+
+            window.ardStartProgram = async function() {
+                if (ardIsRunning) return;
+                ardEnsureAudioCtx();
+                ardRunToken++;
+                const myToken = ardRunToken;
+                ardResetOutputs();
+                ardSetRunningUI(true);
+
+                const useCppEngine = ardCppManuallyEdited || ardActiveTab === 'cpp';
+                if (useCppEngine) {
+                    ardAppendSerial('▶ Kører Arduino C++-kode...', 'sys');
+                    await ardRunCppInterpreter(document.getElementById('ard-cpp-editor').value, myToken);
+                } else {
+                    ardAppendSerial('▶ Kører kodeblokke...', 'sys');
+                    await ardRunBlocksLoop(myToken);
+                }
+            };
+
+            async function ardRunBlocksLoop(token) {
+                if (ardBlocks.length === 0) {
+                    ardAppendSerial('Ingen kodeblokke i loop(). Tilføj mindst én blok først!', 'err');
+                    window.ardStopProgram();
+                    return;
+                }
+
+                while (ardIsRunning && token === ardRunToken) {
+                    let hadDelay = false;
+
+                    for (const b of ardBlocks) {
+                        if (!ardIsRunning || token !== ardRunToken) break;
+                        ardHighlightBlock(b.id);
+
+                        if (b.type === 'digitalWrite') {
+                            ardPinState[b.pin] = b.value === 'HIGH' ? 1 : 0;
+                            ardUpdateBoardVisuals();
+                        } else if (b.type === 'delay') {
+                            hadDelay = true;
+                            const ok = await ardAbortableDelay(b.ms, token);
+                            if (!ok) break;
+                        } else if (b.type === 'tone') {
+                            ardPlayToneAudio(b.pin, b.freq);
+                        } else if (b.type === 'noTone') {
+                            ardStopToneAudio(b.pin, true);
+                        } else if (b.type === 'servo') {
+                            ardServoAngle[b.pin] = Math.max(0, Math.min(180, b.angle));
+                            ardUpdateBoardVisuals();
+                        } else if (b.type === 'serial') {
+                            ardAppendSerial(String(b.text));
+                        } else if (b.type === 'ifButton') {
+                            const pressed = ardIsButtonPinActive(b.btnPin);
+                            if (b.action === 'digitalWrite') {
+                                const v = pressed ? b.thenVal : b.elseVal;
+                                ardPinState[b.targetPin] = v === 'HIGH' ? 1 : 0;
+                                ardUpdateBoardVisuals();
+                            } else if (b.action === 'tone') {
+                                if (pressed) ardPlayToneAudio(b.targetPin, parseInt(b.thenVal, 10) || 440);
+                                else ardStopToneAudio(b.targetPin, true);
+                            } else if (b.action === 'servo') {
+                                const ang = parseInt(pressed ? b.thenVal : b.elseVal, 10) || 0;
+                                ardServoAngle[b.targetPin] = Math.max(0, Math.min(180, ang));
+                                ardUpdateBoardVisuals();
+                            }
+                        }
+                    }
+
+                    if (!hadDelay) {
+                        const ok = await ardAbortableDelay(30, token);
+                        if (!ok) break;
+                    }
+                }
+                ardHighlightBlock(null);
+            }
+
+            function ardStripComments(src) {
+                return src
+                    .replace(/\/\*[\s\S]*?\*\//g, '')
+                    .replace(/\/\/[^\n]*/g, '');
+            }
+
+            function ardExtractFunctionBody(src, fnName) {
+                const re = new RegExp(`void\\s+${fnName}\\s*\\(\\s*\\)\\s*\\{`);
+                const match = re.exec(src);
+                if (!match) return null;
+                let i = match.index + match[0].length;
+                let depth = 1;
+                let start = i;
+                while (i < src.length && depth > 0) {
+                    if (src[i] === '{') depth++;
+                    else if (src[i] === '}') depth--;
+                    i++;
+                }
+                if (depth !== 0) {
+                    throw new Error(`Manglende afsluttende '}' i ${fnName}(). Tjek dine krøllede parenteser.`);
+                }
+                return src.slice(start, i - 1);
+            }
+
+            function ardParseStatements(code) {
+                const stmts = [];
+                let i = 0;
+                const n = code.length;
+
+                function skipWs() {
+                    while (i < n && /\s/.test(code[i])) i++;
+                }
+
+                function readBalanced(openCh, closeCh) {
+                    if (code[i] !== openCh) return null;
+                    i++;
+                    const start = i;
+                    let depth = 1;
+                    let inStr = false;
+                    while (i < n && depth > 0) {
+                        const c = code[i];
+                        if (c === '"' && code[i - 1] !== '\\') inStr = !inStr;
+                        if (!inStr) {
+                            if (c === openCh) depth++;
+                            else if (c === closeCh) depth--;
+                        }
+                        i++;
+                    }
+                    if (depth !== 0) {
+                        throw new Error(`Manglende '${closeCh}' – tjek at alle parenteser og blokke er lukket.`);
+                    }
+                    return code.slice(start, i - 1);
+                }
+
+                while (i < n) {
+                    skipWs();
+                    if (i >= n) break;
+
+                    if (code.slice(i).startsWith('if') && /^if\s*\(/.test(code.slice(i))) {
+                        i += 2;
+                        skipWs();
+                        const cond = readBalanced('(', ')');
+                        skipWs();
+                        const thenBody = readBalanced('{', '}');
+                        if (thenBody === null) {
+                            throw new Error(`Forventede '{' efter if (${cond}).`);
+                        }
+                        skipWs();
+                        let elseBody = null;
+                        if (code.slice(i).startsWith('else') && /^else\b/.test(code.slice(i))) {
+                            i += 4;
+                            skipWs();
+                            elseBody = readBalanced('{', '}');
+                            if (elseBody === null) {
+                                throw new Error(`Forventede '{' efter else.`);
+                            }
+                        }
+                        stmts.push({
+                            kind: 'if',
+                            cond,
+                            thenStmts: ardParseStatements(thenBody),
+                            elseStmts: elseBody ? ardParseStatements(elseBody) : []
+                        });
+                    } else {
+                        const start = i;
+                        let inStr = false;
+                        while (i < n && (inStr || code[i] !== ';')) {
+                            if (code[i] === '"' && code[i - 1] !== '\\') inStr = !inStr;
+                            if (!inStr && (code[i] === '{' || code[i] === '}')) {
+                                throw new Error(`Uventet '${code[i]}' nær "${code.slice(start, i).trim()}". Mangler der et semikolon ';'?`);
+                            }
+                            i++;
+                        }
+                        if (i >= n) {
+                            const rem = code.slice(start).trim();
+                            if (rem) throw new Error(`Mangler semikolon ';' i slutningen af linjen: "${rem}"`);
+                            break;
+                        }
+                        const line = code.slice(start, i).trim();
+                        i++;
+                        if (line) stmts.push({ kind: 'stmt', raw: line });
+                    }
+                }
+                return stmts;
+            }
+
+            function ardEvalExpr(expr, env) {
+                const s = expr.trim();
+                if (s === 'HIGH' || s === 'true') return 1;
+                if (s === 'LOW' || s === 'false') return 0;
+                if (s === 'OUTPUT' || s === 'INPUT' || s === 'INPUT_PULLUP') return s;
+
+                if (s.startsWith('"') && s.endsWith('"')) {
+                    return s.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+                }
+
+                const dr = /^digitalRead\s*\((.+)\)$/.exec(s);
+                if (dr) {
+                    const p = Number(ardEvalExpr(dr[1], env));
+                    return ardIsButtonPinActive(p) ? 1 : (ardPinState[p] ? 1 : 0);
+                }
+
+                const cmp = /^(.+?)\s*(==|!=|<=|>=|<|>)\s*(.+)$/.exec(s);
+                if (cmp) {
+                    const l = ardEvalExpr(cmp[1], env);
+                    const r = ardEvalExpr(cmp[3], env);
+                    const op = cmp[2];
+                    if (op === '==') return l == r ? 1 : 0;
+                    if (op === '!=') return l != r ? 1 : 0;
+                    if (op === '<=') return l <= r ? 1 : 0;
+                    if (op === '>=') return l >= r ? 1 : 0;
+                    if (op === '<')  return l < r ? 1 : 0;
+                    if (op === '>')  return l > r ? 1 : 0;
+                }
+
+                if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+
+                if (Object.prototype.hasOwnProperty.call(env.vars, s)) {
+                    return env.vars[s];
+                }
+
+                const arith = /^(.+?)\s*([+\-*/])\s*(.+)$/.exec(s);
+                if (arith) {
+                    const l = Number(ardEvalExpr(arith[1], env));
+                    const r = Number(ardEvalExpr(arith[3], env));
+                    if (arith[2] === '+') return l + r;
+                    if (arith[2] === '-') return l - r;
+                    if (arith[2] === '*') return l * r;
+                    if (arith[2] === '/') return r !== 0 ? l / r : 0;
+                }
+
+                throw new Error(`Forstod ikke værdien "${s}". Tjek stavning eller gåseøjne.`);
+            }
+
+            function ardSplitArgs(argStr) {
+                const res = [];
+                let cur = '';
+                let inStr = false;
+                let depth = 0;
+                for (let i = 0; i < argStr.length; i++) {
+                    const c = argStr[i];
+                    if (c === '"' && argStr[i - 1] !== '\\') inStr = !inStr;
+                    if (!inStr) {
+                        if (c === '(') depth++;
+                        else if (c === ')') depth--;
+                        else if (c === ',' && depth === 0) {
+                            res.push(cur.trim());
+                            cur = '';
+                            continue;
+                        }
+                    }
+                    cur += c;
+                }
+                if (cur.trim()) res.push(cur.trim());
+                return res;
+            }
+
+            async function ardExecStatements(stmts, env, token) {
+                let hadDelay = false;
+                for (const st of stmts) {
+                    if (!ardIsRunning || token !== ardRunToken) return hadDelay;
+
+                    if (st.kind === 'if') {
+                        const condVal = ardEvalExpr(st.cond, env);
+                        const subDelay = await ardExecStatements(condVal ? st.thenStmts : st.elseStmts, env, token);
+                        if (subDelay) hadDelay = true;
+                        continue;
+                    }
+
+                    const raw = st.raw;
+
+                    const varDecl = /^(?:const\s+)?(?:int|long|float|bool)\s+([a-zA-Z_]\w*)\s*=\s*(.+)$/.exec(raw);
+                    if (varDecl) {
+                        env.vars[varDecl[1]] = ardEvalExpr(varDecl[2], env);
+                        continue;
+                    }
+
+                    const varAssign = /^([a-zA-Z_]\w*)\s*=\s*(.+)$/.exec(raw);
+                    if (varAssign && !raw.includes('(')) {
+                        env.vars[varAssign[1]] = ardEvalExpr(varAssign[2], env);
+                        continue;
+                    }
+
+                    const call = /^([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)?)\s*\((.*)\)$/.exec(raw);
+                    if (!call) {
+                        throw new Error(`Ukendt kommando: "${raw}". Tjek stavefejl og parenteser.`);
+                    }
+
+                    const fn = call[1];
+                    const argStr = call[2].trim();
+                    const args = argStr ? ardSplitArgs(argStr) : [];
+
+                    if (fn === 'pinMode') {
+                        const p = Number(ardEvalExpr(args[0], env));
+                        if (!ARD_ALL_PINS.includes(p)) throw new Error(`Pin D${p} findes ikke på kortet (brug D2–D13).`);
+                    } else if (fn === 'digitalWrite') {
+                        const p = Number(ardEvalExpr(args[0], env));
+                        const v = Number(ardEvalExpr(args[1], env));
+                        ardPinState[p] = v ? 1 : 0;
+                        ardUpdateBoardVisuals();
+                    } else if (fn === 'delay') {
+                        hadDelay = true;
+                        const ms = Number(ardEvalExpr(args[0], env));
+                        const ok = await ardAbortableDelay(ms, token);
+                        if (!ok) return hadDelay;
+                    } else if (fn === 'tone') {
+                        const p = Number(ardEvalExpr(args[0], env));
+                        const hz = Number(ardEvalExpr(args[1], env));
+                        ardPlayToneAudio(p, hz);
+                        if (args[2]) {
+                            hadDelay = true;
+                            const dur = Number(ardEvalExpr(args[2], env));
+                            const ok = await ardAbortableDelay(dur, token);
+                            ardStopToneAudio(p, true);
+                            if (!ok) return hadDelay;
+                        }
+                    } else if (fn === 'noTone') {
+                        const p = Number(ardEvalExpr(args[0], env));
+                        ardStopToneAudio(p, true);
+                    } else if (fn === 'Serial.begin') {
+                        // Ok
+                    } else if (fn === 'Serial.println' || fn === 'Serial.print') {
+                        const val = args.length ? ardEvalExpr(args[0], env) : '';
+                        ardAppendSerial(String(val));
+                    } else if (fn === 'servoWrite') {
+                        if (args.length >= 2) {
+                            const p = Number(ardEvalExpr(args[0], env));
+                            const ang = Number(ardEvalExpr(args[1], env));
+                            ardServoAngle[p] = Math.max(0, Math.min(180, ang));
+                        } else if (args.length === 1) {
+                            const ang = Number(ardEvalExpr(args[0], env));
+                            const targetPin = ardSlots.find(s => s && s.type === 'servo')?.pin || 9;
+                            ardServoAngle[targetPin] = Math.max(0, Math.min(180, ang));
+                        }
+                        ardUpdateBoardVisuals();
+                    } else if (fn.endsWith('.attach')) {
+                        const objName = fn.split('.')[0];
+                        const p = Number(ardEvalExpr(args[0], env));
+                        env.servos[objName] = p;
+                    } else if (fn.endsWith('.write')) {
+                        const objName = fn.split('.')[0];
+                        const ang = Number(ardEvalExpr(args[0], env));
+                        const targetPin = env.servos[objName] !== undefined
+                            ? env.servos[objName]
+                            : (ardSlots.find(s => s && s.type === 'servo')?.pin || 9);
+                        ardServoAngle[targetPin] = Math.max(0, Math.min(180, ang));
+                        ardUpdateBoardVisuals();
+                    } else {
+                        throw new Error(`Ukendt Arduino-kommando "${fn}()". Prøv fx digitalWrite, delay, tone, noTone, servoWrite eller Serial.println.`);
+                    }
+                }
+                return hadDelay;
+            }
+
+            async function ardRunCppInterpreter(source, token) {
+                try {
+                    const clean = ardStripComments(source);
+                    const env = { vars: {}, servos: {} };
+
+                    const globalMatches = clean.matchAll(/^(?:const\s+)?(?:int|long|float)\s+([a-zA-Z_]\w*)\s*=\s*([^;]+);/gm);
+                    for (const m of globalMatches) {
+                        env.vars[m[1]] = ardEvalExpr(m[2], env);
+                    }
+
+                    const setupBody = ardExtractFunctionBody(clean, 'setup');
+                    const loopBody = ardExtractFunctionBody(clean, 'loop');
+
+                    if (setupBody === null) {
+                        throw new Error('Kunne ikke finde "void setup() { ... }" i koden.');
+                    }
+                    if (loopBody === null) {
+                        throw new Error('Kunne ikke finde "void loop() { ... }" i koden.');
+                    }
+
+                    const setupStmts = ardParseStatements(setupBody);
+                    const loopStmts = ardParseStatements(loopBody);
+
+                    await ardExecStatements(setupStmts, env, token);
+
+                    while (ardIsRunning && token === ardRunToken) {
+                        const hadDelay = await ardExecStatements(loopStmts, env, token);
+                        if (!hadDelay) {
+                            const ok = await ardAbortableDelay(30, token);
+                            if (!ok) break;
+                        }
+                    }
+                } catch (err) {
+                    ardAppendSerial(`⚠️ Fejl i koden: ${err.message}`, 'err');
+                    ardRunToken++;
+                    ardSetRunningUI(false);
+                    ardResetOutputs();
+                }
+            }
+
+            window.ardLoadProject = function(name) {
+                if (ardIsRunning) window.ardStopProgram();
+
+                document.querySelectorAll('.ard-preset-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.ardpreset === name);
+                });
+
+                ardSlots = Array(ARD_SLOT_COUNT).fill(null);
+                ardBlocks = [];
+                ardNextBlockId = 1;
+                ardCppManuallyEdited = false;
+
+                if (name === 'blink') {
+                    ardSlots[5] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                    ardBlocks = [
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'serial', text: 'LED tændt!' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 600 },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 600 }
+                    ];
+                } else if (name === 'traffic') {
+                    ardSlots[5] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                    ardSlots[3] = { type: 'led-yellow', pin: 6, pressed: false, latched: false };
+                    ardSlots[2] = { type: 'led-green', pin: 5, pressed: false, latched: false };
+                    ardBlocks = [
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 6, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 5, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'serial', text: 'STOP (Rød)' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 1600 },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 6, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'serial', text: 'Gør klar (Rød + Gul)' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 700 },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 6, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 5, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'serial', text: 'KØR (Grøn)' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 1600 },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 5, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 6, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 700 }
+                    ];
+                } else if (name === 'police') {
+                    ardSlots[5] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                    ardSlots[1] = { type: 'led-blue', pin: 3, pressed: false, latched: false };
+                    ardSlots[3] = { type: 'buzzer', pin: 6, pressed: false, latched: false };
+                    ardBlocks = [
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 3, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'tone', pin: 6, freq: 660 },
+                        { id: ardNextBlockId++, type: 'delay', ms: 350 },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 13, value: 'LOW' },
+                        { id: ardNextBlockId++, type: 'digitalWrite', pin: 3, value: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'tone', pin: 6, freq: 440 },
+                        { id: ardNextBlockId++, type: 'delay', ms: 350 }
+                    ];
+                } else if (name === 'buttonLed') {
+                    ardSlots[0] = { type: 'button', pin: 2, pressed: false, latched: false };
+                    ardSlots[5] = { type: 'led-green', pin: 13, pressed: false, latched: false };
+                    ardSlots[3] = { type: 'buzzer', pin: 6, pressed: false, latched: false };
+                    ardBlocks = [
+                        { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'digitalWrite', targetPin: 13, thenVal: 'HIGH', elseVal: 'LOW' },
+                        { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'tone', targetPin: 6, thenVal: '784', elseVal: '0' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 50 }
+                    ];
+                } else if (name === 'servoGate') {
+                    ardSlots[0] = { type: 'button', pin: 2, pressed: false, latched: false };
+                    ardSlots[4] = { type: 'servo', pin: 9, pressed: false, latched: false };
+                    ardSlots[5] = { type: 'led-red', pin: 13, pressed: false, latched: false };
+                    ardSlots[2] = { type: 'led-green', pin: 5, pressed: false, latched: false };
+                    ardBlocks = [
+                        { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'servo', targetPin: 9, thenVal: '90', elseVal: '0' },
+                        { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'digitalWrite', targetPin: 5, thenVal: 'HIGH', elseVal: 'LOW' },
+                        { id: ardNextBlockId++, type: 'ifButton', btnPin: 2, action: 'digitalWrite', targetPin: 13, thenVal: 'LOW', elseVal: 'HIGH' },
+                        { id: ardNextBlockId++, type: 'delay', ms: 50 }
+                    ];
+                }
+
+                ardRenderSlots();
+                ardRenderBlocks();
+                ardSyncCppIfAuto();
+                window.ardClearSerial();
+                ardAppendSerial('Klar! Tryk på "▶ Kør program" for at starte simuleringen.', 'sys');
+            };
+
+            function ardInitWorkshop() {
+                if (ardInitialized) return;
+                ardInitialized = true;
+
+                document.querySelectorAll('.ard-shelf-item').forEach(el => {
+                    el.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/ard-comp-type', el.dataset.ardtype);
+                    });
+                });
+
+                document.querySelectorAll('.ard-palette-chip').forEach(chip => {
+                    chip.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/ard-new-block', chip.dataset.ardblock);
+                    });
+                });
+
+                const blockListEl = document.getElementById('ard-block-list');
+                if (blockListEl) {
+                    blockListEl.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        blockListEl.classList.add('drag-over');
+                    });
+                    blockListEl.addEventListener('dragleave', () => blockListEl.classList.remove('drag-over'));
+                    blockListEl.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        blockListEl.classList.remove('drag-over');
+                        const newType = e.dataTransfer.getData('text/ard-new-block');
+                        if (newType) window.ardAddBlock(newType);
+                    });
+                }
+
+                window.addEventListener('resize', () => {
+                    const ardView = document.getElementById('arduino-lab-view');
+                    if (ardView && ardView.classList.contains('active')) {
+                        requestAnimationFrame(ardDrawWires);
+                    }
+                });
+
+                window.ardLoadProject('blink');
+            }
+
+            // Sikker MutationObserver på arduino-lab-view
+            const ardViewEl = document.getElementById('arduino-lab-view');
+            if (ardViewEl) {
+                const observer = new MutationObserver(() => {
+                    const isActive = ardViewEl.classList.contains('active');
+                    if (isActive) {
+                        ardInitWorkshop();
+                        requestAnimationFrame(ardDrawWires);
+                    } else if (ardIsRunning) {
+                        window.ardStopProgram();
+                    }
+                });
+                observer.observe(ardViewEl, { attributes: true, attributeFilter: ['class'] });
+
+                if (ardViewEl.classList.contains('active')) {
+                    ardInitWorkshop();
+                    requestAnimationFrame(ardDrawWires);
+                }
+            }
+        })();
     </script>
 </body>
 </html>
