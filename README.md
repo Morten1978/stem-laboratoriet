@@ -2,6 +2,10 @@
 
 Gratis, login-fri og browserbaseret læringsplatform til børn, forældre og undervisning med fokus på fysik, kemi, biologi/mikrobiologi, teknologi, ingeniørkunst og matematik.
 
+* **Live-side (Cloudflare Workers):** [stem-lab.bornsleepy-morten.workers.dev](https://stem-lab.bornsleepy-morten.workers.dev/)
+* **Live-side (GitHub Pages):** [morten1978.github.io/stem-laboratoriet](https://morten1978.github.io/stem-laboratoriet)
+* **Kildekode (GitHub):** [github.com/Morten1978/stem-laboratoriet](https://github.com/Morten1978/stem-laboratoriet/tree/main)
+
 ## Indhold og moduler
 
 ### STEM Aktiviteter & Forsøg
@@ -24,6 +28,6 @@ Gratis, login-fri og browserbaseret læringsplatform til børn, forældre og und
 ## Lokal test og udvikling
 Hele projektet ligger i én samlet fil (`index.html`) uden byggeskridt eller eksterne pakker ud over Three.js via CDN:
 
-1. Klon eller hent repositoryet:
+1. Klon eller hent repositoryet fra [github.com/Morten1978/stem-laboratoriet](https://github.com/Morten1978/stem-laboratoriet/tree/main):
    ```bash
    git clone [https://github.com/Morten1978/stem-laboratoriet.git](https://github.com/Morten1978/stem-laboratoriet.git)
